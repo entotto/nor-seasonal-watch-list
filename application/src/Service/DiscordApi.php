@@ -1,0 +1,176 @@
+<?php
+
+namespace App\Service;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
+
+class DiscordApi
+{
+    private $rootUrl;
+    private $token;
+    private $botToken;
+
+    /**
+     * DiscordApi constructor.
+     * @param string $rootUrl
+     * @param string $botToken
+     */
+    public function __construct(
+        string $rootUrl,
+        string $botToken
+    ) {
+        $this->rootUrl = $rootUrl;
+        $this->botToken = $botToken;
+    }
+
+    public function initialize(string $token): void
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getMe(): ?array
+    {
+        $result = $this->sendRequest('GET', '/users/@me');
+        if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
+            return json_decode($result->getBody(), true);
+        }
+        return null;
+    }
+
+    /**
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getMyGuilds(): ?array
+    {
+        $result = $this->sendRequest('GET', '/users/@me/guilds');
+        if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
+            return json_decode($result->getBody(), true);
+        }
+        return null;
+    }
+
+    /**
+     * @param string $guildId
+     * @param string $memberId
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getGuildMemberInfo(string $guildId, string $memberId): ?array
+    {
+        static $info = [];
+        if (isset($info["{$guildId}:{$memberId}"])) {
+            return $info["{$guildId}:{$memberId}"];
+        }
+        $result = $this->sendRequest('GET', '/guilds/' . $guildId . '/members/' . $memberId, null, true);
+        if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
+            $data = json_decode($result->getBody(), true);
+            $info["{$guildId}:{$memberId}"] = $data;
+            return $data;
+        }
+        return null;
+    }
+
+    /**
+     * @param string $guildId
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getGuild(string $guildId): ?array
+    {
+        static $guilds = [];
+        if (isset($guilds[$guildId])) {
+            return $guilds[$guildId];
+        }
+        $result = $this->sendRequest('GET', '/guilds/' . $guildId, null, true);
+        if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
+            $data = json_decode($result->getBody(), true);
+            $guilds[$guildId] = $data;
+            return $data;
+        }
+        return null;
+    }
+
+    /**
+     * @param string $guildId
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getGuildRoles(string $guildId): ?array
+    {
+        $guild = $this->getGuild($guildId);
+        if ($guild === null) {
+            return null;
+        }
+        return $guild['roles'];
+    }
+
+    /**
+     * @param string $guildId
+     * @param string $memberId
+     * @return array|null
+     * @throws GuzzleException
+     */
+    public function getGuildRolesForMember(string $guildId, string $memberId): ?array
+    {
+        $guildRoles = $this->getGuildRoles($guildId);
+        $memberInfo = $this->getGuildMemberInfo($guildId, $memberId);
+        if ($guildRoles === null || $memberInfo === null) {
+            return null;
+        }
+        $memberRoleIds = $memberInfo['roles'];
+        $data = [];
+        foreach ($memberRoleIds as $memberRoleId) {
+            $data[$memberRoleId] = $this->findRoleInfoByRoleId($memberRoleId, $guildRoles);
+        }
+        return $data;
+    }
+
+    /**
+     * @param string $roleId
+     * @param array $allRolesInfo
+     * @return array|null
+     */
+    private function findRoleInfoByRoleId(string $roleId, array $allRolesInfo): ?array
+    {
+        foreach ($allRolesInfo as $roleInfo) {
+            if ($roleInfo['id'] === $roleId) {
+                return $roleInfo;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param $method
+     * @param $endpoint
+     * @param null $body
+     * @param false $asBot
+     * @return ResponseInterface|null
+     * @throws GuzzleException
+     */
+    public function sendRequest($method, $endpoint, $body = null, $asBot = false): ?ResponseInterface
+    {
+        if ($asBot) {
+            $authorization = 'Bot ' . $this->botToken;
+        } else {
+            if ($this->token === null) {
+                throw new RuntimeException('Token not set, library has not been initialized');
+            }
+            $authorization = 'Bearer ' . $this->token;
+        }
+        $client = new Client(['exceptions' => false]);
+        return $client->request($method, $this->rootUrl . $endpoint, [
+            'body' => $body,
+            'headers' => [ 'Authorization' => $authorization],
+            'http_errors' => false
+        ]);
+    }
+}

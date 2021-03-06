@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Show{% endblock %}
+
+{% block body %}
+    <h1>Edit Show</h1>
+
+    <div class="row">
+        <div class="col-md-9">
+            {{ include('show/_form.html.twig', {'button_label': 'Update'}) }}
+            <div class="float-end">
+                {{ include('show/_delete_form.html.twig') }}
+            </div>
+            <a class="btn btn-light" href="{{ path('admin_show_index') }}">back to list</a>
+        </div>
+    </div>
+
+
+
+{% endblock %}

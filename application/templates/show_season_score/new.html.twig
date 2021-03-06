@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Show Season Score{% endblock %}
+
+{% block body %}
+    <h1>Create new ShowSeasonScore</h1>
+
+    {{ include('show_season_score/_form.html.twig') }}
+
+    <a href="{{ path('admin_show_season_score_index') }}">back to list</a>
+{% endblock %}

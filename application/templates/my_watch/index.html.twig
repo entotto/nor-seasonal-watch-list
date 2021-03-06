@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Watch{% endblock %}
+
+{% block body %}
+    <h1>Your watch picks</h1>
+    <div class="row">
+        <div class="col-md-2">
+            <form>
+                <div class="form-group">
+                    <label for="select_season">Season</label>
+                    <select id="select_season" class="form-control">
+                        {% for season in seasons %}
+                            <option
+                                    value="{{ season.id }}"
+                                    {% if season.id == selectedSeasonId %} selected="selected" {% endif %}
+                            >{{ season.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="row d-none d-md-flex border-bottom mb-2 pb-2">
+                <div class="col-xs-12 col-md-2">Show</div>
+                <div class="col-xs-12 col-md-7">&nbsp;</div>
+                <div class="col-xs-12 col-md-3">Score</div>
+            </div>
+            {% for key, row in data %}
+                <div class="row border-bottom mb-2 pb-md-2 pb-4">
+                    <div class="col-xs-12 col-md-2">
+                        <img src="{{ row.score.show.getCoverImageMedium|raw }}" alt="cover image" />
+                    </div>
+                    <div class="col-xs-12 col-md-7">
+                        {{ row.score.show.getJapaneseTitle }}
+                        ({{ row.score.show.getFullJapaneseTitle }})<br>
+                        {{ row.score.show.getEnglishTitle }}
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        {% if row.form %}
+                            {{ form_start(row.form) }}
+                            {{ form_widget(
+                                row.form.score,
+                                {
+                                    'id': "show_season_score_score_" ~ key,
+                                    'attr': {
+                                        'class': 'show_season_score_score'
+                                    }
+                                }
+                            )}}
+                            {{ form_end(row.form) }}
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col-xs-12">No records found</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row mb-3 pb-3">
+        <div class="col-xs-12">&nbsp;</div>
+    </div>
+
+
+{% endblock %}
+
+{% block body_javascripts %}
+    <script src="/js/MyWatch.js"></script>
+{% endblock %}

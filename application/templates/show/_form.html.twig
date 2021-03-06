@@ -1,0 +1,37 @@
+{{ form_start(form) }}
+{#<div class="row">#}
+{#    <div class="col">#}
+{#        {{ form_row(form.japaneseTitle) }}#}
+{#    </div>#}
+{#</div>#}
+{#<div class="row">#}
+{#    <div class="col">#}
+{#        {{ form_row(form.englishTitle) }}#}
+{#    </div>#}
+{#</div>#}
+{#<div class="row">#}
+{#    <div class="col">#}
+{#        {{ form_row(form.fullJapaneseTitle) }}#}
+{#    </div>#}
+{#</div>#}
+{#<div class="row">#}
+{#    <div class="col">#}
+{#        {{ form_row(form.fullEnglishTitle) }}#}
+{#    </div>#}
+{#</div>#}
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.anilistId) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.seasons) }}
+    </div>
+</div>
+<div class="row py-3">
+    <div class="col">
+        <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+        <link href="/css/navbar-top-fixed.css" rel="stylesheet">
+
+        <title>{% block title %}Seasonal Watch List{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+
+        {% block javascripts %}{% endblock %}
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Seasonal Watch List</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('my_watch_index') }}">Your Watches</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('all_watch_index') }}">All Watches</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('my_vote') }}">Your Vote</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ path('admin_season_index') }}">Seasons</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ path('admin_show_index') }}">Shows</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ path('admin_election_index') }}">Elections</a>
+                            </li>
+{#                            <li>#}
+{#                                <a class="dropdown-item" href="{{ path('admin_election_vote_index') }}">Vote Choices</a>#}
+{#                            </li>#}
+                            <li>
+                                <a class="dropdown-item" href="{{ path('admin_discord_channel_index') }}">Discord Channels</a>
+                            </li>
+                            {#                    <li>#}
+                            {#                        <a class="dropdown-item" href="{{ path('discord_index') }}">Discord login</a>#}
+                            {#                    </li>#}
+                            {#                    <li>#}
+                            {#                        <a class="dropdown-item" href="{{ path('connect_discord_disconnect') }}">Logout</a>#}
+                            {#                    </li>#}
+                            {#                    <li>#}
+                            {#                        <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
+                            {#                    </li>#}
+
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav navbar-right mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('connect_discord_disconnect') }}">Logout</a>
+                    </li>
+                </ul>
+
+                {#                <form class="d-flex">#}
+{#                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">#}
+{#                    <button class="btn btn-outline-success" type="submit">Search</button>#}
+{#                </form>#}
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        {% block body %}{% endblock %}
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+{#    <script src="/js/datatables.min.js"></script>#}
+{#    <script src="/js/jquery.dataTables.min.js"></script>#}
+{#    <script src="/js/dataTables.bootstrap5.min.js"></script>#}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    {% block body_javascripts %}{% endblock %}
+    </body>
+</html>

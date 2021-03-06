@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Vote{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8">
+            <h1>
+                Your vote:
+                Election for the {{ election.season.name }} Season
+            </h1>
+            <p>
+                Open {{ election.getStartDate|date('F jS, Y g:i a') }}
+                through {{ election.getEndDate|date('F jS, Y g:i a') }}
+            </p>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="col-md-2 col-xs-2 col-sm-2">Show</th>
+                    <th class="col-md-7 col-xs-6 col-sm-6">&nbsp;</th>
+                    <th class="col-md-3 col-xs-4 col-sm-4">Votes</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for key, row in data %}
+                    <tr>
+                        <td class="col-md-2 col-xs-2 col-sm-2">
+                            <img src="{{ row.vote.show.getCoverImageMedium|raw }}" alt="cover image" />
+                        </td>
+                        <td class="col-md-7 col-xs-6 col-sm-6">
+                            {{ row.vote.show.getJapaneseTitle }}
+                            ({{ row.vote.show.getFullJapaneseTitle }})<br>
+                            {{ row.vote.show.getEnglishTitle }}
+                        </td>
+                        <td class="col-md-3 col-xs-4 col-sm-4">
+                            {% if row.form %}
+                                {{ form_start(row.form) }}
+                                {{ form_widget(
+                                    row.form.chosen,
+                                    {
+                                        'id': "show_election_vote_vote_" ~ key,
+                                        'attr': {
+                                        'class': 'show_election_vote_vote'
+                                    }
+                                    }
+                                )}}
+                                {{ form_end(row.form) }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">No records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block body_javascripts %}
+    <script src="/js/MyVote.js"></script>
+{% endblock %}

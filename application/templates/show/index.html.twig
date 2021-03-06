@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shows{% endblock %}
+
+{% block body %}
+    <span class="float-end">
+        <a class="btn btn-success" href="{{ path('admin_show_new') }}">Create new</a>
+    </span>
+
+    <h1>Shows</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Cover</th>
+                <th>Japanese&nbsp;Title</th>
+                <th>English&nbsp;Title</th>
+                <th>Anilist&nbsp;Id</th>
+                <th class="col-sm-1">Seasons</th>
+                <th class="col-sm-2"><span class="float-end">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for show in shows %}
+            <tr>
+                <td>
+                    <a href="{{ path('admin_show_show', {'id': show.id}) }}">
+                        <img src="{{ show.getCoverImageMedium|raw }}" alt="cover image" />
+                    </a>
+                </td>
+                <td>
+                    {{ show.getJapaneseTitle }}<br>
+                    {{ show.getFullJapaneseTitle }}
+                </td>
+                <td>{{ show.getEnglishTitle }}</td>
+                <td>{{ show.getAnilistId }}</td>
+                <td class="col-sm-1">
+                    {% for season in show.seasons %}
+                        {{ season.getName }}<br>
+                    {% endfor %}
+                </td>
+                <td class="col-sm-2">
+                    <span class="float-end">
+                        <a class="btn btn-primary" href="{{ path('admin_show_show', {'id': show.id}) }}">View</a>
+                        <a class="btn btn-secondary" href="{{ path('admin_show_edit', {'id': show.id}) }}">Edit</a>
+                    </span>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-md-12 py-xl-3">
+            <span class="float-end">
+                <a class="btn btn-success" href="{{ path('admin_show_new') }}">Create new</a>
+            </span>
+        </div>
+    </div>
+{% endblock %}

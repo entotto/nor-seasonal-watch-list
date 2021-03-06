@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Show{% endblock %}
+
+{% block body %}
+    <h1>Create new Show</h1>
+
+    <div class="row">
+        <div class="col-md-9">
+            {{ include('show/_form.html.twig') }}
+            <a class="btn btn-light" href="{{ path('admin_show_index') }}">Back to list</a>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Elections{% endblock %}
+
+{% block body %}
+    <span class="float-end">
+        <a class="btn btn-success" href="{{ path('admin_election_new') }}">Create new</a>
+    </span>
+    <h1>Elections</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Season</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Open now</th>
+                <th class="col-sm-2"><span class="float-end">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for election in elections %}
+            <tr>
+                <td>{{ election.season.name }}</td>
+                <td>{{ election.startDate ? election.startDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ election.endDate ? election.endDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ election.isActive ? 'Yes' : 'No' }}</td>
+                <td class="col-sm-2">
+                    <span class="float-end">
+                        <a class="btn btn-primary" href="{{ path('admin_election_show', {'id': election.id}) }}">View</a>
+                        <a class="btn btn-secondary" href="{{ path('admin_election_edit', {'id': election.id}) }}">Edit</a>
+                    </span>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <span class="float-end">
+        <a class="btn btn-success" href="{{ path('admin_election_new') }}">Create new</a>
+    </span>
+
+{% endblock %}

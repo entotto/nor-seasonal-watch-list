@@ -1,0 +1,12 @@
+knpu_oauth2_client:
+    clients:
+
+        # will create service: "knpu.oauth2.client.discord"
+        # an instance of: KnpU\OAuth2ClientBundle\Client\Provider\DiscordClient
+        discord:
+            type: discord
+            client_id: '%env(DISCORD_CLIENT_ID)%'
+            client_secret: '%env(DISCORD_CLIENT_SECRET)%'
+            redirect_route: 'secure_connect_discord_check'
+            redirect_params: {}
+            use_state: true

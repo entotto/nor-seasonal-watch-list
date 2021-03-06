@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Election Votes{% endblock %}
+
+{% block body %}
+    <h1>ElectionVote index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Chosen</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for election_vote in election_votes %}
+            <tr>
+                <td>{{ election_vote.id }}</td>
+                <td>{{ election_vote.chosen ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('admin_election_vote_show', {'id': election_vote.id}) }}">show</a>
+                    <a href="{{ path('admin_election_vote_edit', {'id': election_vote.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('admin_election_vote_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Seasonal Watch List{% endblock %}
+
+{% block body %}
+
+    {% if user %}
+        <div class="row justify-content-center py-5">
+            <div class="col-md-6">
+                <h1 class="text-center mb-5">Seasonal Watch List</h1>
+                <p class="mb-3">
+                    Welcome to the Seasonal Watch List. Use this site to record the shows
+                    you are watching and see what others in the NOR community have picked to watch.
+                </p>
+                <div class="text-center">
+                    <a class="btn btn-lg btn-primary mb-5" href="{{ path('my_watch_index') }}">Your Watch Picks</a>
+                </div>
+                <p class="mb-3">
+                    See what everyone else is watching.
+                </p>
+                <div class="text-center">
+                    <a class="btn btn-lg btn-primary mb-5" href="{{ path('all_watch_index') }}">All Watch Picks</a>
+                </div>
+                <p class="mb-3">
+                    Each season we have an election to choose what shows should get their own
+                    discussion channels in the Discord. This is the site where those votes
+                    take place.
+                </p>
+                <div class="text-center">
+                    <a class="btn btn-lg btn-success mb-5" href="{{ path('my_vote') }}">Your Vote</a>
+                </div>
+                <div>
+                    {% for label, messages in app.flashes() %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row justify-content-center py-5">
+            <div class="col-md-6">
+                <h1 class="text-center mb-5">Seasonal Watch List</h1>
+                <p class="mb-3">
+                    Welcome to the Seasonal Watch List. Use this site to record the shows
+                    you are watching and see what others in the NOR community have picked to watch.
+                </p>
+                <p class="mb-3">
+                    Each season we have an election to choose what shows should get their own
+                    discussion channels in the Discord. This is the site where those votes
+                    take place.
+                </p>
+                <p class="mb-3">
+                    Use your Discord account to connect to this site. Click the Login button
+                    below to get started.
+                </p>
+                <div class="text-center">
+                    <a class="btn btn-lg btn-primary mb-5" href="{{ path('connect_discord_start') }}">Login</a>
+                </div>
+
+                <div>
+                    {% for label, messages in app.flashes() %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

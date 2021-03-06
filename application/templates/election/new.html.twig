@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Election{% endblock %}
+
+{% block body %}
+
+    <h1>Create new Election</h1>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-9">
+            {{ include('election/_form.html.twig') }}
+        </div>
+    </div>
+
+    <a class="btn btn-light" href="{{ path('admin_election_index') }}">Back to list</a>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Discord Channel{% endblock %}
+
+{% block body %}
+    <h1>Create new Discord Channel</h1>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-9">
+            {{ include('discord_channel/_form.html.twig') }}
+        </div>
+    </div>
+
+    <a class="btn btn-light" href="{{ path('admin_discord_channel_index') }}">Back to list</a>
+{% endblock %}

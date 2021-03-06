@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Scores{% endblock %}
+
+{% block body %}
+    <h1>Score index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Nickname</th>
+                <th>Slug</th>
+                <th>Rank order</th>
+                <th>Value</th>
+                <th>Color</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for score in scores %}
+            <tr>
+                <td>{{ score.id }}</td>
+                <td>{{ score.name }}</td>
+                <td class="text-{{ score.colorValue }}">
+                    {{ score.icon|raw }}
+                    {{ score.nickname }}
+                </td>
+                <td>{{ score.slug }}</td>
+                <td>{{ score.rankOrder }}</td>
+                <td>{{ score.value }}</td>
+                <td>
+                    {{ score.colorValue }}
+                    <div
+                            class="bg-{{ score.colorValue }}"
+                            style="width:20px;height:20px;padding:0;"
+                    >
+                        &nbsp;
+                    </div>
+                </td>
+                <td>
+                    <a href="{{ path('admin_score_show', {'id': score.id}) }}">show</a>
+                    <a href="{{ path('admin_score_edit', {'id': score.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('admin_score_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Show Season Score{% endblock %}
+
+{% block body %}
+    <h1>Edit ShowSeasonScore</h1>
+
+    {{ include('show_season_score/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('admin_show_season_score_index') }}">back to list</a>
+
+    {{ include('show_season_score/_delete_form.html.twig') }}
+{% endblock %}
+{% block body_javascripts %}
+    <script src="/js/ShowSeasonScore.js"></script>
+{% endblock %}

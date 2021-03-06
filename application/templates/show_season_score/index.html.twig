@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Show Season Scores{% endblock %}
+
+{% block body %}
+    <h1>ShowSeasonScore index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Show</th>
+                <th>Season</th>
+                <th>Score</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for show_season_score in show_season_scores %}
+            <tr>
+                <td>
+                    {{ show_season_score.show.getJapaneseTitle }}
+                    ({{ show_season_score.show.getEnglishTitle }})
+                </td>
+                <td>
+                    {{ show_season_score.season.getName }}
+                </td>
+                <td>
+                    {% if show_season_score.score %}
+                        {{ show_season_score.score.getName }}
+                    {% else %}
+                        (no score)
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('admin_show_season_score_show', {'id': show_season_score.id}) }}">show</a>
+                    <a href="{{ path('admin_show_season_score_edit', {'id': show_season_score.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('admin_show_season_score_new') }}">Create new</a>
+{% endblock %}

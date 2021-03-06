@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Discord Channels{% endblock %}
+
+{% block body %}
+    <span class="float-end">
+        <a class="btn btn-success" href="{{ path('admin_discord_channel_new') }}">Create new</a>
+    </span>
+
+    <h1>Discord Channels</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Channel Name</th>
+                <th>Visible</th>
+                <th class="col-sm-2"><span class="float-end">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for discord_channel in discord_channels %}
+            <tr>
+                <td>{{ discord_channel.name }}</td>
+                <td>{{ not discord_channel.hidden ? 'Yes' : 'No' }}</td>
+                <td class="col-sm-2">
+                    <span class="float-end">
+                        <a class="btn btn-primary" href="{{ path('admin_discord_channel_show', {'id': discord_channel.id}) }}">View</a>
+                        <a class="btn btn-secondary" href="{{ path('admin_discord_channel_edit', {'id': discord_channel.id}) }}">Edit</a>
+                    </span>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <span class="float-end">
+        <a class="btn btn-success" href="{{ path('admin_discord_channel_new') }}">Create new</a>
+    </span>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Seasons{% endblock %}
+
+{% block body %}
+    <span class="float-end">
+        <a class="btn btn-success" href="{{ path('admin_season_new') }}">Create new</a>
+    </span>
+
+    <h1>Seasons</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Year</th>
+                <th>Year Part</th>
+                <th>Rank</th>
+                <th class="col-sm-2"><span class="float-end">Actions</span></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for season in seasons %}
+            <tr>
+                <td>{{ season.name }}</td>
+                <td>{{ season.year }}</td>
+                <td>{{ season.yearPart }}</td>
+                <td>{{ season.rankOrder }}</td>
+                <td class="col-sm-2">
+                    <span class="float-end">
+                        <a class="btn btn-primary" href="{{ path('admin_season_show', {'id': season.id}) }}">View</a>
+                        <a class="btn btn-secondary" href="{{ path('admin_season_edit', {'id': season.id}) }}">Edit</a>
+                    </span>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <span class="float-end">
+        <a class="btn btn-success" href="{{ path('admin_season_new') }}">Create new</a>
+    </span>
+{% endblock %}
