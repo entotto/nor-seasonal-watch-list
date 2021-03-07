@@ -82,9 +82,9 @@ class AdminElectionController extends AbstractController
             $voteTally = new VoteTally();
             $voteTally->setId($key);
             $voteTally->setShowId((int)$voteInfo['show_id']);
-            $voteTally->setShowJapaneseTitle($voteInfo['japanese_title']);
-            $voteTally->setShowFullJapaneseTitle($voteInfo['full_japanese_title']);
-            $voteTally->setShowEnglishTitle($voteInfo['english_title']);
+            $voteTally->setShowJapaneseTitle((string)$voteInfo['japanese_title']);
+            $voteTally->setShowFullJapaneseTitle((string)$voteInfo['full_japanese_title']);
+            $voteTally->setShowEnglishTitle((string)$voteInfo['english_title']);
             $voteTally->setVoteCount((int)$voteInfo['vote_count']);
             $voteTally->setVotePercentOfTotal($this->calculatePercent($voteInfo['vote_count'], $totalVotes));
             $voteTallies[] = $voteTally;
@@ -103,9 +103,9 @@ class AdminElectionController extends AbstractController
             $voteTally = new VoteTally();
             $voteTally->setId($nextVoteTallyId);
             $voteTally->setShowId($show->getId());
-            $voteTally->setShowJapaneseTitle($show->getJapaneseTitle());
-            $voteTally->setShowFullJapaneseTitle($show->getFullJapaneseTitle());
-            $voteTally->setShowEnglishTitle($show->getEnglishTitle());
+            $voteTally->setShowJapaneseTitle((string)$show->getJapaneseTitle());
+            $voteTally->setShowFullJapaneseTitle((string)$show->getFullJapaneseTitle());
+            $voteTally->setShowEnglishTitle((string)$show->getEnglishTitle());
             $voteTally->setVoteCount(0);
             $voteTally->setVotePercentOfTotal(0.0);
             $voteTallies[] = $voteTally;
