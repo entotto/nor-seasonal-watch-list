@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}My Watch{% endblock %}
+{% block title %}All Watch Picks{% endblock %}
 
 {% block stylesheets %}
     <link href="/chart_js/Chart.min.css" rel="stylesheet">
@@ -55,19 +55,41 @@
                 <img class="img" style="max-height:100px;height:100px !important;" src="{{ row.show.coverImage|raw }}" alt="cover image" />
             </div>
             <div class="col-md-2">
-                {{ row.show.japaneseTitle }} / {{ row.show.englishTitle }}
+                {{ row.show.japaneseTitle }}
+                {% if row.show.japaneseTitle is not empty and row.show.englishTitle is not empty %}/{% endif %}
+                {{ row.show.englishTitle }}
             </div>
             <div class="col-md-1">
-                {{ row.consolidatedScores.yes_count }}
+                {% if row.consolidatedScores is not empty %}
+                    {{ row.consolidatedScores.yes_count }}
+                {% else %}
+                    0
+                {% endif %}
             </div>
             <div class="col-md-1">
-                {{ row.consolidatedScores.no_count }}
+                {% if row.consolidatedScores is not null %}
+                    {{ row.consolidatedScores.no_count }}
+                {% else %}
+                    0
+                {% endif %}
             </div>
             <div class="col-md-1">
-                {{ row.consolidatedScores.th8a_count }}
+                {% if row.consolidatedScores is not null %}
+                    {{ row.consolidatedScores.th8a_count }}
+                {% else %}
+                    0
+                {% endif %}
             </div>
             <div class="col-md-1">
-                {{ row.consolidatedScores.score_total }}
+                {% if row.consolidatedScores is not null %}
+                    {% if row.consolidatedScores.score_total is not null %}
+                        {{ row.consolidatedScores.score_total }}
+                    {% else %}
+                        0
+                    {% endif %}
+                {% else %}
+                    0
+                {% endif %}
             </div>
             <div class="col-md-3">
                 {% if row.scores %}
