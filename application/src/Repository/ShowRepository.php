@@ -71,6 +71,23 @@ class ShowRepository extends ServiceEntityRepository
 
     /**
      * @param Season $season
+     * @param string|null $sortColumn
+     * @param string|null $sortOrder
+     * @return Show[]
+     */
+    public function getShowsForSeasonElectionEligible(
+        Season $season,
+        ?string $sortColumn = 'romaji',
+        ?string $sortOrder = 'ASC'
+    ): array {
+        $qb = $this->getShowsForSeasonQb($season);
+        $qb->andWhere('s.excludeFromElections IS NULL OR s.excludeFromElections = 0');
+        $this->setOrderBy($qb, $sortColumn, $sortOrder);
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param Season $season
      * @return QueryBuilder
      */
     private function getShowsForSeasonQb(Season $season): QueryBuilder

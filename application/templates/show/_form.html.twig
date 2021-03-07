@@ -1,3 +1,29 @@
+<div class="row">
+    <div class="col-md-12">
+        <p>
+            Enter the show's Anilist ID. If you navigate to the show's main page
+            at <a target="_blank" href="https://anilist.co">Anilist</a>, the ID
+            is the number in the URL of that page, like this:
+        </p>
+            <div class="card mb-3">
+                <div class="card-body">
+                    anilist.co/anime/<strong>[show-id-here]</strong>/[show-name-here]/
+                </div>
+            </div>
+        <p>
+            The app will automatically fill in show details from the Anilist database.
+        </p>
+        <p>
+            Select the season or seasons the show will air in.
+        </p>
+        <p>
+            If the show should be excluded from being voted on for a NoR discussion
+            channel (because it already has a channel or other reasons) turn on
+            the &quot;Exclude from elections&quot; checkbox.
+        </p>
+    </div>
+</div>
+
 {{ form_start(form) }}
 {#<div class="row">#}
 {#    <div class="col">#}
@@ -26,7 +52,16 @@
 </div>
 <div class="row">
     <div class="col-md-6">
-        {{ form_row(form.seasons) }}
+        <div class="card mt-3 mb-3">
+            <div class="card-body">
+                {{ form_row(form.seasons) }}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.excludeFromElections) }}
     </div>
 </div>
 <div class="row py-3">

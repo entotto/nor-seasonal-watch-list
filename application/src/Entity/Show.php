@@ -94,6 +94,12 @@ class Show
     private ?string $synonyms;
 
     /**
+     * @var bool|null
+     * @ORM\Column(name="exclude_from_elections", type="boolean", nullable=true)
+     */
+    private ?bool $excludeFromElections;
+
+    /**
      * @var DiscordChannel|null
      * @ORM\OneToOne(targetEntity=DiscordChannel::class, mappedBy="animeShow", cascade={"persist", "remove"})
      * @JoinColumn(nullable=true)
@@ -366,5 +372,21 @@ class Show
         $this->discordChannel = $discordChannel;
 
         return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getExcludeFromElections(): ?bool
+    {
+        return $this->excludeFromElections;
+    }
+
+    /**
+     * @param bool|null $excludeFromElections
+     */
+    public function setExcludeFromElections(?bool $excludeFromElections): void
+    {
+        $this->excludeFromElections = $excludeFromElections;
     }
 }

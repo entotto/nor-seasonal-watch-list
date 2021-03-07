@@ -45,7 +45,6 @@ class MyVoteController extends AbstractController
             $election = $electionRepository->getFirstActiveElection();
         }
         if ($election === null) {
-//            $this->flashBag->add('danger', 'There is no election to vote in at this time.');
             $this->addFlash('warning', 'There is no election to vote in at this time.');
             return $this->redirectToRoute('default');
         }
@@ -54,7 +53,7 @@ class MyVoteController extends AbstractController
         $user = $this->getUser();
         $data = [];
 
-        $shows = $showRepository->getShowsForSeasonWithNoChannel($election->getSeason());
+        $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         foreach ($shows as $key => $show) {
             $vote = $electionVoteRepository->getForUserAndShowAndElection(
                 $user,

@@ -70,7 +70,7 @@ class AdminElectionController extends AbstractController
         ElectionVoteRepository $electionVoteRepository,
         ShowRepository $showRepository
     ): Response {
-        $shows = $showRepository->getShowsForSeasonWithNoChannel($election->getSeason());
+        $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         $votesInfo = $electionVoteRepository->getCountsForElection($election);
 
         $voteTallies = [];

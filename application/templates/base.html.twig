@@ -31,50 +31,37 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('my_vote') }}">Your Vote</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            Manage
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{{ path('admin_season_index') }}">Seasons</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ path('admin_show_index') }}">Shows</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ path('admin_election_index') }}">Elections</a>
-                            </li>
-{#                            <li>#}
-{#                                <a class="dropdown-item" href="{{ path('admin_election_vote_index') }}">Vote Choices</a>#}
-{#                            </li>#}
-                            <li>
-                                <a class="dropdown-item" href="{{ path('admin_discord_channel_index') }}">Discord Channels</a>
-                            </li>
-                            {#                    <li>#}
-                            {#                        <a class="dropdown-item" href="{{ path('discord_index') }}">Discord login</a>#}
-                            {#                    </li>#}
-                            {#                    <li>#}
-                            {#                        <a class="dropdown-item" href="{{ path('connect_discord_disconnect') }}">Logout</a>#}
-                            {#                    </li>#}
-                            {#                    <li>#}
-                            {#                        <a class="dropdown-item disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>#}
-                            {#                    </li>#}
-
-                        </ul>
-                    </li>
+                    {% if is_granted('ROLE_SWL_ADMIN') %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Manage
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('admin_season_index') }}">Seasons</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('admin_show_index') }}">Shows</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('admin_election_index') }}">Elections</a>
+                                </li>
+{#                                <li>#}
+{#                                    <a class="dropdown-item" href="{{ path('admin_election_vote_index') }}">Vote Choices</a>#}
+{#                                </li>#}
+{#                                <li>#}
+{#                                    <a class="dropdown-item" href="{{ path('admin_discord_channel_index') }}">Discord Channels</a>#}
+{#                                </li>#}
+                            </ul>
+                        </li>
+                    {% endif %}
                 </ul>
                 <ul class="navbar-nav navbar-right mb-2 mb-md-0">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('connect_discord_disconnect') }}">Logout</a>
                     </li>
                 </ul>
-
-                {#                <form class="d-flex">#}
-{#                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">#}
-{#                    <button class="btn btn-outline-success" type="submit">Search</button>#}
-{#                </form>#}
             </div>
         </div>
     </nav>
