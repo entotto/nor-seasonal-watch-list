@@ -4,21 +4,36 @@
 
 {% block body %}
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <h1>
                 Your vote:
                 Election for the {{ election.season.name }} Season
             </h1>
+            <h5>
+                Open {{ election.getStartDate|date('F jS, Y g:i A') }} (UTC)
+                through {{ election.getEndDate|date('F jS, Y g:i A') }} (UTC)
+            </h5>
             <p>
-                Open {{ election.getStartDate|date('F jS, Y g:i a') }}
-                through {{ election.getEndDate|date('F jS, Y g:i a') }}
+                Please select the shows that you think will generate the most discussion
+                in the NoR Discord server. Vote for as many or as few shows as you wish.
+                The shows that receive the most votes will get individual discussion channels.
+            </p>
+            <p>
+                You are free to revise your choices here as often as you want while voting
+                is open. Changing your selections will not cause your votes to be counted
+                twice. Votes are only counted after the election is closed.
+            </p>
+            <p>
+                You can also
+                <a href="{{ path('my_watch_index') }}">enter</a> your own opinions and
+                <a href="{{ path('all_watch_index') }}">view</a> what others are watching.
             </p>
             <table class="table">
                 <thead>
                 <tr>
                     <th class="col-md-2 col-xs-2 col-sm-2">Show</th>
                     <th class="col-md-7 col-xs-6 col-sm-6">&nbsp;</th>
-                    <th class="col-md-3 col-xs-4 col-sm-4">Votes</th>
+                    <th class="col-md-3 col-xs-4 col-sm-4">Votes (no limit)</th>
                 </tr>
                 </thead>
                 <tbody>

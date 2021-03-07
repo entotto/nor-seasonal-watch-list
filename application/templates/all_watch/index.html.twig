@@ -14,7 +14,7 @@
         <div class="col-md-2">
             <form>
                 <div class="form-group">
-                    <label for="select_season">Season</label>
+                    <label for="select_season">Change season</label>
                     <select id="select_season" class="form-control">
                         {% for season in seasons %}
                             <option
@@ -28,6 +28,17 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col">
+            <p>
+                Here is a summary of NoR community opinions on shows airing this season.
+                Not the season you are interested in? Change it (above). You can also
+                <a href="{{ path('my_watch_index') }}">enter</a> your own opinions and
+                <a href="{{ path('my_vote') }}">vote</a> for discussion channels (when voting is open).
+            </p>
+        </div>
+    </div>
+
     <div class="row mb-2 pb-2 border-bottom border-top pt-2 d-none d-md-flex">
         <div class="col-md-1"><strong>Show</strong></div>
         <div class="col-md-2"><strong>&nbsp;</strong></div>
@@ -35,7 +46,7 @@
         <div class="col-md-1"><strong>Should avoid</strong></div>
         <div class="col-md-1"><strong>Th8a cover</strong></div>
         <div class="col-md-1"><strong>Total score</strong></div>
-        <div class="col-md-3"><strong>Individual scores</strong></div>
+        <div class="col-md-3"><strong>Individual opinions</strong></div>
         <div class="col-md-2"><strong>Distribution</strong></div>
     </div>
     {% for key, row in data %}

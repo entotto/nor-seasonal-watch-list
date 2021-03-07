@@ -6,30 +6,53 @@
 
     {% if user %}
         <div class="row justify-content-center py-5">
-            <div class="col-md-6">
+            <div class="col-md-10">
                 <h1 class="text-center mb-5">Seasonal Watch List</h1>
-                <p class="mb-3">
-                    Welcome to the Seasonal Watch List. Use this site to record the shows
-                    you are watching and see what others in the NOR community have picked to watch.
-                </p>
-                <div class="text-center">
-                    <a class="btn btn-lg btn-primary mb-5" href="{{ path('my_watch_index') }}">Your Watch Picks</a>
+                <div class="row gx-5">
+                    <div class="col">
+                        <div class="card text-center">
+                            <div class="card-header">
+                                <div style="font-size:100px;color:#aaaaaa;"><i class="bi bi-bookmark"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <h5>Your watch list</h5>
+                                <p class="">
+                                    Mark what you are watching.
+                                </p>
+                                <a class="btn btn-lg btn-primary mt-3 mb-3" href="{{ path('my_watch_index') }}">Your Watches</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-center">
+                            <div class="card-header">
+                                <div style="font-size:100px;color:#aaaaaa;"><i class="bi bi-bookmarks"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <h5>All watch lists</h5>
+                                <p class="">
+                                    See what others are watching.
+                                </p>
+                                <a class="btn btn-lg btn-primary mt-3 mb-3" href="{{ path('all_watch_index') }}">All Watches</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-center">
+                            <div class="card-header">
+                                <div style="font-size:100px;color:#aaaaaa;"><i class="bi bi-check-square"></i></div>
+                            </div>
+                            <div class="card-body">
+                                <h5>Election</h5>
+                                <p class="">
+                                    Vote for NoR show discussion channels.
+                                </p>
+                                <a class="btn btn-lg btn-success mt-3 mb-3" href="{{ path('my_vote') }}">Your Vote</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p class="mb-3">
-                    See what everyone else is watching.
-                </p>
-                <div class="text-center">
-                    <a class="btn btn-lg btn-primary mb-5" href="{{ path('all_watch_index') }}">All Watch Picks</a>
-                </div>
-                <p class="mb-3">
-                    Each season we have an election to choose what shows should get their own
-                    discussion channels in the Discord. This is the site where those votes
-                    take place.
-                </p>
-                <div class="text-center">
-                    <a class="btn btn-lg btn-success mb-5" href="{{ path('my_vote') }}">Your Vote</a>
-                </div>
-                <div>
+                <div class="mt-5">
                     {% for label, messages in app.flashes() %}
                         {% for message in messages %}
                             <div class="alert alert-{{ label }}" role="alert">
