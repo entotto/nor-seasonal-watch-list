@@ -33,6 +33,12 @@ class SeasonRepository extends ServiceEntityRepository
     /**
      * @param DateTime|null $date
      * @return Season|null
+     *
+     * Get the default season to show for a given date.
+     *
+     * NOTE: this function now anticipates the coming season by one month. In
+     * December it selects the Winter quarter (of the next year), in March it
+     * selects the Spring quarter, and so on.
      */
     public function getSeasonForDate(?DateTime $date = null): ?season
     {
@@ -41,24 +47,27 @@ class SeasonRepository extends ServiceEntityRepository
             $year = (int)$date->format('Y');
             $month = (int)$date->format('m');
             switch ($month) {
+                case 12:
+                    $quarter = 'Winter';
+                    ++$year;
+                    break;
                 case 1:
                 case 2:
-                case 3:
                     $quarter = 'Winter';
                     break;
+                case 3:
                 case 4:
                 case 5:
-                case 6:
                     $quarter = 'Spring';
                     break;
+                case 6:
                 case 7:
                 case 8:
-                case 9:
                     $quarter = 'Summer';
                     break;
+                case 9:
                 case 10:
                 case 11:
-                case 12:
                     $quarter = 'Fall';
                     break;
                 default:
