@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\DiscordApi;
+use DateTime;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use http\Exception\RuntimeException;
@@ -80,6 +81,7 @@ class DiscordController extends AbstractController
             $discriminator = $user->getDiscriminator();
             $userArray = $user->toArray();
             $userId = $user->getId();
+            $expiresDT = new DateTime('@' . $token->getExpires());
 
             $discordApi->initialize($token->getToken());
             $meInfo = $discordApi->getMe();
@@ -94,6 +96,7 @@ class DiscordController extends AbstractController
             $username = 'unknown (error: ' . $e->getMessage() . ')';
             $discriminator = '';
             $userArray = [];
+            $expiresDT = null;
             $meInfo = [];
             $myGuildsInfo = [];
             $myUHCGuildInfo = [];
@@ -106,6 +109,7 @@ class DiscordController extends AbstractController
             'token' => $token->getToken(),
             'refreshToken' => $token->getRefreshToken(),
             'expires' => $token->getExpires(),
+            'expiresDt' => $expiresDT,
             'tokenHasExpired' => ($token->hasExpired() ? 'yes' : 'no'),
             'username' => $username,
             'discriminator' => $discriminator,
