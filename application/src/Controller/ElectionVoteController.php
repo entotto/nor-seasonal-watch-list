@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\ElectionVote;
+use App\Entity\User;
 use App\Form\ElectionVoteType;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,34 +26,47 @@ class ElectionVoteController extends AbstractController
      */
     public function edit(Request $request, ElectionVote $electionVote): Response
     {
-        $form = $this->createForm(
-            ElectionVoteType::class,
-            $electionVote,
-            [
-                'attr' => [
-                    'id' => 'election_vote_' . $electionVote->getId(),
-                    'class' => 'election_vote_form',
-                ]
-            ]
-        );
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            if ($request->isXmlHttpRequest()) {
-                return new JsonResponse(['data' => ['status' => 'success']]);
+        try {
+            /** @var User $user */
+            $user = $this->getUser();
+            if ($user === null) {
+                return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
+            }
+            if ($electionVote->getUser()->getId() !== $user->getId()) {
+                return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
             }
 
-            throw new UnauthorizedHttpException('This page should never be requested directly.');
-        }
+            $form = $this->createForm(
+                ElectionVoteType::class,
+                $electionVote,
+                [
+                    'attr' => [
+                        'id' => 'election_vote_' . $electionVote->getId(),
+                        'class' => 'election_vote_form',
+                    ]
+                ]
+            );
+            $form->handleRequest($request);
 
-        if ($request->isXmlHttpRequest()) {
-            $html = $this->renderView('election_vote/edit.html.twig', [
-                'election_vote' => $electionVote,
-                'form' => $form->createView(),
-            ]);
-            return new Response($html, 400);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->getDoctrine()->getManager()->flush();
+
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse(['data' => ['status' => 'success']]);
+                }
+
+                throw new UnauthorizedHttpException('This page should never be requested directly.');
+            }
+
+            if ($request->isXmlHttpRequest()) {
+                $html = $this->renderView('election_vote/edit.html.twig', [
+                    'election_vote' => $electionVote,
+                    'form' => $form->createView(),
+                ]);
+                return new Response($html, 400);
+            }
+        } /** @noinspection PhpRedundantCatchClauseInspection */ catch (UniqueConstraintViolationException $e) {
+            return new JsonResponse(['data' => ['status' => 'failed']], Response::HTTP_BAD_REQUEST);
         }
 
         throw new UnauthorizedHttpException('This page should never be requested directly.');

@@ -57,11 +57,13 @@
                         </li>
                     {% endif %}
                 </ul>
+                {% if app.user %}
                 <ul class="navbar-nav navbar-right mb-2 mb-md-0">
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('connect_discord_disconnect') }}">Logout</a>
                     </li>
                 </ul>
+                {% endif %}
             </div>
         </div>
     </nav>

@@ -14,7 +14,12 @@
     <ul>
         <li>Token: {{ token }}</li>
         <li>Refresh token: {{ refreshToken }}</li>
-        <li>Expires: {{ expires }}</li>
+        <li>
+            Expires: {{ expires }}
+            {% if expiresDt is not null %}
+                / {{ expiresDt|date }}
+            {% endif %}
+        </li>
         <li>Expired? {{ tokenHasExpired }}</li>
         <li>Username: {{ username }}</li>
         <li>Discriminator: {{ discriminator }}</li>
