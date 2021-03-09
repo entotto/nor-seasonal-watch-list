@@ -12,10 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\PersistentCollection;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=ShowRepository::class)
  * @ORM\Table(name="anime_show")
+ * @UniqueEntity(fields="anilist_id", message="That Anilist ID is already taken")
  */
 class Show
 {
