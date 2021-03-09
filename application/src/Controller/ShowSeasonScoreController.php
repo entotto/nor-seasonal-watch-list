@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ShowSeasonScore;
+use App\Entity\User;
 use App\Form\ShowSeasonScoreType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +25,15 @@ class ShowSeasonScoreController extends AbstractController
      */
     public function edit(Request $request, ShowSeasonScore $showSeasonScore): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        if ($user === null) {
+            return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
+        }
+        if ($showSeasonScore->getUser()->getId() !== $user->getId()) {
+            return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
+        }
+
         $form = $this->createForm(
             ShowSeasonScoreType::class,
             $showSeasonScore,

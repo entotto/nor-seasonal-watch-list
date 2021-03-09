@@ -8,6 +8,15 @@ use App\Repository\ShowSeasonScoreRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ORM\Table(
+ *     name="show_season_score",
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(
+ *             name="show_season_score_unique",
+ *             columns={"season_id", "show_id", "user_id"}
+ *         )
+ *     }
+ * )
  * @ORM\Entity(repositoryClass=ShowSeasonScoreRepository::class)
  */
 class ShowSeasonScore
