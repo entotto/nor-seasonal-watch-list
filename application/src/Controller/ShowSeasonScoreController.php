@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ShowSeasonScore;
 use App\Entity\User;
 use App\Form\ShowSeasonScoreType;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,44 +26,48 @@ class ShowSeasonScoreController extends AbstractController
      */
     public function edit(Request $request, ShowSeasonScore $showSeasonScore): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        if ($user === null) {
-            return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
-        }
-        if ($showSeasonScore->getUser()->getId() !== $user->getId()) {
-            return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
-        }
-
-        $form = $this->createForm(
-            ShowSeasonScoreType::class,
-            $showSeasonScore,
-            [
-                'attr' => [
-                    'id' => 'show_season_score_' . $showSeasonScore->getId(),
-                    'class' => 'show_season_score_form',
-                ]
-            ]
-        );
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            if ($request->isXmlHttpRequest()) {
-                // Just send back fact of success
-                return new JsonResponse(['data' => ['status' => 'success']]);
+        try {
+            /** @var User $user */
+            $user = $this->getUser();
+            if ($user === null) {
+                return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
+            }
+            if ($showSeasonScore->getUser()->getId() !== $user->getId()) {
+                return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
             }
 
-            throw new UnauthorizedHttpException('This page should never be requested directly.');
-        }
+            $form = $this->createForm(
+                ShowSeasonScoreType::class,
+                $showSeasonScore,
+                [
+                    'attr' => [
+                        'id' => 'show_season_score_' . $showSeasonScore->getId(),
+                        'class' => 'show_season_score_form',
+                    ]
+                ]
+            );
+            $form->handleRequest($request);
 
-        if ($request->isXmlHttpRequest()) {
-            // There was a validation error, return just the form
-            $html = $this->renderView('show_season_score/_form.html.twig', [
-                'form' => $form->createView(),
-            ]);
-            return new Response($html, 400);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->getDoctrine()->getManager()->flush();
+
+                if ($request->isXmlHttpRequest()) {
+                    // Just send back fact of success
+                    return new JsonResponse(['data' => ['status' => 'success']]);
+                }
+
+                throw new UnauthorizedHttpException('This page should never be requested directly.');
+            }
+
+            if ($request->isXmlHttpRequest()) {
+                // There was a validation error, return just the form
+                $html = $this->renderView('show_season_score/_form.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+                return new Response($html, 400);
+            }
+        } /** @noinspection PhpRedundantCatchClauseInspection */ catch (UniqueConstraintViolationException $e) {
+            return new JsonResponse(['data' => ['status' => 'failed']], Response::HTTP_BAD_REQUEST);
         }
 
         throw new UnauthorizedHttpException('This page should never be requested directly.');
