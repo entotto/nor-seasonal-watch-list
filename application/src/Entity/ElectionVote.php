@@ -9,6 +9,15 @@ use App\Repository\ElectionVoteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ORM\Table(
+ *     name="election_vote",
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(
+ *             name="election_vote_unique",
+ *             columns={"anime_show_id", "season_id", "user_id", "election_id"}
+ *         )
+ *     }
+ * )
  * @ORM\Entity(repositoryClass=ElectionVoteRepository::class)
  */
 class ElectionVote

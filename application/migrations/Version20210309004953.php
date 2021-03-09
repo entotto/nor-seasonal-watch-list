@@ -11,11 +11,11 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210309002415 extends AbstractMigration
+final class Version20210309004953 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'Adds unique constraint on opinions per season, show and user';
+        return 'Adds unique constraint on votes per user, show, season and election';
     }
 
     public function up(Schema $schema) : void
@@ -28,16 +28,17 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-DELETE ssc1 FROM show_season_score ssc1
-INNER JOIN show_season_score ssc2
+DELETE ev1 FROM show_season_score ev1
+INNER JOIN show_season_score ev2
 WHERE
-    ssc1.id > ssc2.id
-    AND ssc1.season_id = ssc2.season_id
-    AND ssc1.show_id = ssc2.show_id
-    AND ssc1.user_id = ssc2.user_id
+    ev1.id > ev2.id
+    AND ev1.season_id = ev2.season_id
+    AND ev1.show_id = ev2.show_id
+    AND ev1.user_id = ev2.user_id
+    AND ev1.election_id = ev2.election_id
     ;
 
-CREATE UNIQUE INDEX show_season_score_unique ON show_season_score (season_id, show_id, user_id);
+CREATE UNIQUE INDEX election_vote_unique ON election_vote (anime_show_id, season_id, user_id, election_id);
 
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
@@ -56,7 +57,7 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-DROP INDEX show_season_score_unique ON show_season_score;
+DROP INDEX election_vote_unique ON election_vote;
 
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
