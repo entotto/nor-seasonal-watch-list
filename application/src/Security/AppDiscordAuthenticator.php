@@ -24,17 +24,17 @@ use Wohali\OAuth2\Client\Provider\DiscordResourceOwner;
 
 class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthenticator
 {
-    private $clientRegistry;
-    private $em;
-    private $router;
+    private ClientRegistry $clientRegistry;
+    private EntityManagerInterface $em;
+    private RouterInterface $router;
     /**
      * @var string
      */
-    private $norGuildId;
+    private string $norGuildId;
     /**
      * @var DiscordApi
      */
-    private $discordApi;
+    private DiscordApi $discordApi;
     /**
      * @var FlashBagInterface
      */
@@ -73,8 +73,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
 
     public function getCredentials(Request $request): AccessToken
     {
-        $credentials = $this->fetchAccessToken($this->getDiscordClient());
-        return $credentials;
+        return $this->fetchAccessToken($this->getDiscordClient());
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)
@@ -130,7 +129,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         $this->flashBag->add('danger', strtr($exception->getMessageKey(), $exception->getMessageData()));
-        $targetUrl = $this->router->generate('default');
+        $targetUrl = $this->router->generate('https_default');
         return new RedirectResponse($targetUrl);
     }
 
@@ -145,7 +144,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         // Go home
         $targetUrl = $request->getSession()->get('loginOriginalRequestUri');
         if ($targetUrl === null) {
-            $targetUrl = $this->router->generate('default');
+            $targetUrl = $this->router->generate('https_default');
         }
         return new RedirectResponse($targetUrl);
         // Or allow the original controller to process this request

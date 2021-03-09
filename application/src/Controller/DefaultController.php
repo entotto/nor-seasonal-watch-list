@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends AbstractController
 {
     /**
-     * @Route("/default", name="default")
+     * @Route("/", name="default", schemes={"HTTP"})
      */
     public function index(): Response
     {
@@ -19,4 +19,13 @@ class DefaultController extends AbstractController
             'user' => $user,
         ]);
     }
+
+    /**
+     * @Route("/", name="https_default", schemes={"HTTPS"})
+     */
+    public function indexHttps(): Response
+    {
+        return $this->index();
+    }
+
 }

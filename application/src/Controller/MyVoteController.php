@@ -46,7 +46,7 @@ class MyVoteController extends AbstractController
         }
         if ($election === null) {
             $this->addFlash('warning', 'There is no election to vote in at this time.');
-            return $this->redirectToRoute('default');
+            return $this->redirectToRoute('https_default');
         }
 
         /** @var User $user */
