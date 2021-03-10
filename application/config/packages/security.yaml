@@ -42,3 +42,5 @@ security:
         - { path: ^/admin, roles: ROLE_SWL_ADMIN }
         - { path: ^/show, roles: ROLE_SWL_USER }
         - { path: ^/my, roles: ROLE_SWL_USER }
+        - { path: ^/all, roles: ROLE_SWL_USER }
+        - { path: ^/election, roles: ROLE_SWL_USER }
