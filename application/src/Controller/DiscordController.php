@@ -19,7 +19,7 @@ use Wohali\OAuth2\Client\Provider\Discord;
 class DiscordController extends AbstractController
 {
     /**
-     * @Route("/discord", name="discord_index")
+     * @Route("/admin/discord", name="discord_index")
      * @param Request $request
      * @param DiscordApi $discordApi
      * @param string $discordClientId
