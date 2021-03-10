@@ -27,6 +27,15 @@
                 <th scope="row" class="col-md-3">Rank</th>
                 <td class="col-md-9">{{ season.rankOrder }}</td>
             </tr>
+            <tr>
+                <th scope="row" class="col-md-3">Environment</th>
+                <td class="col-md-9">{{ app.environment }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="col-md-3">Debug</th>
+                <td class="col-md-9">{% if app.debug %}Yes{% else %}No{% endif %}</td>
+            </tr>
+
         </tbody>
     </table>
 
