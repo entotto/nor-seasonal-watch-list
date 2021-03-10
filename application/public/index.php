@@ -18,6 +18,7 @@ if ($_SERVER['APP_DEBUG']) {
 }
 
 $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+date_default_timezone_set($_SERVER['APP_TIMEZONE']);
 
 $trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false;
 $trustedProxies = $trustedProxies ? explode(',', $trustedProxies) : [];

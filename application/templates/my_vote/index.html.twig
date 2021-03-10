@@ -10,8 +10,11 @@
                 Election for the {{ election.season.name }} Season
             </h1>
             <h5>
-                Open {{ election.getStartDate|date('F jS, Y g:i A') }} (UTC)
-                through {{ election.getEndDate|date('F jS, Y g:i A') }} (UTC)
+                Local: <span id="localStartTime"></span>
+                through <span id="localEndTime"></span><br>
+                UTC: {{ election.getStartDate|date('l M j Y g:i:00 A') }} -00:00
+                through {{ election.getEndDate|date('l M j Y g:i:00 A') }} -00:00<br>
+                Remaining: <span id="countdownOutput"></span>
             </h5>
             <p>
                 Please select the shows that you think will generate the most discussion
@@ -78,5 +81,11 @@
 {% endblock %}
 
 {% block body_javascripts %}
+    <script type="application/javascript">
+        const electionTimes = {
+            start: "{{ election.getStartDate|date('c') }}",
+            end: "{{ election.getEndDate|date('c') }}"
+        }
+    </script>
     <script src="/js/MyVote.js"></script>
 {% endblock %}
