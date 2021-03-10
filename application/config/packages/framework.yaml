@@ -5,7 +5,8 @@ framework:
     #http_method_override: true
 
     #trusted_proxies: '127.0.0.1,REMOTE_ADDR'
-    trusted_proxies: '127.0.0.1'
+    #trusted_proxies: '127.0.0.1'
+    trusted_proxies: '%env(TRUSTED_PROXIES)%'
     trusted_headers: ["forwarded", "x-forwarded-for", "x-forwarded-host", "x-forwarded-proto", "x-forwarded-port"]
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
