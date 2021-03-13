@@ -10,6 +10,7 @@ use App\Form\ShowSeasonScoreType;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
+use App\Service\SelectedSeasonHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,6 +27,7 @@ class MyWatchController extends AbstractController
      * @param SeasonRepository $seasonRepository
      * @param ShowRepository $showRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
+     * @param SelectedSeasonHelper $selectedSeasonHelper
      * @return Response
      * @throws NonUniqueResultException
      */
@@ -34,22 +36,18 @@ class MyWatchController extends AbstractController
         EntityManagerInterface $em,
         SeasonRepository $seasonRepository,
         ShowRepository $showRepository,
-        ShowSeasonScoreRepository $showSeasonScoreRepository
+        ShowSeasonScoreRepository $showSeasonScoreRepository,
+        SelectedSeasonHelper $selectedSeasonHelper
     ): Response {
         $seasons = $seasonRepository->getAllInRankOrder();
-        $selectedSeasonId = $request->get('season');
 
         /** @var User $user */
         $user = $this->getUser();
         $data = [];
-        if ($selectedSeasonId === null) {
-            $season = $seasonRepository->getSeasonForDate();
-            if ($season === null) {
-                $season = $seasonRepository->getFirstSeason();
-            }
-        } else {
-            $season = $seasonRepository->find($selectedSeasonId);
-        }
+        $selectedSeasonId = null;
+
+        $season = $selectedSeasonHelper->getSelectedSeason($request);
+
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
             $shows = $showRepository->getShowsForSeason($season);
@@ -92,4 +90,5 @@ class MyWatchController extends AbstractController
             'data' => $data,
         ]);
     }
+
 }
