@@ -8,6 +8,7 @@ use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
 use App\Repository\UserRepository;
+use App\Service\SelectedSeasonHelper;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,32 +26,23 @@ class AllWatchController extends AbstractController
      * @param ShowRepository $showRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
      * @param UserRepository $userRepository
+     * @param SelectedSeasonHelper $selectedSeasonHelper
      * @return Response
+     * @throws Exception
      * @throws NonUniqueResultException
      * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws Exception
      */
     public function index(
         Request $request,
         SeasonRepository $seasonRepository,
         ShowRepository $showRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        SelectedSeasonHelper $selectedSeasonHelper
     ): Response {
+        $selectedSeasonId = null;
         $seasons = $seasonRepository->getAllInRankOrder();
-        $selectedSeasonId = $request->get('season');
-
-//        /** @var User $user */
-//        $user = $this->getUser();
-//        $data = [];
-        if ($selectedSeasonId === null) {
-            $season = $seasonRepository->getSeasonForDate();
-            if ($season === null) {
-                $season = $seasonRepository->getFirstSeason();
-            }
-        } else {
-            $season = $seasonRepository->find($selectedSeasonId);
-        }
+        $season = $selectedSeasonHelper->getSelectedSeason($request);
         $users = $userRepository->getAllSorted();
         $userKeys = [];
         foreach ($users as $user) {
