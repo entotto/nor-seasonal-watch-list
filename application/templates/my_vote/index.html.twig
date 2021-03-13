@@ -9,13 +9,11 @@
                 Your vote:
                 Election for the {{ election.season.name }} Season
             </h1>
-            <h5>
-                Local: <span id="localStartTime"></span>
-                through <span id="localEndTime"></span><br>
-                UTC: {{ election.getStartDate|date('l M j Y g:i:00 A') }} -00:00
-                through {{ election.getEndDate|date('l M j Y g:i:00 A') }} -00:00<br>
-                Remaining: <span id="countdownOutput"></span>
-            </h5>
+            <p>
+                Voting ends <span id="localEndTime"></span>
+                ({{ election.getEndDate|date('l Y-m-d g:i A') }} +00:00/UTC)<br>
+                Remaining: <strong><span id="countdownOutput"></span></strong>
+            </p>
             <p>
                 Please select the shows that you think will generate the most discussion
                 in the NoR Discord server. Vote for as many or as few shows as you wish.

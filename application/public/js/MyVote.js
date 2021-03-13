@@ -19,10 +19,12 @@
     })
     const formatDate = function (originalDate) {
         const day = originalDate.getDate()
+        const formattedDay = day < 10 ? "0" + day : day
         const dayNum = originalDate.getDay()
         const month = originalDate.getMonth() + 1
+        const formattedMonth = month < 10 ? "0" + month : month
         const year = originalDate.getFullYear()
-        const localTime = originalDate.toLocaleTimeString()
+        const formattedLocalTime = originalDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
         const offset = originalDate.getTimezoneOffset()
         let offsetHours = Math.floor(offset / 60)
         if (offsetHours < 10) {
@@ -106,8 +108,8 @@
             default:
                 monthName = ''
         }
-        return dayName + ' ' + monthName + ' ' + day + ' ' +
-            year + ' ' + localTime + ' ' + offsetText
+        return dayName + ' ' + year + '-' + formattedMonth + '-' + formattedDay + ' ' +
+            formattedLocalTime + ' ' + offsetText
     }
     const setLocalTimes = function () {
         const startTime = new Date(electionTimes.start)
