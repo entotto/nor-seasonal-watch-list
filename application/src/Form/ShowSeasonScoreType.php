@@ -31,7 +31,7 @@ class ShowSeasonScoreType extends AbstractType
                     return $er->createQueryBuilder('s')
                         ->orderBy('s.rankOrder', 'ASC');
                 },
-                'expanded' => false,
+                'expanded' => true,
                 'multiple'=> false,
                 'required' => false,
                 'attr' => [
