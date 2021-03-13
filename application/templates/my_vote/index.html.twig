@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}My Vote{% endblock %}
+{% block title %}Your Vote{% endblock %}
 
 {% block body %}
     <div class="row">
@@ -43,12 +43,10 @@
                 {% for key, row in data %}
                     <tr>
                         <td class="col-md-2 col-xs-2 col-sm-2">
-                            <img src="{{ row.vote.show.getCoverImageMedium|raw }}" alt="cover image" />
+                            <img class="img-fluid" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />
                         </td>
                         <td class="col-md-7 col-xs-6 col-sm-6">
-                            {{ row.vote.show.getJapaneseTitle }}
-                            ({{ row.vote.show.getFullJapaneseTitle }})<br>
-                            {{ row.vote.show.getEnglishTitle }}
+                            {{ row.vote.show.getAllTitles }}
                         </td>
                         <td class="col-md-3 col-xs-4 col-sm-4">
                             {% if row.form %}
@@ -87,5 +85,5 @@
             end: "{{ election.getEndDate|date('c') }}"
         }
     </script>
-    <script src="/js/MyVote.js"></script>
+    <script src="/js/MyVote.js?v={{ asset_version }}"></script>
 {% endblock %}
