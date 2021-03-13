@@ -3,3 +3,11 @@ body {
     min-height: 75rem;
     padding-top: 4.5rem;
 }
+
+.bg-royal {
+    background-color: #6f42c1;
+}
+
+.text-royal {
+    color: #6f42c1;
+}

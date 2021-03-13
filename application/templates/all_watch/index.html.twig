@@ -39,176 +39,202 @@
         </div>
     </div>
 
-    <div class="row mb-2 pb-2 border-bottom border-top pt-2 d-none d-md-flex">
-        <div class="col-md-1"><strong>Show</strong></div>
-        <div class="col-md-2"><strong>&nbsp;</strong></div>
-        <div class="col-md-1"><strong>Should watch</strong></div>
-        <div class="col-md-1"><strong>Should avoid</strong></div>
-        <div class="col-md-1"><strong>Th8a cover</strong></div>
-        <div class="col-md-1"><strong>Total score</strong></div>
-        <div class="col-md-3"><strong>Individual opinions</strong></div>
-        <div class="col-md-2"><strong>Distribution</strong></div>
+    <div class="row mb-2 pb-2 border-bottom border-top pt-2 d-none d-lg-flex">
+        <div class="col-md-2"><strong>Show</strong></div>
+        <div class="col-md-3"><strong>&nbsp;</strong></div>
+        <div class="col-md-3"><strong>Scores</strong></div>
+        <div class="col-md-4"><strong>Recommendations</strong></div>
     </div>
     {% for key, row in data %}
-        <div class="row mb-2 pb-2 border-bottom d-none d-md-flex">
-            <div class="col-md-1">
-                <img class="img" style="max-height:100px;height:100px !important;" src="{{ row.show.coverImage|raw }}" alt="cover image" />
-            </div>
+        <div class="row mb-2 pb-2 border-bottom d-none d-lg-flex">
             <div class="col-md-2">
-                {{ row.show.japaneseTitle }}
-                {% if row.show.japaneseTitle is not empty and row.show.englishTitle is not empty %}/{% endif %}
-                {{ row.show.englishTitle }}
-            </div>
-            <div class="col-md-1">
-                {% if row.consolidatedScores is not empty %}
-                    {{ row.consolidatedScores.yes_count }}
-                {% else %}
-                    0
-                {% endif %}
-            </div>
-            <div class="col-md-1">
-                {% if row.consolidatedScores is not null %}
-                    {{ row.consolidatedScores.no_count }}
-                {% else %}
-                    0
-                {% endif %}
-            </div>
-            <div class="col-md-1">
-                {% if row.consolidatedScores is not null %}
-                    {{ row.consolidatedScores.th8a_count }}
-                {% else %}
-                    0
-                {% endif %}
-            </div>
-            <div class="col-md-1">
-                {% if row.consolidatedScores is not null %}
-                    {% if row.consolidatedScores.score_total is not null %}
-                        {{ row.consolidatedScores.score_total }}
-                    {% else %}
-                        0
-                    {% endif %}
-                {% else %}
-                    0
-                {% endif %}
+                <img class="img-fluid" src="{{ row.show.coverImage|raw }}" alt="cover image" />
             </div>
             <div class="col-md-3">
+                {{ row.show.title }}
+            </div>
+            <div class="col-md-3">
+                <table>
+                    <tbody>
+                    <tr>
+                        <th>Th8a should cover</th>
+                        <td>
+                            {% if row.consolidatedScores is not null %}
+                                {{ row.consolidatedScores.th8a_count }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Should watch</th>
+                        <td>
+                            {% if row.consolidatedScores is not empty %}
+                                {{ row.consolidatedScores.yes_count }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Should avoid</th>
+                        <td>
+                            {% if row.consolidatedScores is not null %}
+                                {{ row.consolidatedScores.no_count }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Total</th>
+                        <td>
+                            {% if row.consolidatedScores is not null %}
+                                {% if row.consolidatedScores.score_total is not null %}
+                                    {{ row.consolidatedScores.score_total }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                {% if row.consolidatedScores.all_count > 0 %}
+                    <canvas width="300"
+                            height="200"
+                            id="bar_{{ row.show.id }}"
+                            class="all_watch_bar_chart"
+                            data-scores="{{ row.consolidatedScores.scores_array }}"
+                            data-maxscore="{{ row.maxScore }}"
+                    ></canvas>
+                {% else %}
+                    &nbsp;
+                {% endif %}
                 {% if row.scores %}
                     {% set foundScores = 0 %}
                     {% for scoreField in row.scores %}
                         {% if users[scoreField.getUser.getUsername] %}
                             {% if scoreField.score %}
                                 {% set foundScores = foundScores + 1 %}
-                                    {{ scoreField.getUser.getUsername }}:
-                                    <span class="text-{{ scoreField.score.getColorValue }}">{{ scoreField.score.getNickname }}</span><br>
                             {% endif %}
                         {% endif %}
                     {% endfor %}
-                    {% if foundScores == 0 %}
-                        <div class="row">
-                            No scores
+                    {% if foundScores > 0 %}
+                        <div>
+                            <a
+                                    class="btn btn-outline-primary mt-3 mb-3"
+                                    data-bs-toggle="collapse"
+                                    href="#collapseRow{{ key }}"
+                                    aria-expanded="false"
+                                    aria-controls="collapseExample"
+                            >Individual</a>
+                        </div>
+                        <div class="collapse" id="collapseRow{{ key }}">
+                            <p>
+                                {% for scoreField in row.scores %}
+                                    {% if users[scoreField.getUser.getUsername] %}
+                                        {% if scoreField.score %}
+                                            {{ scoreField.getUser.getDiscordUsername }}:
+                                            <span class="text-{{ scoreField.score.getColorValue }}">{{ scoreField.score.getNickname }}</span><br>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </p>
                         </div>
                     {% endif %}
-                {% else %}
-                    <div class="row">
-                        <div class="col">No scores</div>
-                    </div>
-                {% endif %}
-
-            </div>
-            <div class="col-md-2">
-                {% if row.consolidatedScores.all_count > 0 %}
-                    <canvas width="150"
-                            height="150"
-                            id="bar_{{ row.show.id }}"
-                            class="all_watch_bar_chart"
-                            data-scores="{{ row.consolidatedScores.scores_array }}"
-                            data-maxcharttick="{{ row.maxChartTick }}"
-                    ></canvas>
-                {% else %}
-                    &nbsp;
                 {% endif %}
             </div>
         </div>
     {% endfor %}
 
-    <div class="row mb-2 pb-2 d-block d-md-none border-bottom">
+    <div class="row mb-2 pb-2 d-block d-lg-none border-bottom">
         <div class="col">&nbsp;</div>
     </div>
 
     {% for key, row in data %}
-        <div class="row mb-2 pb-2 d-block d-md-none">
-            <div class="col-xs-3"><strong>Show</strong></div>
-            <div class="col-xs-3">
-                <img class="img" style="max-height:100px;height:100px !important;" src="{{ row.show.coverImage|raw }}" alt="cover image" />
-            </div>
-            <div class="col-xs-5">
-                {{ row.show.japaneseTitle }} / {{ row.show.englishTitle }}
-            </div>
-        </div>
-        <div class="row mb-2 pb-2 d-block d-md-none">
-            <div class="col-xs-3"><strong>Watch</strong></div>
-            <div class="col-xs-8">
-                {{ row.consolidatedScores.yes_count }}
+        <div class="row mb-2 pb-2 d-block d-lg-none">
+            <div class="col">
+                <strong>Show</strong><br>
+                <span class="float-start">
+                <img class="img-fluid me-2" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                </span>
+                {{ row.show.title }}
+                <br style="clear:both">
             </div>
         </div>
-        <div class="row mb-2 pb-2 d-block d-md-none">
-            <div class="col-xs-3"><strong>Avoid</strong></div>
-            <div class="col-xs-8">
-                {{ row.consolidatedScores.no_count }}
+        <div class="row mb-2 pb-2 d-block d-lg-none">
+            <div class="col">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td><strong>Th8a</strong></td>
+                        <td><strong>Watch</strong></td>
+                        <td><strong>Avoid</strong></td>
+                        <td><strong>Total</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{{ row.consolidatedScores.th8a_count }}</td>
+                        <td>{{ row.consolidatedScores.yes_count }}</td>
+                        <td>{{ row.consolidatedScores.no_count }}</td>
+                        <td>{{ row.consolidatedScores.score_total }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="row mb-2 pb-2 d-block d-md-none">
-            <div class="col-xs-3"><strong>Th8a</strong></div>
-            <div class="col-xs-8">
-                {{ row.consolidatedScores.th8a_count }}
-            </div>
-        </div>
-        <div class="row mb-2 pb-2 d-block d-md-none">
-            <div class="col-xs-3"><strong>Total</strong></div>
-            <div class="col-xs-8">
-                {{ row.consolidatedScores.score_total }}
-            </div>
-        </div>
-        <div class="row mb-2 pb-2 d-block d-md-none">
-            <div class="col-xs-3"><strong>Scores</strong></div>
-            <div class="col-xs-8">
+        <div class="row mb-3 pb-3 border-bottom d-block d-lg-none">
+            <div class="col">
+                <strong>Recommendations</strong><br>
+                {% if row.consolidatedScores.all_count > 0 %}
+                    <canvas width="300"
+                            height="200"
+                            id="bar_{{ row.show.id }}_narrow"
+                            class="all_watch_bar_chart"
+                            data-scores="{{ row.consolidatedScores.scores_array }}"
+                            data-maxscore="{{ row.maxScore }}"
+                    ></canvas>
+                {% else %}
+                    &nbsp;
+                {% endif %}
+                <br>
                 {% if row.scores %}
                     {% set foundScores = 0 %}
                     {% for scoreField in row.scores %}
                         {% if users[scoreField.getUser.getUsername] %}
                             {% if scoreField.score %}
                                 {% set foundScores = foundScores + 1 %}
-                                {{ scoreField.getUser.getUsername }}:
-                                <span class="text-{{ scoreField.score.getColorValue }}">{{ scoreField.score.getNickname }}</span><br>
                             {% endif %}
                         {% endif %}
                     {% endfor %}
-                    {% if foundScores == 0 %}
-                        <div class="row">
-                            No scores
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <div class="row">
-                        <div class="col">No scores</div>
-                    </div>
                 {% endif %}
-
-            </div>
-        </div>
-        <div class="row mb-3 pb-3 border-bottom d-block d-md-none">
-            <div class="col-xs-3"><strong>Distribution</strong></div>
-            <div class="col-xs-8">
-                {% if row.consolidatedScores.all_count > 0 %}
-                    <canvas width="150"
-                            height="150"
-                            id="bar_{{ row.show.id }}_narrow"
-                            class="all_watch_bar_chart"
-                            data-scores="{{ row.consolidatedScores.scores_array }}"
-                            data-maxcharttick="{{ row.maxChartTick }}"
-                    ></canvas>
-                {% else %}
-                    &nbsp;
+                {% if foundScores > 0 %}
+                    <div>
+                        <a
+                                class="btn btn-outline-primary mt-3 mb-3"
+                                data-bs-toggle="collapse"
+                                href="#collapseRowSmall{{ key }}"
+                                aria-expanded="false"
+                                aria-controls="collapseExample"
+                        >Individual</a>
+                    </div>
+                    <div class="collapse" id="collapseRowSmall{{ key }}">
+                        <p>
+                            {% for scoreField in row.scores %}
+                                {% if users[scoreField.getUser.getUsername] %}
+                                    {% if scoreField.score %}
+                                        {% set foundScores = foundScores + 1 %}
+                                        {{ scoreField.getUser.getDiscordUsername }}:
+                                        <span class="text-{{ scoreField.score.getColorValue }}">{{ scoreField.score.getNickname }}</span><br>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -220,6 +246,6 @@
 {% endblock %}
 
 {% block body_javascripts %}
-    <script src="/chart_js/Chart.min.js"></script>
-    <script src="/js/AllWatch.js"></script>
+    <script src="/chart_js/Chart.min.js?v={{ asset_version }}"></script>
+    <script src="/js/AllWatch.js?v={{ asset_version }}"></script>
 {% endblock %}

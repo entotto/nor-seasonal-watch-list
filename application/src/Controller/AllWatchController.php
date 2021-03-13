@@ -57,15 +57,15 @@ class AllWatchController extends AbstractController
             $userKeys[$user->getUsername()] = false;
         }
         $data = [];
-        $maxChartTick = 0;
+        $maxScore = 0;
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
             $shows = $showRepository->getShowsForSeason($season);
             $consolidatedShowScores = $showSeasonScoreRepository->getCountsForSeason($season);
             $keyedConsolidatedShowScores = [];
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
-                $maxChartTick = max([
-                    $maxChartTick,
+                $maxScore = max([
+                    $maxScore,
                     $consolidatedShowScore['th8a_count'],
                     $consolidatedShowScore['suggested_count'],
                     $consolidatedShowScore['watching_count'],
@@ -86,10 +86,8 @@ class AllWatchController extends AbstractController
             foreach ($shows as $key => $show) {
                 $showInfo = [
                     'id' => $show->getId(),
-                    'japaneseTitle' => u($show->getJapaneseTitle())->truncate(40, '...', false),
-                    'englishTitle' => u($show->getEnglishTitle())->truncate(40, '...', false),
-                    'fullJapaneseTitle' => u($show->getFullJapaneseTitle())->truncate(40, '...', false),
-                    'coverImage' => $show->getCoverImageMedium(),
+                    'title' => u($show->getAllTitles())->truncate(240, '...', false),
+                    'coverImage' => $show->getCoverImageLarge(),
                 ];
                 $scores = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show);
                 foreach ($scores as $score) {
@@ -101,7 +99,7 @@ class AllWatchController extends AbstractController
                     'show' => $showInfo,
                     'consolidatedScores' => $keyedConsolidatedShowScores[$show->getId()] ?? null,
                     'scores' => $scores,
-                    'maxChartTick' => $maxChartTick + 1,
+                    'maxScore' => $maxScore,
                 ];
             }
         }

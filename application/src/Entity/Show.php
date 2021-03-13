@@ -197,6 +197,33 @@ class Show
         return $this;
     }
 
+    public function getAllTitles(): ?string
+    {
+        $result = [];
+        if (!empty($this->japaneseTitle)) {
+            $result[] = $this->japaneseTitle;
+        }
+        if (!empty($this->fullJapaneseTitle)) {
+            $result[] = $this->fullJapaneseTitle;
+        }
+        if (!empty($this->englishTitle)) {
+            $result[] = $this->englishTitle;
+        }
+        return empty($result) ? null : implode(' / ', $result);
+    }
+
+    public function getAllShortTitles(): ?string
+    {
+        $result = [];
+        if (!empty($this->japaneseTitle)) {
+            $result[] = $this->japaneseTitle;
+        }
+        if (!empty($this->fullJapaneseTitle)) {
+            $result[] = $this->fullJapaneseTitle;
+        }
+        return empty($result) ? null : implode(' / ', $result);
+    }
+
     /**
      * @return Collection|Season[]
      */

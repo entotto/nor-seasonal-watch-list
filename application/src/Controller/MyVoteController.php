@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MyVoteController extends AbstractController
 {
     /**
-     * @Route("/my/vote", name="my_vote")
+     * @Route("/your/vote", name="my_vote")
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param ShowRepository $showRepository
