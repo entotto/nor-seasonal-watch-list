@@ -1,6 +1,6 @@
 (function(window, $) {
     // noinspection DuplicatedCode
-    $("form.list_my_watch_form select").change(function (e) {
+    const submitSelection = function (e) {
         e.preventDefault();
         const control = $(e.target)
         const form = control.closest('form')
@@ -13,10 +13,14 @@
             },
             error: function (x) {
                 alert('Got error posting the form: ' + x.data);
-
             }
         })
-    })
+    }
+
+    $("form.list_my_watch_form select").change(submitSelection)
+
+    $("form.list_my_watch_form input[type=radio]").change(submitSelection)
+
     $('#select_season').change(function (e) {
         e.preventDefault()
         const control = $(e.target)
