@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\ShowSeasonScoreType;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,13 +20,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ShowSeasonScoreController extends AbstractController
 {
     /**
-     * @Route("/{id}/edit", name="admin_show_season_score_edit", methods={"GET","POST"})
+     * @Route("/{id}/edit/{key}", name="admin_show_season_score_edit", methods={"GET","POST"})
      * @param Request $request
      * @param ShowSeasonScore $showSeasonScore
+     * @param FormFactoryInterface $formFactory
      * @return Response
      */
-    public function edit(Request $request, ShowSeasonScore $showSeasonScore): Response
-    {
+    public function edit(
+        Request $request,
+        ShowSeasonScore $showSeasonScore,
+        FormFactoryInterface $formFactory
+    ): Response {
         try {
             /** @var User $user */
             $user = $this->getUser();
@@ -36,7 +41,10 @@ class ShowSeasonScoreController extends AbstractController
                 return new JsonResponse(['data' => ['status' => 'permission_denied']], Response::HTTP_FORBIDDEN);
             }
 
-            $form = $this->createForm(
+            $key = $request->get('key');
+
+            $form = $formFactory->createNamed(
+                'show_season_score_' . $key,
                 ShowSeasonScoreType::class,
                 $showSeasonScore,
                 [

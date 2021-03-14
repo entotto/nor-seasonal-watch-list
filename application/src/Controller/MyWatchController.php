@@ -14,6 +14,7 @@ use App\Service\SelectedSeasonHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,6 +29,7 @@ class MyWatchController extends AbstractController
      * @param ShowRepository $showRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
+     * @param FormFactoryInterface $formFactory
      * @return Response
      * @throws NonUniqueResultException
      */
@@ -37,7 +39,8 @@ class MyWatchController extends AbstractController
         SeasonRepository $seasonRepository,
         ShowRepository $showRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
-        SelectedSeasonHelper $selectedSeasonHelper
+        SelectedSeasonHelper $selectedSeasonHelper,
+        FormFactoryInterface $formFactory
     ): Response {
         $seasons = $seasonRepository->getAllInRankOrder();
 
@@ -65,7 +68,8 @@ class MyWatchController extends AbstractController
                     $em->persist($score);
                     $em->flush();
                 }
-                $form = $this->createForm(
+                $form = $formFactory->createNamed(
+                    'show_season_score_' . $key,
                     ShowSeasonScoreType::class,
                     $score,
                     [
@@ -75,7 +79,13 @@ class MyWatchController extends AbstractController
                         ],
                         'show_score_only' => true,
                         'form_key' => $key,
-                        'action' => $this->generateUrl('admin_show_season_score_edit', ['id' => $score->getId()])
+                        'action' => $this->generateUrl(
+                            'admin_show_season_score_edit',
+                            [
+                                'id' => $score->getId(),
+                                'key' => $key
+                            ]
+                        )
                     ]
                 );
                 $data[] = ['score' => $score, 'form' => $form->createView()];
