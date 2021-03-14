@@ -50,28 +50,47 @@ class AllWatchController extends AbstractController
         }
         $data = [];
         $maxScore = 0;
+        $maxActivityCount = 0;
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
             $shows = $showRepository->getShowsForSeason($season);
-            $consolidatedShowScores = $showSeasonScoreRepository->getCountsForSeason($season);
+            $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
+            $keyedConsolidatedShowActivities = [];
+            foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
+                $maxActivityCount = max([
+                    $maxActivityCount,
+                    $consolidatedShowActivity['finished_count'],
+                    $consolidatedShowActivity['watching_count'],
+                    $consolidatedShowActivity['paused_count'],
+                    $consolidatedShowActivity['ptw_count'],
+                    $consolidatedShowActivity['dropped_count'],
+                ]);
+                $consolidatedShowActivity['activities_array'] = '[' .
+                    $consolidatedShowActivity['finished_count'] . ',' .
+                    $consolidatedShowActivity['watching_count'] . ',' .
+                    $consolidatedShowActivity['paused_count'] . ',' .
+                    $consolidatedShowActivity['ptw_count'] . ',' .
+                    $consolidatedShowActivity['dropped_count'] . ']';
+                $keyedConsolidatedShowActivities[$consolidatedShowActivity['show_id']] = $consolidatedShowActivity;
+            }
+
+            $consolidatedShowScores = $showSeasonScoreRepository->getScoresForSeason($season);
             $keyedConsolidatedShowScores = [];
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
                 $maxScore = max([
                     $maxScore,
                     $consolidatedShowScore['th8a_count'],
-                    $consolidatedShowScore['suggested_count'],
-                    $consolidatedShowScore['watching_count'],
-                    $consolidatedShowScore['ptw_count'],
-                    $consolidatedShowScore['dropped_count'],
-                    $consolidatedShowScore['disliked_count'],
+                    $consolidatedShowScore['highly_favorable_count'],
+                    $consolidatedShowScore['favorable_count'],
+                    $consolidatedShowScore['neutral_count'],
+                    $consolidatedShowScore['unfavorable_count'],
                 ]);
                 $consolidatedShowScore['scores_array'] = '[' .
                     $consolidatedShowScore['th8a_count'] . ',' .
-                    $consolidatedShowScore['suggested_count'] . ',' .
-                    $consolidatedShowScore['watching_count'] . ',' .
-                    $consolidatedShowScore['ptw_count'] . ',' .
-                    $consolidatedShowScore['dropped_count'] . ',' .
-                    $consolidatedShowScore['disliked_count'] . ']';
+                    $consolidatedShowScore['highly_favorable_count'] . ',' .
+                    $consolidatedShowScore['favorable_count'] . ',' .
+                    $consolidatedShowScore['neutral_count'] . ',' .
+                    $consolidatedShowScore['unfavorable_count'] . ']';
                 $keyedConsolidatedShowScores[$consolidatedShowScore['show_id']] = $consolidatedShowScore;
             }
             unset($consolidatedShowScores);
@@ -89,9 +108,11 @@ class AllWatchController extends AbstractController
                 }
                 $data[] = [
                     'show' => $showInfo,
+                    'consolidatedActivities' => $keyedConsolidatedShowActivities[$show->getId()] ?? null,
                     'consolidatedScores' => $keyedConsolidatedShowScores[$show->getId()] ?? null,
                     'scores' => $scores,
                     'maxScore' => $maxScore,
+                    'maxActivityCount' => $maxActivityCount,
                 ];
             }
         }

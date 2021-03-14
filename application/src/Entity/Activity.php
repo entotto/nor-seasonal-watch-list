@@ -4,13 +4,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ScoreRepository;
+use App\Repository\ActivityRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ScoreRepository::class)
+ * @ORM\Entity(repositoryClass=ActivityRepository::class)
  */
-class Score
+class Activity
 {
     /**
      * @var int|null

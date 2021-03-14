@@ -1,48 +1,50 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
+
+/** @noinspection PhpUnused */
 
 namespace App\Repository;
 
-use App\Entity\Score;
+use App\Entity\Activity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Score|null find($id, $lockMode = null, $lockVersion = null)
- * @method Score|null findOneBy(array $criteria, array $orderBy = null)
- * @method Score[]    findAll()
- * @method Score[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Activity|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Activity|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Activity[]    findAll()
+ * @method Activity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ScoreRepository extends ServiceEntityRepository
+class ActivityRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Score::class);
+        parent::__construct($registry, Activity::class);
     }
 
     public function findAllInRankOrder(): array
     {
-        return $this->createQueryBuilder('s')
-            ->orderBy('s.rankOrder', 'ASC')
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.rankOrder', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * @return Score|null
+     * @return Activity|null
      * @throws NonUniqueResultException
      */
-    public function getDefaultScore(): ?Score
+    public function getDefaultActivity(): ?Activity
     {
-        return $this->createQueryBuilder('s')
-            ->where('s.slug = :defaultSlug')
+        return $this->createQueryBuilder('a')
+            ->where('a.slug = :defaultSlug')
             ->setParameter('defaultSlug', 'none')
             ->setMaxResults(1)
             ->getQuery()->getOneOrNullResult();
     }
 
     // /**
-    //  * @return Score[] Returns an array of Score objects
+    //  * @return Activity[] Returns an array of Activity objects
     //  */
     /*
     public function findByExampleField($value)
@@ -59,7 +61,7 @@ class ScoreRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Score
+    public function findOneBySomeField($value): ?Activity
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.exampleField = :val')

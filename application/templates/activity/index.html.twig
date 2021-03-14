@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Scores{% endblock %}
+{% block title %}Activities{% endblock %}
 
 {% block body %}
     <span class="float-end">
         <a class="btn btn-success" href="{{ path('admin_activity_new') }}">Create new</a>
     </span>
-    <h1>Scores</h1>
+    <h1>Activities</h1>
 
     <table class="table">
         <thead>
@@ -22,21 +22,21 @@
             </tr>
         </thead>
         <tbody>
-        {% for score in scores %}
+        {% for activity in activities %}
             <tr>
-                <td>{{ score.id }}</td>
-                <td>{{ score.name }}</td>
-                <td class="text-{{ score.colorValue }}">
-                    {{ score.icon|raw }}
-                    {{ score.nickname }}
+                <td>{{ activity.id }}</td>
+                <td>{{ activity.name }}</td>
+                <td class="text-{{ activity.colorValue }}">
+                    {{ activity.icon|raw }}
+                    {{ activity.nickname }}
                 </td>
-                <td>{{ score.slug }}</td>
-                <td>{{ score.rankOrder }}</td>
-                <td>{{ score.value }}</td>
+                <td>{{ activity.slug }}</td>
+                <td>{{ activity.rankOrder }}</td>
+                <td>{{ activity.value }}</td>
                 <td>
-                    {{ score.colorValue }}
+                    {{ activity.colorValue }}
                     <div
-                            class="bg-{{ score.colorValue }}"
+                            class="bg-{{ activity.colorValue }}"
                             style="width:20px;height:20px;padding:0;"
                     >
                         &nbsp;
@@ -44,8 +44,8 @@
                 </td>
                 <td class="col-sm-2">
                     <span class="float-end">
-                        <a class="btn btn-primary" href="{{ path('admin_score_show', {'id': score.id}) }}">show</a>
-                        <a class="btn btn-secondary" href="{{ path('admin_score_edit', {'id': score.id}) }}">edit</a>
+                        <a class="btn btn-primary" href="{{ path('admin_activity_show', {'id': activity.id}) }}">show</a>
+                        <a class="btn btn-secondary" href="{{ path('admin_activity_edit', {'id': activity.id}) }}">edit</a>
                     </span>
                 </td>
             </tr>
@@ -58,6 +58,6 @@
     </table>
 
     <span class="float-end">
-        <a class="btn btn-success" href="{{ path('admin_score_new') }}">Create new</a>
+        <a class="btn btn-success" href="{{ path('admin_activity_new') }}">Create new</a>
     </span>
 {% endblock %}
