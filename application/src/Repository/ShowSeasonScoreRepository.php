@@ -157,29 +157,99 @@ class ShowSeasonScoreRepository extends ServiceEntityRepository
     {
         $sql = <<<EOF
 SELECT
-       sss.show_id,
-       count(s_yes.id) AS yes_count,
-       count(s_no.id) AS no_count,
-       count(s_disliked.id) AS disliked_count,
-       count(s_dropped.id) AS dropped_count,
-       count(s_ptw.id) AS ptw_count,
-       count(s_watching.id) AS watching_count,
-       count(s_suggested.id) AS suggested_count,
-       count(s_th8a.id) AS th8a_count,
-       count(s_all.value) AS all_count,
-       sum(s_all.value) AS score_total
-FROM show_season_score sss
-    LEFT JOIN score s_yes ON sss.score_id = s_yes.id AND s_yes.value >= 2
-    LEFT JOIN score s_no ON sss.score_id = s_no.id AND s_no.value < 0
-    LEFT JOIN score s_disliked on sss.score_id = s_disliked.id AND s_disliked.slug = 'disliked'
-    LEFT JOIN score s_dropped on sss.score_id = s_dropped.id AND s_dropped.slug = 'dropped'
-    LEFT JOIN score s_ptw on sss.score_id = s_ptw.id AND s_ptw.slug = 'ptw'
-    LEFT JOIN score s_watching on sss.score_id = s_watching.id AND s_watching.slug = 'watching'
-    LEFT JOIN score s_suggested on sss.score_id = s_suggested.id AND s_suggested.slug = 'suggested'
-    LEFT JOIN score s_th8a ON sss.score_id = s_th8a.id AND s_th8a.slug = 'th8a'
-    LEFT JOIN score s_all ON sss.score_id = s_all.id
-WHERE sss.season_id = :season_id
-GROUP BY sss.show_id;
+    ss.show_id,
+    coalesce(yes_j.my_count, 0) as yes_count,
+    coalesce(no_j.my_count, 0) as no_count,
+    coalesce(disliked_j.my_count, 0) as disliked_count,
+    coalesce(dropped_j.my_count, 0) as dropped_count,
+    coalesce(ptw_j.my_count, 0) as ptw_count,
+    coalesce(watching_j.my_count, 0) as watching_count,
+    coalesce(suggested_j.my_count, 0) as suggested_count,
+    coalesce(th8a_j.my_count, 0) as th8a_count,
+    coalesce(disliked_j.my_count, 0) +
+        coalesce(dropped_j.my_count, 0) +
+        coalesce(ptw_j.my_count, 0) +
+        coalesce(watching_j.my_count, 0) +
+        coalesce(suggested_j.my_count, 0) +
+        coalesce(th8a_j.my_count, 0) AS all_count,
+    coalesce(score_j.my_total, 0) as score_total
+FROM show_season ss
+LEFT JOIN (
+  SELECT 
+      sss1.show_id AS show_id,
+      count(*) AS my_count
+  FROM show_season_score sss1
+  JOIN score s1 ON sss1.score_id = s1.id AND s1.value >= 2
+  GROUP BY sss1.show_id
+) AS yes_j ON yes_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss2.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss2
+    JOIN score s2 on sss2.score_id = s2.id AND s2.value < 0
+    GROUP BY sss2.show_id
+) AS no_j ON no_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss3.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss3
+    JOIN score s3 on sss3.score_id = s3.id AND s3.slug = 'disliked'
+    GROUP BY sss3.show_id
+) AS disliked_j ON disliked_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss4.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss4
+    JOIN score s4 on sss4.score_id = s4.id AND s4.slug = 'dropped'
+    GROUP BY sss4.show_id
+) AS dropped_j ON dropped_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss5.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss5
+    JOIN score s5 on sss5.score_id = s5.id AND s5.slug = 'ptw'
+    GROUP BY sss5.show_id
+) AS ptw_j ON ptw_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss6.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss6
+    JOIN score s6 on sss6.score_id = s6.id AND s6.slug = 'watching'
+    GROUP BY sss6.show_id
+) AS watching_j ON watching_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss7.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss7
+    JOIN score s7 on sss7.score_id = s7.id AND s7.slug = 'suggested'
+    GROUP BY sss7.show_id
+) AS suggested_j ON suggested_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss8.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss8
+    JOIN score s8 on sss8.score_id = s8.id AND s8.slug = 'th8a'
+    GROUP BY sss8.show_id
+) AS th8a_j ON th8a_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss9.show_id AS show_id,
+        sum(s9.value) as my_total
+    FROM show_season_score sss9
+    JOIN score s9 on sss9.score_id = s9.id
+    GROUP BY sss9.show_id
+) AS score_j ON score_j.show_id = ss.show_id
+WHERE ss.season_id = :season_id
+;
+
+
 EOF;
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
