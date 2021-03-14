@@ -11,3 +11,10 @@ body {
 .text-royal {
     color: #6f42c1;
 }
+
+.recommendation-pip {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin-right: 5px;
+}
