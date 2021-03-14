@@ -30,6 +30,13 @@ class ShowSeasonScore
     private ?int $id;
 
     /**
+     * @var Activity|null
+     * @ORM\ManyToOne(targetEntity=Activity::class)
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private ?Activity $activity;
+
+    /**
      * @var Score|null
      * @ORM\ManyToOne(targetEntity=Score::class)
      * @ORM\JoinColumn(nullable=true)
@@ -60,6 +67,22 @@ class ShowSeasonScore
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return Activity|null
+     */
+    public function getActivity(): ?Activity
+    {
+        return $this->activity;
+    }
+
+    /**
+     * @param Activity|null $activity
+     */
+    public function setActivity(?Activity $activity): void
+    {
+        $this->activity = $activity;
     }
 
     /**

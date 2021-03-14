@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Activity;
 use App\Entity\Score;
 use App\Entity\Season;
 use App\Entity\Show;
@@ -26,15 +27,39 @@ class ShowSeasonScoreType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('activity',  EntityType::class, [
+                'class' => Activity::class,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('a')
+                        ->orderBy('a.rankOrder', 'ASC');
+                },
+                'choice_attr' => ChoiceList::attr(
+                    $this,
+                    function (?Activity $activity) {
+                        return $activity ? ['class' => 'activity-choice-' . $activity->getColorValue()] : [];
+                    },
+                    Activity::class
+                ),
+                'expanded' => true,
+                'multiple'=> false,
+                'required' => true,
+                'attr' => [
+                    'id' => 'show_season_score_activity_' . $options['form_key']
+                ]
+            ])
             ->add('score',  EntityType::class, [
                 'class' => Score::class,
                 'query_builder' => function (EntityRepository $er) {
                     return $er->createQueryBuilder('s')
                         ->orderBy('s.rankOrder', 'ASC');
                 },
-                'choice_attr' => ChoiceList::attr($this, function (?Score $score) {
-                    return $score ? ['class' => 'score-choice-' . $score->getColorValue()] : [];
-                }),
+                'choice_attr' => ChoiceList::attr(
+                    $this,
+                    function (?Score $score) {
+                        return $score ? ['class' => 'score-choice-' . $score->getColorValue()] : [];
+                    },
+                    Score::class
+                ),
                 'expanded' => true,
                 'multiple'=> false,
                 'required' => true,

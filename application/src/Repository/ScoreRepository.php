@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Score;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -25,6 +26,19 @@ class ScoreRepository extends ServiceEntityRepository
             ->orderBy('s.rankOrder', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return Score|null
+     * @throws NonUniqueResultException
+     */
+    public function getDefaultScore(): ?Score
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.slug = :defaultSlug')
+            ->setParameter('defaultSlug', 'none')
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
     }
 
     // /**

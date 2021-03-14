@@ -1,17 +1,19 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
+
+/** @noinspection PhpUnused */
 
 namespace App\Repository;
 
 use App\Entity\Activity;
-use App\Entity\Score;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Score|null find($id, $lockMode = null, $lockVersion = null)
- * @method Score|null findOneBy(array $criteria, array $orderBy = null)
- * @method Score[]    findAll()
- * @method Score[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Activity|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Activity|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Activity[]    findAll()
+ * @method Activity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ActivityRepository extends ServiceEntityRepository
 {
@@ -28,8 +30,21 @@ class ActivityRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return Activity|null
+     * @throws NonUniqueResultException
+     */
+    public function getDefaultActivity(): ?Activity
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.slug = :defaultSlug')
+            ->setParameter('defaultSlug', 'none')
+            ->setMaxResults(1)
+            ->getQuery()->getOneOrNullResult();
+    }
+
     // /**
-    //  * @return Score[] Returns an array of Score objects
+    //  * @return Activity[] Returns an array of Activity objects
     //  */
     /*
     public function findByExampleField($value)
@@ -46,7 +61,7 @@ class ActivityRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Score
+    public function findOneBySomeField($value): ?Activity
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.exampleField = :val')

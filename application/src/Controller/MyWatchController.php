@@ -7,6 +7,8 @@ namespace App\Controller;
 use App\Entity\ShowSeasonScore;
 use App\Entity\User;
 use App\Form\ShowSeasonScoreType;
+use App\Repository\ActivityRepository;
+use App\Repository\ScoreRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
@@ -28,6 +30,8 @@ class MyWatchController extends AbstractController
      * @param SeasonRepository $seasonRepository
      * @param ShowRepository $showRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
+     * @param ScoreRepository $scoreRepository
+     * @param ActivityRepository $activityRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param FormFactoryInterface $formFactory
      * @return Response
@@ -39,6 +43,8 @@ class MyWatchController extends AbstractController
         SeasonRepository $seasonRepository,
         ShowRepository $showRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
+        ScoreRepository $scoreRepository,
+        ActivityRepository $activityRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
         FormFactoryInterface $formFactory
     ): Response {
@@ -50,6 +56,9 @@ class MyWatchController extends AbstractController
         $selectedSeasonId = null;
 
         $season = $selectedSeasonHelper->getSelectedSeason($request);
+
+        $defaultScore = $scoreRepository->getDefaultScore();
+        $defaultActivity = $activityRepository->getDefaultActivity();
 
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
@@ -65,8 +74,24 @@ class MyWatchController extends AbstractController
                     $score->setUser($user);
                     $score->setShow($show);
                     $score->setSeason($season);
+                    $score->setScore($defaultScore);
+                    $score->setActivity($defaultActivity);
                     $em->persist($score);
                     $em->flush();
+                } else {
+                    $changed = false;
+                    if ($score->getScore() === null) {
+                        $score->setScore($defaultScore);
+                        $changed = true;
+                    }
+                    if ($score->getActivity() === null) {
+                        $score->setActivity($defaultActivity);
+                        $changed = true;
+                    }
+                    if ($changed) {
+                        $em->persist($score);
+                        $em->flush();
+                    }
                 }
                 $form = $formFactory->createNamed(
                     'show_season_score_' . $key,
