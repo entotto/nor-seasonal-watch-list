@@ -37,7 +37,7 @@ class ShowSeasonScoreType extends AbstractType
                 }),
                 'expanded' => true,
                 'multiple'=> false,
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'id' => 'show_season_score_score_' . $options['form_key']
                 ]

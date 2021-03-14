@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity{% endblock %}
+
+{% block body %}
+    <h1>Activity</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ activity.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ activity.name }}</td>
+            </tr>
+            <tr>
+                <th>Nickname</th>
+                <td>{{ activity.nickname }}</td>
+            </tr>
+            <tr>
+                <th>Slug</th>
+                <td>{{ activity.slug }}</td>
+            </tr>
+            <tr>
+                <th>RankOrder</th>
+                <td>{{ activity.rankOrder }}</td>
+            </tr>
+            <tr>
+                <th>Value</th>
+                <td>{{ activity.value }}</td>
+            </tr>
+            <tr>
+                <th>Color value</th>
+                <td>{{ activity.colorValue }}</td>
+            </tr>
+            <tr>
+                <th>Icon</th>
+                <td><i class="bi {{ activity.icon }}"></i></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="float-end">
+        {{ include('activity/_delete_form.html.twig') }}
+    </div>
+
+    <a class="btn btn-light" href="{{ path('admin_activity_index') }}">Back to list</a>
+
+    <a class="btn btn-secondary" href="{{ path('admin_activity_edit', {'id': activity.id}) }}">Edit</a>
+
+{% endblock %}

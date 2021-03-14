@@ -53,25 +53,23 @@ class AllWatchController extends AbstractController
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
             $shows = $showRepository->getShowsForSeason($season);
-            $consolidatedShowScores = $showSeasonScoreRepository->getCountsForSeason($season);
+            $consolidatedShowScores = $showSeasonScoreRepository->getScoresForSeason($season);
             $keyedConsolidatedShowScores = [];
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
                 $maxScore = max([
                     $maxScore,
                     $consolidatedShowScore['th8a_count'],
-                    $consolidatedShowScore['suggested_count'],
-                    $consolidatedShowScore['watching_count'],
-                    $consolidatedShowScore['ptw_count'],
-                    $consolidatedShowScore['dropped_count'],
-                    $consolidatedShowScore['disliked_count'],
+                    $consolidatedShowScore['highly_favorable_count'],
+                    $consolidatedShowScore['favorable_count'],
+                    $consolidatedShowScore['neutral_count'],
+                    $consolidatedShowScore['unfavorable_count'],
                 ]);
                 $consolidatedShowScore['scores_array'] = '[' .
                     $consolidatedShowScore['th8a_count'] . ',' .
-                    $consolidatedShowScore['suggested_count'] . ',' .
-                    $consolidatedShowScore['watching_count'] . ',' .
-                    $consolidatedShowScore['ptw_count'] . ',' .
-                    $consolidatedShowScore['dropped_count'] . ',' .
-                    $consolidatedShowScore['disliked_count'] . ']';
+                    $consolidatedShowScore['highly_favorable_count'] . ',' .
+                    $consolidatedShowScore['favorable_count'] . ',' .
+                    $consolidatedShowScore['neutral_count'] . ',' .
+                    $consolidatedShowScore['unfavorable_count'] . ']';
                 $keyedConsolidatedShowScores[$consolidatedShowScore['show_id']] = $consolidatedShowScore;
             }
             unset($consolidatedShowScores);

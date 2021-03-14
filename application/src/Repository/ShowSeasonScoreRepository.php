@@ -153,24 +153,22 @@ class ShowSeasonScoreRepository extends ServiceEntityRepository
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
      */
-    public function getCountsForSeason(Season $season): array
+    public function getScoresForSeason(Season $season): array
     {
         $sql = <<<EOF
 SELECT
     ss.show_id,
     coalesce(yes_j.my_count, 0) as yes_count,
     coalesce(no_j.my_count, 0) as no_count,
-    coalesce(disliked_j.my_count, 0) as disliked_count,
-    coalesce(dropped_j.my_count, 0) as dropped_count,
-    coalesce(ptw_j.my_count, 0) as ptw_count,
-    coalesce(watching_j.my_count, 0) as watching_count,
-    coalesce(suggested_j.my_count, 0) as suggested_count,
+    coalesce(unfavorable_j.my_count, 0) as unfavorable_count,
+    coalesce(neutral_j.my_count, 0) as neutral_count,
+    coalesce(favorable_j.my_count, 0) as favorable_count,
+    coalesce(highly_favorable_j.my_count, 0) as highly_favorable_count,
     coalesce(th8a_j.my_count, 0) as th8a_count,
-    coalesce(disliked_j.my_count, 0) +
-        coalesce(dropped_j.my_count, 0) +
-        coalesce(ptw_j.my_count, 0) +
-        coalesce(watching_j.my_count, 0) +
-        coalesce(suggested_j.my_count, 0) +
+    coalesce(unfavorable_j.my_count, 0) +
+        coalesce(neutral_j.my_count, 0) +
+        coalesce(favorable_j.my_count, 0) +
+        coalesce(highly_favorable_j.my_count, 0) +
         coalesce(th8a_j.my_count, 0) AS all_count,
     coalesce(score_j.my_total, 0) as score_total
 FROM show_season ss
@@ -195,48 +193,40 @@ LEFT JOIN (
         sss3.show_id AS show_id,
         count(*) AS my_count
     FROM show_season_score sss3
-    JOIN score s3 on sss3.score_id = s3.id AND s3.slug = 'disliked'
+    JOIN score s3 on sss3.score_id = s3.id AND s3.slug = 'unfavorable'
     GROUP BY sss3.show_id
-) AS disliked_j ON disliked_j.show_id = ss.show_id
+) AS unfavorable_j ON unfavorable_j.show_id = ss.show_id
 LEFT JOIN (
     SELECT
         sss4.show_id AS show_id,
         count(*) AS my_count
     FROM show_season_score sss4
-    JOIN score s4 on sss4.score_id = s4.id AND s4.slug = 'dropped'
+    JOIN score s4 on sss4.score_id = s4.id AND s4.slug = 'neutral'
     GROUP BY sss4.show_id
-) AS dropped_j ON dropped_j.show_id = ss.show_id
+) AS neutral_j ON neutral_j.show_id = ss.show_id
 LEFT JOIN (
     SELECT
         sss5.show_id AS show_id,
         count(*) AS my_count
     FROM show_season_score sss5
-    JOIN score s5 on sss5.score_id = s5.id AND s5.slug = 'ptw'
+    JOIN score s5 on sss5.score_id = s5.id AND s5.slug = 'favorable'
     GROUP BY sss5.show_id
-) AS ptw_j ON ptw_j.show_id = ss.show_id
+) AS favorable_j ON favorable_j.show_id = ss.show_id
 LEFT JOIN (
     SELECT
         sss6.show_id AS show_id,
         count(*) AS my_count
     FROM show_season_score sss6
-    JOIN score s6 on sss6.score_id = s6.id AND s6.slug = 'watching'
+    JOIN score s6 on sss6.score_id = s6.id AND s6.slug = 'highly-favorable'
     GROUP BY sss6.show_id
-) AS watching_j ON watching_j.show_id = ss.show_id
+) AS highly_favorable_j ON highly_favorable_j.show_id = ss.show_id
 LEFT JOIN (
     SELECT
         sss7.show_id AS show_id,
         count(*) AS my_count
     FROM show_season_score sss7
-    JOIN score s7 on sss7.score_id = s7.id AND s7.slug = 'suggested'
+    JOIN score s7 on sss7.score_id = s7.id AND s7.slug = 'th8a'
     GROUP BY sss7.show_id
-) AS suggested_j ON suggested_j.show_id = ss.show_id
-LEFT JOIN (
-    SELECT
-        sss8.show_id AS show_id,
-        count(*) AS my_count
-    FROM show_season_score sss8
-    JOIN score s8 on sss8.score_id = s8.id AND s8.slug = 'th8a'
-    GROUP BY sss8.show_id
 ) AS th8a_j ON th8a_j.show_id = ss.show_id
 LEFT JOIN (
     SELECT
