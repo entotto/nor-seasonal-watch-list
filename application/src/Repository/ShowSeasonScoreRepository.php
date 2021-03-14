@@ -153,6 +153,73 @@ class ShowSeasonScoreRepository extends ServiceEntityRepository
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
      */
+    public function getActivitiesForSeason(Season $season): array
+    {
+        $sql = <<<EOF
+SELECT
+    ss.show_id,
+    coalesce(ptw_j.my_count, 0) as ptw_count,
+    coalesce(watching_j.my_count, 0) as watching_count,
+    coalesce(finished_j.my_count, 0) as finished_count,
+    coalesce(paused_j.my_count, 0) as paused_count,
+    coalesce(dropped_j.my_count, 0) as dropped_count
+FROM show_season ss
+LEFT JOIN (
+    SELECT
+        sss3.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss3
+    JOIN activity a3 on sss3.activity_id = a3.id AND a3.slug = 'ptw'
+    GROUP BY sss3.show_id
+) AS ptw_j ON ptw_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss4.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss4
+    JOIN activity a4 on sss4.activity_id = a4.id AND a4.slug = 'watching'
+    GROUP BY sss4.show_id
+) AS watching_j ON watching_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss5.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss5
+    JOIN activity a5 on sss5.activity_id = a5.id AND a5.slug = 'finished'
+    GROUP BY sss5.show_id
+) AS finished_j ON finished_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss6.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss6
+    JOIN activity a6 on sss6.activity_id = a6.id AND a6.slug = 'paused'
+    GROUP BY sss6.show_id
+) AS paused_j ON paused_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss7.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss7
+    JOIN activity a7 on sss7.activity_id = a7.id AND a7.slug = 'dropped'
+    GROUP BY sss7.show_id
+) AS dropped_j ON dropped_j.show_id = ss.show_id
+WHERE ss.season_id = :season_id
+;
+
+EOF;
+        $conn = $this->getEntityManager()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['season_id' => $season->getId()]);
+        return $stmt->fetchAllAssociative();
+    }
+
+    /**
+     * @param Season $season
+     * @return array
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws Exception
+     */
     public function getScoresForSeason(Season $season): array
     {
         $sql = <<<EOF

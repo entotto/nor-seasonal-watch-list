@@ -11,7 +11,74 @@
             $(table).DataTable().columns.adjust();
         });
     })
-    $('.all_watch_bar_chart').each( function () {
+
+    $('.all_watch_bar_activity_chart').each( function () {
+        const ctx = document.getElementById($(this).attr('id'))
+        const data = $(this).data('scores')
+        const maxScore = $(this).data('maxscore')
+        let stepSize, maxChartTick
+        if (maxScore < 6) {
+            stepSize = 1
+            maxChartTick = maxScore + 1
+        } else {
+            stepSize = Math.max(Math.floor(maxScore / 6), 1)
+            maxChartTick = stepSize * (6 + 1)
+        }
+        // noinspection JSUnusedLocalSymbols
+        const myChart = new Chart(ctx, {
+            type: 'horizontalBar',
+            defaults: {
+                horizontalBar: {
+
+                },
+                global: {
+                    title: {
+                        display: false
+                    }
+                }
+            },
+            data: {
+                labels: [
+                    'Finished',
+                    'Watching',
+                    'Paused',
+                    'PTW',
+                    'Dropped'
+                ],
+                datasets: [{
+                    data: data,
+                    borderColor: '#aaaaaa',
+                    borderWidth: 1,
+                    backgroundColor: [
+                        '#007eb9ff',  // blue         / finished
+                        '#007eb9aa',  // mid blue     / watching
+                        '#007eb966',  // weaker blue  / paused (#6c757d)
+                        '#007eb922',  // weakest blue / ptw
+                        '#000000ff'   // black        / dropped
+                    ]
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {stepSize: stepSize, maxRotation: 0, min: 0, max: maxChartTick}
+                    }],
+                    yAxes: [{
+                        gridLines: {display: false}
+                    }]
+                },
+                responsive: false,
+                legend: {
+                    display: false
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        })
+    })
+
+    $('.all_watch_bar_score_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
         const maxScore = $(this).data('maxscore')
@@ -69,6 +136,9 @@
                 responsive: false,
                 legend: {
                     display: false
+                },
+                animation: {
+                    duration: 0
                 }
             }
         })

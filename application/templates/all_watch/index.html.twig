@@ -41,19 +41,28 @@
 
     <div class="row mb-2 pb-2 border-bottom border-top pt-2 d-none d-lg-flex">
         <div class="col-md-2"><strong>Show</strong></div>
-        <div class="col-md-3"><strong>&nbsp;</strong></div>
-        <div class="col-md-3"><strong>Scores</strong></div>
-        <div class="col-md-4"><strong>Recommendations</strong></div>
+        <div class="col-md-2"><strong>&nbsp;</strong></div>
+        <div class="col-md-2"><strong>Scores</strong></div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Activity</strong>
+                </div>
+                <div class="col-md-6">
+                    <strong>Recommendations</strong>
+                </div>
+            </div>
+        </div>
     </div>
     {% for key, row in data %}
         <div class="row mb-2 pb-2 border-bottom d-none d-lg-flex">
             <div class="col-md-2">
                 <img class="img-fluid" src="{{ row.show.coverImage|raw }}" alt="cover image" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 {{ row.show.title }}
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <table>
                     <tbody>
                     <tr>
@@ -103,51 +112,93 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-md-4">
-                {% if row.consolidatedScores.all_count > 0 %}
-                    <canvas width="300"
-                            height="200"
-                            id="bar_{{ row.show.id }}"
-                            class="all_watch_bar_chart"
-                            data-scores="{{ row.consolidatedScores.scores_array }}"
-                            data-maxscore="{{ row.maxScore }}"
-                    ></canvas>
-                {% else %}
-                    &nbsp;
-                {% endif %}
-                {% if row.scores %}
-                    {% set foundScores = 0 %}
-                    {% for scoreField in row.scores %}
-                        {% if users[scoreField.getUser.getUsername] %}
-                            {% if scoreField.score %}
-                                {% set foundScores = foundScores + 1 %}
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        {% if row.consolidatedActivities %}
+                            <canvas width="250"
+                                    height="200"
+                                    id="bar_activities_{{ row.show.id }}"
+                                    class="all_watch_bar_activity_chart"
+                                    data-scores="{{ row.consolidatedActivities.activities_array }}"
+                                    data-maxscore="{{ row.maxActivityCount }}"
+                            ></canvas>
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        {% if row.consolidatedScores.all_count > 0 %}
+                            <canvas width="250"
+                                    height="200"
+                                    id="bar_scores_{{ row.show.id }}"
+                                    class="all_watch_bar_score_chart"
+                                    data-scores="{{ row.consolidatedScores.scores_array }}"
+                                    data-maxscore="{{ row.maxScore }}"
+                            ></canvas>
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        {% if row.scores %}
+                            {% set foundScores = 0 %}
+                            {% for scoreField in row.scores %}
+                                {% if users[scoreField.getUser.getUsername] %}
+                                    {% if scoreField.score %}
+                                        {% set foundScores = foundScores + 1 %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if foundScores > 0 %}
+                                <div>
+                                    <a
+                                            class="btn btn-outline-primary mt-3 mb-3"
+                                            data-bs-toggle="collapse"
+                                            href="#collapseRow{{ key }}"
+                                            aria-expanded="false"
+                                            aria-controls="collapseExample"
+                                    >Individual</a>
+                                </div>
+                                <div class="collapse" id="collapseRow{{ key }}">
+                                    <table class="table table-sm">
+                                        <tr class="d-flex">
+                                            <th class="col-4">User</th>
+                                            <th class="col-4 text-center">Activity</th>
+                                            <th class="col-4 text-center">Recommendation</th>
+                                        </tr>
+                                        {% for scoreField in row.scores %}
+                                            {% if users[scoreField.getUser.getUsername] %}
+                                                <tr class="d-flex">
+                                                    <td class="col-4">
+                                                        {{ scoreField.getUser.getDiscordUsername }}
+                                                    </td>
+                                                    {% if scoreField.activity %}
+                                                        <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
+                                                            {{ scoreField.activity.getNickname }}
+                                                        </td>
+                                                    {% else %}
+                                                        <td class="col-4">&nbsp;</td>
+                                                    {% endif %}
+                                                    {% if scoreField.score %}
+                                                        <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
+                                                            {{ scoreField.score.getNickname }}
+                                                        </td>
+                                                    {% else %}
+                                                        <td class="col-4">&nbsp;</td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                    </table>
+                                </div>
                             {% endif %}
                         {% endif %}
-                    {% endfor %}
-                    {% if foundScores > 0 %}
-                        <div>
-                            <a
-                                    class="btn btn-outline-primary mt-3 mb-3"
-                                    data-bs-toggle="collapse"
-                                    href="#collapseRow{{ key }}"
-                                    aria-expanded="false"
-                                    aria-controls="collapseExample"
-                            >Individual</a>
-                        </div>
-                        <div class="collapse" id="collapseRow{{ key }}">
-                            <p>
-                                {% for scoreField in row.scores %}
-                                    {% if users[scoreField.getUser.getUsername] %}
-                                        {% if scoreField.score %}
-                                            {{ scoreField.getUser.getDiscordUsername }}:
-                                            <span class="text-{{ scoreField.score.getColorValue }}">{{ scoreField.score.getNickname }}</span><br>
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            </p>
-                        </div>
-                    {% endif %}
-                {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     {% endfor %}
@@ -187,21 +238,32 @@
                 </table>
             </div>
         </div>
-        <div class="row mb-3 pb-3 border-bottom d-block d-lg-none">
+        <div class="row mb-3 pb-3 d-block d-lg-none">
+            <div class="col">
+                <strong>Activity</strong><br>
+                <canvas width="400"
+                        height="300"
+                        id="bar_activity_{{ row.show.id }}_narrow"
+                        class="all_watch_bar_activity_chart"
+                        data-scores="{{ row.consolidatedActivities.activities_array }}"
+                        data-maxscore="{{ row.maxActivityCount }}"
+                ></canvas>
+            </div>
+        </div>
+        <div class="row mb-3 pb-3 d-block d-lg-none">
             <div class="col">
                 <strong>Recommendations</strong><br>
-                {% if row.consolidatedScores.all_count > 0 %}
-                    <canvas width="300"
-                            height="200"
-                            id="bar_{{ row.show.id }}_narrow"
-                            class="all_watch_bar_chart"
-                            data-scores="{{ row.consolidatedScores.scores_array }}"
-                            data-maxscore="{{ row.maxScore }}"
-                    ></canvas>
-                {% else %}
-                    &nbsp;
-                {% endif %}
-                <br>
+                <canvas width="400"
+                        height="300"
+                        id="bar_score_{{ row.show.id }}_narrow"
+                        class="all_watch_bar_score_chart"
+                        data-scores="{{ row.consolidatedScores.scores_array }}"
+                        data-maxscore="{{ row.maxScore }}"
+                ></canvas>
+            </div>
+        </div>
+        <div class="row mb-3 pb-3 border-bottom d-block d-lg-none">
+            <div class="col">
                 {% if row.scores %}
                     {% set foundScores = 0 %}
                     {% for scoreField in row.scores %}
@@ -223,17 +285,37 @@
                         >Individual</a>
                     </div>
                     <div class="collapse" id="collapseRowSmall{{ key }}">
-                        <p>
+                        <table class="table table-sm">
+                            <tr class="d-flex">
+                                <th class="col-4">User</th>
+                                <th class="col-4 text-center">Activity</th>
+                                <th class="col-4 text-center">Recommendation</th>
+                            </tr>
                             {% for scoreField in row.scores %}
                                 {% if users[scoreField.getUser.getUsername] %}
-                                    {% if scoreField.score %}
-                                        {% set foundScores = foundScores + 1 %}
-                                        {{ scoreField.getUser.getDiscordUsername }}:
-                                        <span class="text-{{ scoreField.score.getColorValue }}">{{ scoreField.score.getNickname }}</span><br>
-                                    {% endif %}
+                                    <tr class="d-flex">
+                                        <td class="col-4">
+                                            {{ scoreField.getUser.getDiscordUsername }}
+                                        </td>
+                                        {% if scoreField.activity %}
+                                            <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
+                                                {{ scoreField.activity.getNickname }}
+                                            </td>
+                                        {% else %}
+                                            <td class="col-4">&nbsp;</td>
+                                        {% endif %}
+                                        {% if scoreField.score %}
+                                            <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
+                                                {{ scoreField.score.getNickname }}
+                                            </td>
+                                        {% else %}
+                                            <td class="col-4">&nbsp;</td>
+                                        {% endif %}
+                                    </tr>
                                 {% endif %}
                             {% endfor %}
-                        </p>
+
+                        </table>
                     </div>
                 {% endif %}
             </div>

@@ -50,9 +50,30 @@ class AllWatchController extends AbstractController
         }
         $data = [];
         $maxScore = 0;
+        $maxActivityCount = 0;
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
             $shows = $showRepository->getShowsForSeason($season);
+            $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
+            $keyedConsolidatedShowActivities = [];
+            foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
+                $maxActivityCount = max([
+                    $maxActivityCount,
+                    $consolidatedShowActivity['finished_count'],
+                    $consolidatedShowActivity['watching_count'],
+                    $consolidatedShowActivity['paused_count'],
+                    $consolidatedShowActivity['ptw_count'],
+                    $consolidatedShowActivity['dropped_count'],
+                ]);
+                $consolidatedShowActivity['activities_array'] = '[' .
+                    $consolidatedShowActivity['finished_count'] . ',' .
+                    $consolidatedShowActivity['watching_count'] . ',' .
+                    $consolidatedShowActivity['paused_count'] . ',' .
+                    $consolidatedShowActivity['ptw_count'] . ',' .
+                    $consolidatedShowActivity['dropped_count'] . ']';
+                $keyedConsolidatedShowActivities[$consolidatedShowActivity['show_id']] = $consolidatedShowActivity;
+            }
+
             $consolidatedShowScores = $showSeasonScoreRepository->getScoresForSeason($season);
             $keyedConsolidatedShowScores = [];
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
@@ -87,9 +108,11 @@ class AllWatchController extends AbstractController
                 }
                 $data[] = [
                     'show' => $showInfo,
+                    'consolidatedActivities' => $keyedConsolidatedShowActivities[$show->getId()] ?? null,
                     'consolidatedScores' => $keyedConsolidatedShowScores[$show->getId()] ?? null,
                     'scores' => $scores,
                     'maxScore' => $maxScore,
+                    'maxActivityCount' => $maxActivityCount,
                 ];
             }
         }
