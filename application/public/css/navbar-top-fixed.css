@@ -12,9 +12,27 @@ body {
     color: #6f42c1;
 }
 
-.recommendation-pip {
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    margin-right: 5px;
+.recommendation-row {
+    background-color: #00000022;
+    margin-bottom: 0;
+    padding-left: 28px;
 }
+.recommendation-row-danger {
+    background-color: #dc354522;
+}
+.recommendation-row-secondary {
+    background-color: #6c757d22;
+}
+.recommendation-row-info {
+    background-color: #0dcaf022;
+}
+.recommendation-row-primary {
+    background-color: #0d6efd22;
+}
+.recommendation-row-success {
+    background-color: #19875422;
+}
+.recommendation-row-royal {
+    background-color: #6f42c122;
+}
+
