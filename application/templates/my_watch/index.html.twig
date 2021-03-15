@@ -2,25 +2,26 @@
 
 {% block title %}Your Watch{% endblock %}
 
+{% block season_picker %}
+    <li>
+        <form class="d-flex">
+            <label class="nav-item text-light" for="select_season">Change season</label>
+            <select id="select_season" class="form-control me-2">
+                {% for season in seasons %}
+                    <option
+                            value="{{ season.id }}"
+                            {% if season.id == selectedSeasonId %} selected="selected" {% endif %}
+                    >{{ season.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </li>
+{% endblock %}
+
 {% block body %}
-    <div class="row mb-5">
+    <div class="row mb-2">
         <div class="col-md-10">
             <h1>Your watch picks</h1>
-        </div>
-        <div class="col-md-2">
-            <form>
-                <div class="form-group">
-                    <label for="select_season">Change season</label>
-                    <select id="select_season" class="form-control">
-                        {% for season in seasons %}
-                            <option
-                                    value="{{ season.id }}"
-                                    {% if season.id == selectedSeasonId %} selected="selected" {% endif %}
-                            >{{ season.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </form>
         </div>
     </div>
 
