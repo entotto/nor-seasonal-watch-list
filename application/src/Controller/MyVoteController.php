@@ -45,7 +45,7 @@ class MyVoteController extends AbstractController
             $election = $electionRepository->getFirstActiveElection();
         }
         if ($election === null) {
-            $this->addFlash('warning', 'There is no election to vote in at this time.');
+            $this->addFlash('warning', 'There is no election to vote on at this time.');
             return $this->redirectToRoute('https_default');
         }
 

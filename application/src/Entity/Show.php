@@ -209,7 +209,7 @@ class Show
         if (!empty($this->englishTitle)) {
             $result[] = $this->englishTitle;
         }
-        return empty($result) ? null : implode(' / ', $result);
+        return empty($result) ? null : implode('<br>', $result);
     }
 
     public function getAllShortTitles(): ?string

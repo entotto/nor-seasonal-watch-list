@@ -44,7 +44,7 @@
                             <img class="img-fluid" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />
                         </td>
                         <td class="col-md-7 col-xs-6 col-sm-6">
-                            {{ row.vote.show.getAllTitles }}
+                            {{ row.vote.show.getAllTitles|raw }}
                         </td>
                         <td class="col-md-3 col-xs-4 col-sm-4">
                             {% if row.form %}

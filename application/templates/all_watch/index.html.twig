@@ -60,7 +60,7 @@
                 <img class="img-fluid" src="{{ row.show.coverImage|raw }}" alt="cover image" />
             </div>
             <div class="col-md-2">
-                {{ row.show.title }}
+                {{ row.show.title|raw }}
             </div>
             <div class="col-md-2">
                 <table>
@@ -214,7 +214,7 @@
                 <span class="float-start">
                 <img class="img-fluid me-2" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                 </span>
-                {{ row.show.title }}
+                {{ row.show.title|raw }}
                 <br style="clear:both">
             </div>
         </div>
