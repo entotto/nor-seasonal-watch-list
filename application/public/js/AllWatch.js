@@ -6,10 +6,19 @@
         // noinspection JSUnresolvedFunction
         window.location.replace(Routing.generate('all_watch_index') + '?season=' + val)
     })
+
     $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
         $.each( $.fn.dataTable.tables(true), function () {
             $(table).DataTable().columns.adjust();
         });
+    })
+
+    $('#select_show').change(function (e) {
+        e.preventDefault()
+        const control = $(e.target)
+        const val = control.val()
+        // noinspection JSUnresolvedFunction
+        window.location.replace(Routing.generate('all_watch_index') + '#' + val)
     })
 
     $('.all_watch_bar_activity_chart').each( function () {
