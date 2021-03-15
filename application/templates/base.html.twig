@@ -24,29 +24,29 @@
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     {% if app.user and is_granted('ROLE_SWL_USER') %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('my_watch_index') }}">Your Watches</a>
+                            <a class="nav-link {% if app.request.pathinfo == '/your/watch' %}active{% endif %}" href="{{ path('my_watch_index') }}">Your Watches</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('all_watch_index') }}">All Watches</a>
+                            <a class="nav-link {% if app.request.pathinfo == '/all/watch' %}active{% endif %}" href="{{ path('all_watch_index') }}">All Watches</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('my_vote') }}">Your Vote</a>
+                            <a class="nav-link {% if app.request.pathinfo == '/your/vote' %}active{% endif %}" href="{{ path('my_vote') }}">Your Vote</a>
                         </li>
                         {% if is_granted('ROLE_SWL_ADMIN') %}
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                <a class="nav-link dropdown-toggle {% if app.request.pathinfo starts with '/admin/' %}active{% endif %}" href="#" id="navbarDropdown" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     Manage
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
-                                        <a class="dropdown-item" href="{{ path('admin_season_index') }}">Seasons</a>
+                                        <a class="dropdown-item {% if app.request.pathinfo == '/admin/season/' %}active{% endif %}" href="{{ path('admin_season_index') }}">Seasons</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ path('admin_show_index') }}">Shows</a>
+                                        <a class="dropdown-item {% if app.request.pathinfo == '/admin/show/' %}active{% endif %}" href="{{ path('admin_show_index') }}">Shows</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ path('admin_election_index') }}">Elections</a>
+                                        <a class="dropdown-item {% if app.request.pathinfo == '/admin/election/' %}active{% endif %}" href="{{ path('admin_election_index') }}">Elections</a>
                                     </li>
                                 </ul>
                             </li>
