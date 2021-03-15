@@ -9,20 +9,25 @@
 {% block season_picker %}
     <li>
         <form class="d-flex">
-                <label class="nav-item text-light pe-2 pt-2" for="select_season">Season</label>
-                <select id="select_season" class="form-control me-2">
-                    {% for season in seasons %}
-                        <option
-                                value="{{ season.id }}"
-                                {% if season.id == selectedSeasonId %} selected="selected" {% endif %}
-                        >{{ season.name }}</option>
-                    {% endfor %}
-                </select>
+            <label class="nav-item text-light pe-2 pt-2" for="select_season">Season</label>
+            <select id="select_season" class="form-control me-2">
+                {% for season in seasons %}
+                    <option
+                            value="{{ season.id }}"
+                            {% if season.id == selectedSeasonId %} selected="selected" {% endif %}
+                    >{{ season.name }}</option>
+                {% endfor %}
+            </select>
         </form>
     </li>
 {% endblock %}
 
 {% block body %}
+    <div class="row d-block d-lg-none">
+        <div class="col">
+            <a style="position:relative;top:-5rem;z-index:-100;" id="show_target_top"></a>
+        </div>
+    </div>
     <div class="row mb-2">
         <div class="col-md-10">
             <h1>All watch picks</h1>
@@ -148,7 +153,7 @@
                             {% set foundScores = 0 %}
                             {% for scoreField in row.scores %}
                                 {% if users[scoreField.getUser.getUsername] %}
-                                    {% if scoreField.score %}
+                                    {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
                                         {% set foundScores = foundScores + 1 %}
                                     {% endif %}
                                 {% endif %}
@@ -161,7 +166,7 @@
                                             href="#collapseRow{{ key }}"
                                             aria-expanded="false"
                                             aria-controls="collapseExample"
-                                    >Individual</a>
+                                    >Details</a>
                                 </div>
                                 <div class="collapse" id="collapseRow{{ key }}">
                                     <table class="table table-sm">
@@ -171,19 +176,19 @@
                                             <th class="col-4 text-center">Recommendation</th>
                                         </tr>
                                         {% for scoreField in row.scores %}
-                                            {% if users[scoreField.getUser.getUsername] %}
+                                            {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
                                                 <tr class="d-flex">
                                                     <td class="col-4">
                                                         {{ scoreField.getUser.getDiscordUsername }}
                                                     </td>
-                                                    {% if scoreField.activity %}
+                                                    {% if scoreField.activity and scoreField.activity.getSlug != 'none'%}
                                                         <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
                                                             {{ scoreField.activity.getNickname }}
                                                         </td>
                                                     {% else %}
                                                         <td class="col-4">&nbsp;</td>
                                                     {% endif %}
-                                                    {% if scoreField.score %}
+                                                    {% if scoreField.score and scoreField.score.getSlug != 'none' %}
                                                         <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
                                                             {{ scoreField.score.getNickname }}
                                                         </td>
@@ -205,14 +210,29 @@
     {% endfor %}
 
     <div class="row mb-2 pb-2 d-block d-lg-none border-bottom">
-        <div class="col">&nbsp;</div>
+        <div class="col mb-2">
+            <form class="d-flex">
+                <label class="pe-2 pt-2" for="select_show">Show</label>
+                <select id="select_show" class="form-control me-2">
+                    <option value=""></option>
+                    {% for key, row in data %}
+                        <option value="show_target_{{ key }}">{{ row.show.shortTitle }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
     </div>
 
     {% for key, row in data %}
+        <div class="row d-block d-lg-none">
+            <div class="col">
+                <a style="position:relative;top:-5rem;z-index:-100;" id="show_target_{{ key }}">&nbsp;</a>
+            </div>
+        </div>
         <div class="row mb-2 pb-2 d-block d-lg-none">
             <div class="col">
                 <span class="float-start">
-                <img class="img-fluid me-2" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                    <img class="img-fluid me-2" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                 </span>
                 {{ row.show.title|raw }}
                 <br style="clear:both">
@@ -273,7 +293,7 @@
                     ></canvas>
                 </div>
             </div>
-            <div class="row mb-3 pb-3 border-bottom d-block d-lg-none">
+            <div class="row mb-3 pb-3 d-block d-lg-none">
                 <div class="col">
                     {% if row.scores %}
                         {% set foundScores = 0 %}
@@ -290,7 +310,7 @@
                             <tr class="d-flex">
                                 <th class="col-4"><strong>User</strong></th>
                                 <th class="col-4 text-center"><strong>Activity</strong></th>
-                                <th class="col-4 text-center"><strong>Recommendation</strong></th>
+                                <th class="col-4 text-center"><strong>Recommend</strong></th>
                             </tr>
                             {% for scoreField in row.scores %}
                                 {% if users[scoreField.getUser.getUsername] %}
@@ -326,8 +346,11 @@
     {% endfor %}
 
     <div class="row">
-        <div class="col mb-3">&nbsp;</div>
+        <div class="col mb-3 mr-3">&nbsp;</div>
     </div>
+
+    <a class="btn btn-primary rounded-pill" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
+
 {% endblock %}
 
 {% block body_javascripts %}
