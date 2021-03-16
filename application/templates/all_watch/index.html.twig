@@ -238,14 +238,16 @@
                 <br style="clear:both">
             </div>
         </div>
-        <div>
-            <a
-                    class="btn btn-outline-primary mt-3 mb-3"
-                    data-bs-toggle="collapse"
-                    href="#collapseRowSmall{{ key }}"
-                    aria-expanded="false"
-                    aria-controls="collapseExample"
-            >Details</a>
+        <div class="row d-block d-lg-none">
+            <div class="col">
+                <a
+                        class="btn btn-outline-primary mt-3 mb-3"
+                        data-bs-toggle="collapse"
+                        href="#collapseRowSmall{{ key }}"
+                        aria-expanded="false"
+                        aria-controls="collapseExample"
+                >Details</a>
+            </div>
         </div>
         <div class="collapse" id="collapseRowSmall{{ key }}">
             <div class="row mb-3 pb-3 d-block d-lg-none">
@@ -349,7 +351,7 @@
         <div class="col mb-3 mr-3">&nbsp;</div>
     </div>
 
-    <a class="btn btn-primary rounded-pill" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
+    <a class="btn btn-primary rounded-pill d-block d-lg-none" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
 
 {% endblock %}
 
