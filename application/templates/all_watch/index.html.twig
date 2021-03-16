@@ -301,8 +301,10 @@
                         {% set foundScores = 0 %}
                         {% for scoreField in row.scores %}
                             {% if users[scoreField.getUser.getUsername] %}
-                                {% if scoreField.score %}
-                                    {% set foundScores = foundScores + 1 %}
+                                {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
+                                    {% if scoreField.score %}
+                                        {% set foundScores = foundScores + 1 %}
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
@@ -315,7 +317,7 @@
                                 <th class="col-4 text-center"><strong>Recommend</strong></th>
                             </tr>
                             {% for scoreField in row.scores %}
-                                {% if users[scoreField.getUser.getUsername] %}
+                                {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
                                     <tr class="d-flex">
                                         <td class="col-4">
                                             {{ scoreField.getUser.getDiscordUsername }}
