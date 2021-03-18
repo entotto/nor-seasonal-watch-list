@@ -44,3 +44,6 @@ security:
         - { path: ^/your, roles: ROLE_SWL_USER }
         - { path: ^/all, roles: ROLE_SWL_USER }
         - { path: ^/election, roles: ROLE_SWL_USER }
+        - { path: ^/personal, roles: ROLE_SWL_USER }
+        - { path: ^/community, roles: ROLE_SWL_USER }
+        - { path: ^/vote, roles: ROLE_SWL_USER }
