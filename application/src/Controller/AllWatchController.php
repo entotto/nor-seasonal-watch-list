@@ -98,8 +98,9 @@ class AllWatchController extends AbstractController
                 $showInfo = [
                     'id' => $show->getId(),
                     'title' => u($show->getAllTitles())->truncate(240, '...', false),
-                    'shortTitle' => u($show->getJapaneseTitle())->truncate(20, '...', false),
+                    'shortTitle' => u($show->getJapaneseTitle())->truncate(100, '...', false),
                     'coverImage' => $show->getCoverImageLarge(),
+                    'coverImageMedium' => $show->getCoverImageMedium(),
                 ];
                 $scores = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show);
                 foreach ($scores as $score) {
