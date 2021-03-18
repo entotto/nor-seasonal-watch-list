@@ -45,8 +45,10 @@ class MyVoteController extends AbstractController
             $election = $electionRepository->getFirstActiveElection();
         }
         if ($election === null) {
-            $this->addFlash('warning', 'There is no election to vote on at this time.');
-            return $this->redirectToRoute('https_default');
+            $election = $electionRepository->getNextAvailableElection();
+            return $this->render('my_vote/no_election.html.twig', [
+                'election' => $election
+            ]);
         }
 
         /** @var User $user */
