@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MyWatchController extends AbstractController
 {
     /**
-     * @Route("/your/watch", name="my_watch_index", options={"expose"=true})
+     * @Route("/personal/watch", name="my_watch_index", options={"expose"=true})
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param SeasonRepository $seasonRepository

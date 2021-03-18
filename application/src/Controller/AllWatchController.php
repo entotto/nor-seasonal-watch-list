@@ -20,7 +20,7 @@ use function Symfony\Component\String\u;
 class AllWatchController extends AbstractController
 {
     /**
-     * @Route("/all/watch", name="all_watch_index", options={"expose"=true})
+     * @Route("/community/watch", name="all_watch_index", options={"expose"=true})
      * @param Request $request
      * @param SeasonRepository $seasonRepository
      * @param ShowRepository $showRepository

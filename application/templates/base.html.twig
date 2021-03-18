@@ -24,13 +24,13 @@
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     {% if app.user and is_granted('ROLE_SWL_USER') %}
                         <li class="nav-item">
-                            <a class="nav-link {% if app.request.pathinfo == '/your/watch' %}active{% endif %}" href="{{ path('my_watch_index') }}">Your Watches</a>
+                            <a class="nav-link {% if app.request.pathinfo == '/your/watch' %}active{% endif %}" href="{{ path('my_watch_index') }}">Personal</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if app.request.pathinfo == '/all/watch' %}active{% endif %}" href="{{ path('all_watch_index') }}">All Watches</a>
+                            <a class="nav-link {% if app.request.pathinfo == '/all/watch' %}active{% endif %}" href="{{ path('all_watch_index') }}">Community</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if app.request.pathinfo == '/your/vote' %}active{% endif %}" href="{{ path('my_vote') }}">Your Vote</a>
+                            <a class="nav-link {% if app.request.pathinfo == '/your/vote' %}active{% endif %}" href="{{ path('my_vote') }}">Vote</a>
                         </li>
                         {% if is_granted('ROLE_SWL_ADMIN') %}
                             <li class="nav-item dropdown">
