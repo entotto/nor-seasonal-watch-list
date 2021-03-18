@@ -117,9 +117,8 @@
         $("#localStartTime").text(formatDate(startTime))
         $("#localEndTime").text(formatDate(endTime))
     }
-    const countdownTimer = function () {
-        const difference = +new Date(electionTimes.end) - +new Date()
-        let remaining = "Time's up!"
+    const calcRemaining = function(difference, defaultResult) {
+        let result = defaultResult
         if (difference > 0) {
             const parts = {
                 days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -130,12 +129,28 @@
             if (parts.seconds < 10) {
                 parts.seconds = '0' + parts.seconds
             }
-            remaining = Object.keys(parts).map(part => {
+            result = Object.keys(parts).map(part => {
                 if (!parts[part]) return
                 return `${parts[part]} ${part}`
             }).join(" ")
+        } else {
+            // Reload the page to get its other mode.
+            // noinspection JSUnresolvedFunction
+            window.location.reload()
         }
-        document.getElementById('countdownOutput').innerHTML = remaining
+        return result
+    }
+    const countdownTimer = function () {
+        const startDifference = +new Date(electionTimes.start) - +new Date()
+        const endDifference = +new Date(electionTimes.end) - +new Date()
+        const startOutput = document.getElementById('countdownStartOutput')
+        if (startOutput) {
+            startOutput.innerHTML = calcRemaining(startDifference, "Voting has started!")
+        }
+        const endOutput = document.getElementById('countdownOutput')
+        if (endOutput) {
+            endOutput.innerHTML = calcRemaining(endDifference, "Time's up!")
+        }
     }
     setLocalTimes()
     countdownTimer()

@@ -38,6 +38,22 @@ class ElectionRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * @return Election|null
+     * @throws NonUniqueResultException
+     */
+    public function getNextAvailableElection(): ?Election
+    {
+        $now = (new DateTime());
+        return $this->createQueryBuilder('e')
+            ->where('e.startDate > :now')
+            ->orderBy('e.startDate', 'ASC')
+            ->setParameter('now', $now)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     // /**
     //  * @return Election[] Returns an array of Election objects
     //  */

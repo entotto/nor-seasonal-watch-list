@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Your Vote{% endblock %}
+
+{% block body %}
+    <div class="row mb">
+        <div class="col-lg-12">
+            <h1>
+                Vote
+            </h1>
+            {% if election is not null %}
+                <p>Voting has not started yet.</p>
+                <p>
+                    The election for the {{ election.season.name }} season
+                    starts on <span id="localStartTime"></span>
+                    ({{ election.getStartDate|date('l Y-m-d g:i A') }} +00:00/UTC).<br>
+                    Countdown: <strong><span id="countdownStartOutput"></span></strong>
+                </p>
+            {% else %}
+                <p>The next election has not started yet.</p>
+            {% endif %}
+            <p>
+                Now is a good time to
+                <a href="{{ path('my_watch_index') }}">enter</a> your own opinions and
+                <a href="{{ path('all_watch_index') }}">view</a> what others are watching.
+            </p>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block body_javascripts %}
+    {% if election is not null %}
+        <script type="application/javascript">
+            const electionTimes = {
+                start: "{{ election.getStartDate|date('c') }}",
+                end: "{{ election.getEndDate|date('c') }}"
+            }
+        </script>
+        <script src="/js/MyVote.js?v={{ asset_version }}"></script>
+    {% endif %}
+{% endblock %}
