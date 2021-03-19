@@ -60,6 +60,7 @@
     }
 
     const calcDarkerColors = (barColors) => {
+        // noinspection JSUnusedLocalSymbols
         return barColors.map((rgba, i) => {
             const hsl = d3.hsl(rgba);
             hsl.l -= 0.1;
@@ -67,6 +68,7 @@
         });
     }
 
+    // noinspection JSUnusedLocalSymbols
     const isBarTooNarrow = (context) => {
         // Trying out the datalabel-always-outside strategy
         return true;
@@ -78,21 +80,21 @@
         // return currentValue.toString().length * 10 + 26 > approxBarLength;
     }
 
+    const activityBarColors = [
+        "#007eb9", // blue / finished
+        whiten("#007eb9", 0.25), // mid blue / watching
+        whiten("#007eb9", 0.5),  // weaker blue / paused
+        whiten("#007eb9", 0.75), // weakest blue / ptw
+        whiten("#000", 0.85)     // grey / dropped
+    ];
+    const activityTextColors = calcTextColors(activityBarColors)
+    const activityDarkerColors = calcDarkerColors(activityBarColors)
+
     $('.all_watch_bar_activity_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
         const maxScore = $(this).data('maxscore')
         const maxChartTick = calcMaxChartTick(maxScore)
-        const barColors = [
-            "#007eb9", // blue / finished
-            whiten("#007eb9", 0.25), // mid blue / watching
-            whiten("#007eb9", 0.5),  // weaker blue / paused
-            whiten("#007eb9", 0.75), // weakest blue / ptw
-            whiten("#000", 0.85)     // grey / dropped
-        ];
-        // Use dark text on light background and vice versa.
-        const textColors = calcTextColors(barColors);
-        const darkerColors = calcDarkerColors(barColors);
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -116,13 +118,13 @@
                 ],
                 datasets: [{
                     data: data,
-                    borderColor: darkerColors,
+                    borderColor: activityDarkerColors,
                     borderSkipped: false,
                     borderWidth: 1,
-                    backgroundColor: barColors,
+                    backgroundColor: activityBarColors,
                     categoryPercentage: 0.9, // Tighten up the space between bars
                     datalabels: {
-                        color: textColors,
+                        color: activityTextColors,
                         align: (context) => isBarTooNarrow(context) ? "end" : "start"
                     }
                 }]
@@ -165,21 +167,22 @@
         })
     })
 
+    const scoreBarColors = [
+        "#c80d0d",                         // th8a red / th8a should
+        whiten("#c80d0d", 0.25), // weak red / highly favorable
+        whiten("#c80d0d", 0.5),  // weaker red / favorable
+        whiten("#000", 0.85),    // grey / neutral
+        whiten("#000", 0.25)     // black / unfavorable
+    ];
+    // Use dark text on light background and vice versa.
+    const scoreTextColors = calcTextColors(scoreBarColors);
+    const scoreDarkerColors = calcDarkerColors(scoreBarColors);
+
     $('.all_watch_bar_score_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
         const maxScore = $(this).data('maxscore')
         const maxChartTick = calcMaxChartTick(maxScore)
-        const barColors = [
-            "#c80d0d",                         // th8a red / th8a should
-            whiten("#c80d0d", 0.25), // weak red / highly favorable
-            whiten("#c80d0d", 0.5),  // weaker red / favorable
-            whiten("#000", 0.85),    // grey / neutral
-            whiten("#000", 0.25)      // black / unfavorable
-        ];
-        // Use dark text on light background and vice versa.
-        const textColors = calcTextColors(barColors);
-        const darkerColors = calcDarkerColors(barColors);
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -204,13 +207,13 @@
                 datasets: [
                     {
                         data: data,
-                        borderColor: darkerColors,
+                        borderColor: scoreDarkerColors,
                         borderSkipped: false,
                         borderWidth: 1,
-                        backgroundColor: barColors,
+                        backgroundColor: scoreBarColors,
                         categoryPercentage: 0.9,
                         datalabels: {
-                            color: textColors,
+                            color: scoreTextColors,
                             align: (context) => isBarTooNarrow(context) ? "end" : "start"
                         }
                     }
