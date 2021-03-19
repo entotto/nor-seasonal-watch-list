@@ -170,59 +170,47 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        {% if row.scores %}
-                            {% set foundScores = 0 %}
-                            {% for scoreField in row.scores %}
-                                {% if users[scoreField.getUser.getUsername] %}
-                                    {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
-                                        {% set foundScores = foundScores + 1 %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                            {% if foundScores > 0 %}
-                                <div>
-                                    <a
-                                            class="btn btn-outline-primary mt-3 mb-3"
-                                            data-bs-toggle="collapse"
-                                            href="#collapseRow{{ key }}"
-                                            aria-expanded="false"
-                                            aria-controls="collapseExample"
-                                    >Details</a>
-                                </div>
-                                <div class="collapse" id="collapseRow{{ key }}">
-                                    <table class="table table-sm">
+                        {% if row.scores and row.scoreCount > 0%}
+                            <div>
+                                <a
+                                        class="btn btn-outline-primary mt-3 mb-3"
+                                        data-bs-toggle="collapse"
+                                        href="#collapseRow{{ key }}"
+                                        aria-expanded="false"
+                                        aria-controls="collapseExample"
+                                >Details</a>
+                            </div>
+                            <div class="collapse" id="collapseRow{{ key }}">
+                                <table class="table table-sm">
+                                    <tr class="d-flex">
+                                        <th class="col-4">User</th>
+                                        <th class="col-4 text-center">Activity</th>
+                                        <th class="col-4 text-center">Recommendation</th>
+                                    </tr>
+                                    {% for scoreField in row.scores %}
                                         <tr class="d-flex">
-                                            <th class="col-4">User</th>
-                                            <th class="col-4 text-center">Activity</th>
-                                            <th class="col-4 text-center">Recommendation</th>
-                                        </tr>
-                                        {% for scoreField in row.scores %}
-                                            {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
-                                                <tr class="d-flex">
-                                                    <td class="col-4">
-                                                        {{ scoreField.getUser.getDiscordUsername }}
-                                                    </td>
-                                                    {% if scoreField.activity and scoreField.activity.getSlug != 'none'%}
-                                                        <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
-                                                            {{ scoreField.activity.getNickname }}
-                                                        </td>
-                                                    {% else %}
-                                                        <td class="col-4">&nbsp;</td>
-                                                    {% endif %}
-                                                    {% if scoreField.score and scoreField.score.getSlug != 'none' %}
-                                                        <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
-                                                            {{ scoreField.score.getNickname }}
-                                                        </td>
-                                                    {% else %}
-                                                        <td class="col-4">&nbsp;</td>
-                                                    {% endif %}
-                                                </tr>
+                                            <td class="col-4">
+                                                {{ scoreField.getUser.getDiscordUsername }}
+                                            </td>
+                                            {% if scoreField.activity and scoreField.activity.getSlug != 'none' %}
+                                                <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
+                                                    {{ scoreField.activity.getNickname }}
+                                                </td>
+                                            {% else %}
+                                                <td class="col-4">&nbsp;</td>
                                             {% endif %}
-                                        {% endfor %}
+                                            {% if scoreField.score and scoreField.score.getSlug != 'none' %}
+                                                <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
+                                                    {{ scoreField.score.getNickname }}
+                                                </td>
+                                            {% else %}
+                                                <td class="col-4">&nbsp;</td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
 
-                                    </table>
-                                </div>
-                            {% endif %}
+                                </table>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
@@ -305,19 +293,7 @@
                     </div>
                     <div class="row mb-3 pb-3">
                         <div class="col">
-                            {% if row.scores %}
-                                {% set foundScores = 0 %}
-                                {% for scoreField in row.scores %}
-                                    {% if users[scoreField.getUser.getUsername] %}
-                                        {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
-                                            {% if scoreField.score %}
-                                                {% set foundScores = foundScores + 1 %}
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            {% if foundScores > 0 %}
+                            {% if row.scores and row.scoreCount > 0 %}
                                 <table class="table table-sm">
                                     <tr class="d-flex">
                                         <th class="col-4"><strong>User</strong></th>
@@ -325,27 +301,25 @@
                                         <th class="col-4 text-center"><strong>Recommend</strong></th>
                                     </tr>
                                     {% for scoreField in row.scores %}
-                                        {% if (scoreField.activity and scoreField.activity.getSlug != 'none') and (scoreField.score and scoreField.score.getSlug != 'none') %}
-                                            <tr class="d-flex">
-                                                <td class="col-4">
-                                                    {{ scoreField.getUser.getDiscordUsername }}
+                                        <tr class="d-flex">
+                                            <td class="col-4">
+                                                {{ scoreField.getUser.getDiscordUsername }}
+                                            </td>
+                                            {% if scoreField.activity and scoreField.activity.getSlug != 'none' %}
+                                                <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
+                                                    {{ scoreField.activity.getNickname }}
                                                 </td>
-                                                {% if scoreField.activity %}
-                                                    <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
-                                                        {{ scoreField.activity.getNickname }}
-                                                    </td>
-                                                {% else %}
-                                                    <td class="col-4">&nbsp;</td>
-                                                {% endif %}
-                                                {% if scoreField.score %}
-                                                    <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
-                                                        {{ scoreField.score.getNickname }}
-                                                    </td>
-                                                {% else %}
-                                                    <td class="col-4">&nbsp;</td>
-                                                {% endif %}
-                                            </tr>
-                                        {% endif %}
+                                            {% else %}
+                                                <td class="col-4">&nbsp;</td>
+                                            {% endif %}
+                                            {% if scoreField.score and scoreField.score.getSlug != 'none' %}
+                                                <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
+                                                    {{ scoreField.score.getNickname }}
+                                                </td>
+                                            {% else %}
+                                                <td class="col-4">&nbsp;</td>
+                                            {% endif %}
+                                        </tr>
                                     {% endfor %}
                                 </table>
                             {% endif %}

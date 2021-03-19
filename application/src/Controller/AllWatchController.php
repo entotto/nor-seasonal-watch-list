@@ -103,16 +103,24 @@ class AllWatchController extends AbstractController
                     'coverImageMedium' => $show->getCoverImageMedium(),
                 ];
                 $scores = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show);
+                $filteredScores = [];
                 foreach ($scores as $score) {
                     if ($score->getScore() !== null && $score->getScore()->getValue() !== 0) {
                         $userKeys[$score->getUser()->getUsername()] = true;
+                    }
+                    if (
+                        ($score->getScore() && $score->getScore()->getSlug() !== 'none')
+                        || ($score->getActivity() && $score->getActivity()->getSlug() !== 'none')
+                    ) {
+                        $filteredScores[] = $score;
                     }
                 }
                 $data[] = [
                     'show' => $showInfo,
                     'consolidatedActivities' => $keyedConsolidatedShowActivities[$show->getId()] ?? null,
                     'consolidatedScores' => $keyedConsolidatedShowScores[$show->getId()] ?? null,
-                    'scores' => $scores,
+                    'scores' => $filteredScores,
+                    'scoreCount' => count($filteredScores),
                     'maxScore' => $maxScore,
                     'maxActivityCount' => $maxActivityCount,
                 ];
