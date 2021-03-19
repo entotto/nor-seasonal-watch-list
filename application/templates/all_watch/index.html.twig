@@ -38,15 +38,15 @@
 {% endblock %}
 
 {% block body %}
-    <div class="row d-block d-lg-none">
-        <div class="col">
-            <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_top"></a>
+    <div class="d-block d-lg-none">
+        <div class="row">
+            <div class="col">
+                <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_top"></a>
+            </div>
         </div>
-    </div>
-
-
-    <div class="row mb-2 d-block d-lg-none">
-        <div class="col-md-10" style="margin-top: 2rem;">&nbsp;</div>
+        <div class="row mb-2">
+            <div class="col-md-10" style="margin-top: 2rem;">&nbsp;</div>
+        </div>
     </div>
 
     <div class="row mb-2">
@@ -230,17 +230,9 @@
         </div>
     {% endfor %}
 
-    <div>
+    <div class="d-block d-lg-none">
         {% for key, row in data %}
-{#            <div class="row">#}
-{#                <div class="col">#}
-{#                    Col 1#}
-{#                </div>#}
-{#                <div class="col">#}
-{#                    Col 2#}
-{#                </div>#}
-{#            </div>#}
-            <div id="show_container_{{ key }}" class="show_container d-block d-lg-none" data-anchorid="{{ key }}">
+            <div id="show_container_{{ key }}" class="show_container" data-anchorid="{{ key }}">
                 <div class="row">
                     <div class="col">
                         <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_{{ key }}">&nbsp;</a>
@@ -249,7 +241,6 @@
                 <div class="row">
                     <div class="col">
                         <img class="img-fluid" src="{{ row.show.coverImage|raw }}" alt="cover image" />
-{#                        {{ row.show.title|raw }}#}
                     </div>
                     <div class="col">
                         {{ row.show.title|raw }}
@@ -257,8 +248,29 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col">
+                        <strong>Score</strong><br>
+                        <table class="table table-responsive-sm">
+                            <tbody>
+                            <tr>
+                                <td><strong>Th8a</strong></td>
+                                <td><strong>Watch</strong></td>
+                                <td><strong>Avoid</strong></td>
+                                <td><strong>Total</strong></td>
+                            </tr>
+                            <tr>
+                                <td>{{ row.consolidatedScores.th8a_count }}</td>
+                                <td>{{ row.consolidatedScores.yes_count }}</td>
+                                <td>{{ row.consolidatedScores.no_count }}</td>
+                                <td>{{ row.consolidatedScores.score_total }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
                         <a
-                                class="btn btn-outline-primary mt-3 mb-3"
+                                class="btn btn-outline-primary mt-0 mb-3"
                                 data-bs-toggle="collapse"
                                 href="#collapseRowSmall{{ key }}"
                                 aria-expanded="false"
@@ -279,28 +291,7 @@
                             ></canvas>
                         </div>
                     </div>
-                    <div class="row mb-2 pb-2 d-block d-lg-none">
-                        <div class="col">
-                            <strong>Score</strong><br>
-                            <table class="table">
-                                <tbody>
-                                <tr>
-                                    <td><strong>Th8a</strong></td>
-                                    <td><strong>Watch</strong></td>
-                                    <td><strong>Avoid</strong></td>
-                                    <td><strong>Total</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ row.consolidatedScores.th8a_count }}</td>
-                                    <td>{{ row.consolidatedScores.yes_count }}</td>
-                                    <td>{{ row.consolidatedScores.no_count }}</td>
-                                    <td>{{ row.consolidatedScores.score_total }}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mb-3 pb-3 d-block d-lg-none">
+                    <div class="row mb-3 pb-3">
                         <div class="col">
                             <strong>Recommendations</strong><br>
                             <canvas width="300"
@@ -312,7 +303,7 @@
                             ></canvas>
                         </div>
                     </div>
-                    <div class="row mb-3 pb-3 d-block d-lg-none">
+                    <div class="row mb-3 pb-3">
                         <div class="col">
                             {% if row.scores %}
                                 {% set foundScores = 0 %}
@@ -361,9 +352,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mb-2 border-bottom d-block d-lg-none">
-                    <div class="col">&nbsp;</div>
-                </div>
+                <div class="row mt-2 mb-1 border-bottom"></div>
             </div>
         {% endfor %}
 
