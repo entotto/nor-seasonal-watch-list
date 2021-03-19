@@ -232,14 +232,6 @@
 
     <div>
         {% for key, row in data %}
-{#            <div class="row">#}
-{#                <div class="col">#}
-{#                    Col 1#}
-{#                </div>#}
-{#                <div class="col">#}
-{#                    Col 2#}
-{#                </div>#}
-{#            </div>#}
             <div id="show_container_{{ key }}" class="show_container d-block d-lg-none" data-anchorid="{{ key }}">
                 <div class="row">
                     <div class="col">
@@ -253,6 +245,27 @@
                     </div>
                     <div class="col">
                         {{ row.show.title|raw }}
+                    </div>
+                </div>
+                <div class="row mt-2 pb-2 d-block d-lg-none">
+                    <div class="col">
+                        <strong>Score</strong><br>
+                        <table class="table table-responsive-sm">
+                            <tbody>
+                            <tr>
+                                <td><strong>Th8a</strong></td>
+                                <td><strong>Watch</strong></td>
+                                <td><strong>Avoid</strong></td>
+                                <td><strong>Total</strong></td>
+                            </tr>
+                            <tr>
+                                <td>{{ row.consolidatedScores.th8a_count }}</td>
+                                <td>{{ row.consolidatedScores.yes_count }}</td>
+                                <td>{{ row.consolidatedScores.no_count }}</td>
+                                <td>{{ row.consolidatedScores.score_total }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="row mt-2">
@@ -277,27 +290,6 @@
                                     data-scores="{{ row.consolidatedActivities.activities_array }}"
                                     data-maxscore="{{ row.maxActivityCount }}"
                             ></canvas>
-                        </div>
-                    </div>
-                    <div class="row mb-2 pb-2 d-block d-lg-none">
-                        <div class="col">
-                            <strong>Score</strong><br>
-                            <table class="table">
-                                <tbody>
-                                <tr>
-                                    <td><strong>Th8a</strong></td>
-                                    <td><strong>Watch</strong></td>
-                                    <td><strong>Avoid</strong></td>
-                                    <td><strong>Total</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ row.consolidatedScores.th8a_count }}</td>
-                                    <td>{{ row.consolidatedScores.yes_count }}</td>
-                                    <td>{{ row.consolidatedScores.no_count }}</td>
-                                    <td>{{ row.consolidatedScores.score_total }}</td>
-                                </tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                     <div class="row mb-3 pb-3 d-block d-lg-none">
