@@ -101,6 +101,7 @@ class AllWatchController extends AbstractController
                     'shortTitle' => u($show->getJapaneseTitle())->truncate(100, '...', false),
                     'coverImage' => $show->getCoverImageLarge(),
                     'coverImageMedium' => $show->getCoverImageMedium(),
+                    'anilistId' => $show->getAnilistId(),
                 ];
                 $scores = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show);
                 $filteredScores = [];

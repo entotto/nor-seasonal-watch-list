@@ -88,6 +88,14 @@
             </div>
             <div class="col-md-2">
                 {{ row.show.title|raw }}
+                {% if row.show.anilistId %}
+                    <br>
+                    <a
+                            href="https://anilist.co/anime/{{ row.show.anilistId }}"
+                            target="_blank"
+                            class="btn btn-outline-primary mt-1 mb-1"
+                    >Anilist</a>
+                {% endif %}
             </div>
             <div class="col-md-2">
                 <table>
@@ -232,6 +240,13 @@
                     </div>
                     <div class="col">
                         {{ row.show.title|raw }}
+                        {% if row.show.anilistId %}
+                            <br>
+                            <a
+                                    href="https://anilist.co/anime/{{ row.show.anilistId }}"
+                                    class="btn btn-outline-primary mt-1 mb-1"
+                            >Anilist</a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="row mt-2">
