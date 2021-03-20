@@ -1,19 +1,20 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Service;
 
 use App\Entity\Show;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 
 class AnilistApi
 {
-    private $anilistApiBase = 'https://graphql.anilist.co';
+    private string $anilistApiBase = 'https://graphql.anilist.co';
 
     /**
      * @param int $anilistId
      * @return array|null
-     * @throws GuzzleException
+     * @throws GuzzleException|JsonException
      */
     public function fetch(int $anilistId): ?array
     {
@@ -25,7 +26,7 @@ class AnilistApi
         ]);
         $statusCode = $response->getStatusCode();
         if (($statusCode >= 200) && ($statusCode < 300)) {
-            $data = json_decode($response->getBody()->getContents(), true);
+            $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             return $data['data']['Media'];
         }
         return null;
@@ -42,10 +43,15 @@ class AnilistApi
         $show->setHashtag($data['hashtag']);
         $show->setCoverImageMedium($data['coverImage']['medium']);
         $show->setCoverImageLarge($data['coverImage']['large']);
+        $show->setMalId((int)$data['idMal']);
         if (empty($data['synonyms'])) {
             $show->setSynonyms(null);
         } else {
-            $show->setSynonyms(json_encode($data['synonyms']));
+            try {
+                $show->setSynonyms(json_encode($data['synonyms'], JSON_THROW_ON_ERROR));
+            } catch (JsonException $e) {
+                $show->setSynonyms('');
+            }
         }
         $show->setSiteUrl($data['siteUrl']);
     }
@@ -68,7 +74,8 @@ class AnilistApi
             large
         },
         synonyms,
-        siteUrl
+        siteUrl,
+        idMal
     }
 }
 EOF;
