@@ -69,8 +69,8 @@
     <div class="row mb-2 pb-2 border-bottom border-top pt-2 d-none d-lg-flex">
         <div class="col-md-2"><strong>Show</strong></div>
         <div class="col-md-2"><strong>&nbsp;</strong></div>
-        <div class="col-md-2"><strong>Score</strong></div>
-        <div class="col-md-6">
+        <div class="col-md-3"><strong>Statistics</strong></div>
+        <div class="col-md-5">
             <div class="row">
                 <div class="col-md-6">
                     <strong>Activity</strong>
@@ -97,12 +97,32 @@
                     >Anilist</a>
                 {% endif %}
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <table>
                     <tbody>
                     <tr>
+                        <th class="pe-3">Mood</th>
+                        <td class="text-center">
+                            {% if row.consolidatedScores is not null %}
+                                {% if row.consolidatedScores.mood_array is not null %}
+                                    <div
+                                            class="mood-emoji-container"
+                                            data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
+                                            style="font-size:24px;"
+                                    >
+                                        <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
+                                    </div>
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
                         <th class="pe-3">Th8a should cover</th>
-                        <td>
+                        <td class="text-center">
                             {% if row.consolidatedScores is not null %}
                                 {{ row.consolidatedScores.th8a_count }}
                             {% else %}
@@ -112,7 +132,7 @@
                     </tr>
                     <tr>
                         <th class="pe-3">Should watch</th>
-                        <td>
+                        <td class="text-center">
                             {% if row.consolidatedScores is not empty %}
                                 {{ row.consolidatedScores.yes_count }}
                             {% else %}
@@ -122,7 +142,7 @@
                     </tr>
                     <tr>
                         <th class="pe-3">Should avoid</th>
-                        <td>
+                        <td class="text-center">
                             {% if row.consolidatedScores is not null %}
                                 {{ row.consolidatedScores.no_count }}
                             {% else %}
@@ -131,11 +151,25 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="pe-3">Total</th>
-                        <td>
+                        <th class="pe-3">Recommendations</th>
+                        <td class="text-center">
                             {% if row.consolidatedScores is not null %}
-                                {% if row.consolidatedScores.score_total is not null %}
-                                    {{ row.consolidatedScores.score_total }}
+                                {% if row.consolidatedScores.all_count is not null %}
+                                    {{ row.consolidatedScores.all_count }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="pe-3">Average</th>
+                        <td class="text-center">
+                            {% if row.consolidatedScores is not null %}
+                                {% if row.consolidatedScores.mood_array is not null %}
+                                    {{ row.consolidatedScores.mood_array.mood_average_value|round(1) }}
                                 {% else %}
                                     0
                                 {% endif %}
@@ -147,7 +181,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
                         {% if row.consolidatedActivities %}
@@ -251,20 +285,53 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col">
-                        <strong>Score</strong><br>
                         <table class="table table-responsive-sm">
                             <tbody>
                             <tr>
-                                <td><strong>Th8a</strong></td>
-                                <td><strong>Watch</strong></td>
-                                <td><strong>Avoid</strong></td>
-                                <td><strong>Total</strong></td>
+                                <td style="width:33%;"><strong>Recommendations</strong></td>
+                                <td style="width:33%;"><strong>Average</strong></td>
+                                <td style="width:34%;"><strong>Mood</strong></td>
                             </tr>
                             <tr>
-                                <td>{{ row.consolidatedScores.th8a_count }}</td>
-                                <td>{{ row.consolidatedScores.yes_count }}</td>
-                                <td>{{ row.consolidatedScores.no_count }}</td>
-                                <td>{{ row.consolidatedScores.score_total }}</td>
+                                <td style="width:33%;">
+                                    {% if row.consolidatedScores is not null %}
+                                        {% if row.consolidatedScores.all_count is not null %}
+                                            {{ row.consolidatedScores.all_count }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </td>
+                                <td style="width:33%;">
+                                    {% if row.consolidatedScores is not null %}
+                                        {% if row.consolidatedScores.mood_array is not null %}
+                                            {{ row.consolidatedScores.mood_array.mood_average_value|round(1) }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                </td>
+                                <td style="width:34%;">
+                                    {% if row.consolidatedScores is not null %}
+                                        {% if row.consolidatedScores.mood_array is not null %}
+                                            <div
+                                                    class="mood-emoji-container"
+                                                    data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
+                                                    style="font-size:24px;"
+                                            >
+                                                <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
+                                            </div>
+                                        {% else %}
+                                            &nbsp;
+                                        {% endif %}
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </td>
                             </tr>
                             </tbody>
                         </table>

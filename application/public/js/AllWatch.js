@@ -257,6 +257,19 @@
         })
     })
 
+    $('.mood-emoji-container').each( function () {
+        const moodValue = $(this).data('moodValue')
+        if (moodValue > 1) {
+            $(this).css('color', '#eeb408')
+        } else if (moodValue > 0.1) {
+            $(this).css('color', '#eeb408')
+        } else if (moodValue > -0.1) {
+            $(this).css('color', '#bbbbbb')
+        } else {
+            $(this).css('color', '#555555')
+        }
+    })
+
     const containerValues = {}
     let currentAnchorId = ''
     const changeSelector = function () {

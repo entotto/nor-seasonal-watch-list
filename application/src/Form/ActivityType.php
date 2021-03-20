@@ -22,7 +22,7 @@ class ActivityType extends AbstractType
                 'required' => false,
             ])
             ->add('colorValue')
-            ->add('icon')
+//            ->add('icon')
         ;
     }
 

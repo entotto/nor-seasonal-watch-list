@@ -75,7 +75,7 @@ class Activity
      */
     public function getName(): string
     {
-        return $this->name;
+        return $this->name ?? '';
     }
 
     /**
@@ -94,7 +94,7 @@ class Activity
      */
     public function getRankOrder(): int
     {
-        return $this->rankOrder;
+        return $this->rankOrder ?? 0;
     }
 
     /**
@@ -140,7 +140,7 @@ class Activity
      */
     public function getNickname(): string
     {
-        return $this->nickname;
+        return $this->nickname ?? '';
     }
 
     /**
@@ -156,7 +156,7 @@ class Activity
      */
     public function getColorValue(): string
     {
-        return $this->colorValue;
+        return $this->colorValue ?? '';
     }
 
     /**
@@ -172,7 +172,7 @@ class Activity
      */
     public function getIcon(): string
     {
-        return $this->icon;
+        return $this->icon ?? '';
     }
 
     /**
@@ -188,7 +188,7 @@ class Activity
      */
     public function getSlug(): string
     {
-        return $this->slug;
+        return $this->slug ?? '';
     }
 
     /**

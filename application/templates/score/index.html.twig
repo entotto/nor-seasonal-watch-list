@@ -4,7 +4,7 @@
 
 {% block body %}
     <span class="float-end">
-        <a class="btn btn-success" href="{{ path('admin_activity_new') }}">Create new</a>
+        <a class="btn btn-success" href="{{ path('admin_score_new') }}">Create new</a>
     </span>
     <h1>Scores</h1>
 
@@ -27,7 +27,6 @@
                 <td>{{ score.id }}</td>
                 <td>{{ score.name }}</td>
                 <td class="text-{{ score.colorValue }}">
-                    {{ score.icon|raw }}
                     {{ score.nickname }}
                 </td>
                 <td>{{ score.slug }}</td>
