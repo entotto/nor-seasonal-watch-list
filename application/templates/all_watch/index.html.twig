@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-md-10" style="margin-top: 2rem;">&nbsp;</div>
+            <div class="col-md-10" style="margin-top: 1rem;">&nbsp;</div>
         </div>
     </div>
 
@@ -419,9 +419,11 @@
 {% endblock %}
 
 {% block body_javascripts %}
-    <script src="/chart_js/Chart.min.js?v={{ asset_version }}"></script>
+    <script src="/chart_js/Chart.min.js"></script>
     <script src="https://d3js.org/d3-color.v2.min.js"></script>
     <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+    <script src="/js/SelectSeason.js?v={{ asset_version }}"></script>
+    <script src="/js/SelectShow.js?v={{ asset_version }}"></script>
     <script src="/js/AllWatch.js?v={{ asset_version }}"></script>
 {% endblock %}
