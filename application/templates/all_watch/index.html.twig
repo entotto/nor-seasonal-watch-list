@@ -264,6 +264,13 @@
         </div>
     {% endfor %}
 
+    {% if data is empty %}
+        <div class="row">
+            <div class="col-xs-12 d-none d-lg-block text-center mt-3">No shows found</div>
+            <div class="col-xs-12 d-block d-lg-none">No shows found</div>
+        </div>
+    {% endif %}
+
     <div class="d-block d-lg-none">
         {% for key, row in data %}
             <div id="show_container_{{ key }}" class="show_container" data-anchorid="{{ key }}">
@@ -424,12 +431,13 @@
             </div>
         {% endfor %}
 
-        <div class="row">
-            <div class="col mb-5 mr-3">&nbsp;</div>
-        </div>
+        {% if data is not empty %}
+            <a class="btn btn-primary rounded-pill d-block d-lg-none" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
+            <div class="row">
+                <div class="col mb-5 mr-3">&nbsp;</div>
+            </div>
+        {% endif %}
     </div>
-
-    <a class="btn btn-primary rounded-pill d-block d-lg-none" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
 
 {% endblock %}
 
