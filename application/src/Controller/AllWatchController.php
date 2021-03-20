@@ -118,6 +118,8 @@ class AllWatchController extends AbstractController
                     'coverImage' => $show->getCoverImageLarge(),
                     'coverImageMedium' => $show->getCoverImageMedium(),
                     'anilistId' => $show->getAnilistId(),
+                    'anilistShowUrl' => $show->getSiteUrl() ?: "https://anilist.co/anime/" . $show->getAnilistId(),
+                    'malShowUrl' => $show->getMalId() ? "https://myanimelist.net/anime/" . $show->getMalId() : '',
                 ];
                 $scores = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show);
                 $filteredScores = [];

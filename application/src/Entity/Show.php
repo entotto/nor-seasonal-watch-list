@@ -17,7 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass=ShowRepository::class)
  * @ORM\Table(name="anime_show")
- * @UniqueEntity(fields="anilist_id", message="That Anilist ID is already taken")
+ * @UniqueEntity(fields="anilistId", message="That Anilist ID is already taken")
  */
 class Show
 {
@@ -107,6 +107,12 @@ class Show
      * @JoinColumn(nullable=true)
      */
     private ?DiscordChannel $discordChannel;
+
+    /**
+     * @var int|null
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private ?int $malId;
 
     public function __construct()
     {
@@ -417,5 +423,21 @@ class Show
     public function setExcludeFromElections(?bool $excludeFromElections): void
     {
         $this->excludeFromElections = $excludeFromElections;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMalId(): ?int
+    {
+        return $this->malId;
+    }
+
+    /**
+     * @param int|null $malId
+     */
+    public function setMalId(?int $malId): void
+    {
+        $this->malId = $malId;
     }
 }

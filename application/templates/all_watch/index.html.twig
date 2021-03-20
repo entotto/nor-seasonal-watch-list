@@ -85,13 +85,20 @@
             </div>
             <div class="col-md-2">
                 {{ row.show.title|raw }}
-                {% if row.show.anilistId %}
-                    <br>
+                <br>
+                {% if row.show.anilistShowUrl %}
                     <a
-                            href="https://anilist.co/anime/{{ row.show.anilistId }}"
+                            href="{{ row.show.anilistShowUrl }}"
                             target="_blank"
-                            class="btn btn-outline-primary mt-1 mb-1"
+                            class="btn btn-outline-primary m-1 ms-0"
                     >Anilist</a>
+                {% endif %}
+                {% if row.show.malShowUrl %}
+                    <a
+                            href="{{ row.show.malShowUrl }}"
+                            target="_blank"
+                            class="btn btn-outline-primary m-1 ms-0"
+                    >MAL</a>
                 {% endif %}
             </div>
             <div class="col-md-3">
@@ -271,12 +278,20 @@
                     </div>
                     <div class="col">
                         {{ row.show.title|raw }}
-                        {% if row.show.anilistId %}
-                            <br>
+                        <br>
+                        {% if row.show.anilistShowUrl %}
                             <a
-                                    href="https://anilist.co/anime/{{ row.show.anilistId }}"
-                                    class="btn btn-outline-primary mt-1 mb-1"
+                                    href="{{ row.show.anilistShowUrl }}"
+                                    target="_blank"
+                                    class="btn btn-outline-primary m-1 ms-0"
                             >Anilist</a>
+                        {% endif %}
+                        {% if row.show.malShowUrl %}
+                            <a
+                                    href="{{ row.show.malShowUrl }}"
+                                    target="_blank"
+                                    class="btn btn-outline-primary m-1 ms-0"
+                            >MAL</a>
                         {% endif %}
                     </div>
                 </div>
