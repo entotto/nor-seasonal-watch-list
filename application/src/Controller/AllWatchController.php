@@ -77,6 +77,17 @@ class AllWatchController extends AbstractController
             $consolidatedShowScores = $showSeasonScoreRepository->getScoresForSeason($season);
             $keyedConsolidatedShowScores = [];
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
+                $moodAverageValue = ($consolidatedShowScore['all_count'] > 0) ?
+                    $consolidatedShowScore['score_total'] / $consolidatedShowScore['all_count'] : 0;
+                if ($moodAverageValue > 1) {
+                    $moodEmoji = 'emoji-heart-eyes-fill';
+                } elseif ($moodAverageValue > 0.1) {
+                    $moodEmoji = 'emoji-smile-fill';
+                } elseif ($moodAverageValue > -0.1) {
+                    $moodEmoji = 'emoji-neutral-fill';
+                } else {
+                    $moodEmoji = 'emoji-frown-fill';
+                }
                 $maxScore = max([
                     $maxScore,
                     $consolidatedShowScore['th8a_count'],
@@ -90,7 +101,12 @@ class AllWatchController extends AbstractController
                     $consolidatedShowScore['highly_favorable_count'] . ',' .
                     $consolidatedShowScore['favorable_count'] . ',' .
                     $consolidatedShowScore['neutral_count'] . ',' .
-                    $consolidatedShowScore['unfavorable_count'] . ']';
+                    $consolidatedShowScore['unfavorable_count'] .
+                    ']';
+                $consolidatedShowScore['mood_array'] = [
+                    'mood_average_value' => $moodAverageValue,
+                    'mood_emoji' => $moodEmoji,
+                ];
                 $keyedConsolidatedShowScores[$consolidatedShowScore['show_id']] = $consolidatedShowScore;
             }
             unset($consolidatedShowScores);
