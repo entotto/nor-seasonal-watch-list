@@ -2,7 +2,32 @@
 
 {% block title %}Personal Watch List{% endblock %}
 
+{% block second_navbar %}
+    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none" style="top:3.53rem;z-index:1000;">
+        <div class="container-fluid">
+            <form class="d-flex">
+                <label class="pe-2 pt-2" for="select_show">Show</label>
+                <select id="select_show" class="form-control me-2">
+                    {% for key, row in data %}
+                        <option value="show_target_{{ key }}">{{ row.score.show.getJapaneseTitle }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </nav>
+{% endblock %}
+
 {% block body %}
+    <div class="d-block d-lg-none">
+        <div class="row">
+            <div class="col">
+                <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_top"></a>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-10" style="margin-top: 1rem;">&nbsp;</div>
+        </div>
+    </div>
     <div class="row mb-2">
         <div class="col-md-12">
             <div class="float-end pb-2 ps-2">
@@ -42,68 +67,75 @@
             </div>
             {% if data is not empty %}
                 {% for key, row in data %}
-                    {% if row.form %}
-                        {{ form_start(row.form) }}
-                    {% endif %}
-                    <div class="row border-bottom mb-2 pb-md-2 pb-4">
-                        <div class="col-xs-12 col-md-2">
-                            <div class="d-flex d-md-none mt-3">
+                    <div id="show_container_{{ key }}" class="show_container" data-anchorid="{{ key }}">
+                        {% if row.form %}
+                            {{ form_start(row.form) }}
+                        {% endif %}
+                        <div class="row">
+                            <div class="col">
+                                <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_{{ key }}">&nbsp;</a>
                             </div>
-                            <img class="img-fluid" src="{{ row.score.show.getCoverImageLarge|raw }}" alt="cover image" />
                         </div>
-                        <div class="col-xs-12 col-md-2 col-lg-4 col-xl-6">
-                            <div class="d-flex d-md-none mt-3">
+                        <div class="row border-bottom mb-2 pb-md-2 pb-4">
+                            <div class="col-xs-12 col-md-2">
+                                <div class="d-flex d-md-none mt-3">
+                                </div>
+                                <img class="img-fluid" src="{{ row.score.show.getCoverImageLarge|raw }}" alt="cover image" />
                             </div>
-                            {{ row.score.show.getAllTitles|raw }}
-                            {% if row.score.show.getAnilistId %}
-                                <br>
-                                <a
-                                        href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
-                                        class="btn btn-outline-primary mt-1 mb-1 d-inline-block d-lg-none"
-                                >Anilist</a>
-                                <a
-                                        href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
-                                        target="_blank"
-                                        class="btn btn-outline-primary mt-1 mb-1 d-none d-lg-inline-block"
-                                >Anilist</a>
-                            {% endif %}
-                        </div>
-                        <div class="col-xs-12 col-md-4 col-lg-3 col-xl-2">
-                            <div class="d-flex d-md-none mt-2">
-                                <strong>Activity:</strong>
+                            <div class="col-xs-12 col-md-2 col-lg-4 col-xl-6">
+                                <div class="d-flex d-md-none mt-3">
+                                </div>
+                                {{ row.score.show.getAllTitles|raw }}
+                                {% if row.score.show.getAnilistId %}
+                                    <br>
+                                    <a
+                                            href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
+                                            class="btn btn-outline-primary mt-1 mb-1 d-inline-block d-lg-none"
+                                    >Anilist</a>
+                                    <a
+                                            href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
+                                            target="_blank"
+                                            class="btn btn-outline-primary mt-1 mb-1 d-none d-lg-inline-block"
+                                    >Anilist</a>
+                                {% endif %}
                             </div>
-                            {% if row.form %}
-                                {{ form_widget(
-                                    row.form.activity,
-                                    {
-                                        'id': "show_season_score_activity_" ~ key,
-                                        'attr': {
-                                        'class': 'show_season_score_activity'
-                                    }
-                                    }
-                                )}}
-                            {% endif %}
-                        </div>
-                        <div class="col-xs-12 col-md-4 col-lg-3 col-xl-2">
-                            <div class="d-flex d-md-none mt-2">
-                                <strong>Recommendation:</strong>
-                            </div>
-                            {% if row.form %}
-                                {{ form_widget(
-                                    row.form.score,
-                                    {
-                                        'id': "show_season_score_score_" ~ key,
-                                        'attr': {
-                                            'class': 'show_season_score_score'
+                            <div class="col-xs-12 col-md-4 col-lg-3 col-xl-2">
+                                <div class="d-flex d-md-none mt-2">
+                                    <strong>Activity:</strong>
+                                </div>
+                                {% if row.form %}
+                                    {{ form_widget(
+                                        row.form.activity,
+                                        {
+                                            'id': "show_season_score_activity_" ~ key,
+                                            'attr': {
+                                            'class': 'show_season_score_activity'
                                         }
-                                    }
-                                )}}
-                            {% endif %}
+                                        }
+                                    )}}
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-12 col-md-4 col-lg-3 col-xl-2">
+                                <div class="d-flex d-md-none mt-2">
+                                    <strong>Recommendation:</strong>
+                                </div>
+                                {% if row.form %}
+                                    {{ form_widget(
+                                        row.form.score,
+                                        {
+                                            'id': "show_season_score_score_" ~ key,
+                                            'attr': {
+                                                'class': 'show_season_score_score'
+                                            }
+                                        }
+                                    )}}
+                                {% endif %}
+                            </div>
                         </div>
+                        {% if row.form %}
+                            {{ form_end(row.form) }}
+                        {% endif %}
                     </div>
-                    {% if row.form %}
-                        {{ form_end(row.form) }}
-                    {% endif %}
                 {% endfor %}
             {% else %}
                 <div class="row">
@@ -125,9 +157,12 @@
         <div class="col-xs-12">&nbsp;</div>
     </div>
 
+    <a class="btn btn-primary rounded-pill d-block d-lg-none" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="#show_target_top">Top</a>
 
 {% endblock %}
 
 {% block body_javascripts %}
-    <script src="/js/MyWatch.js?{{ asset_version }}"></script>
+    <script src="/js/SelectSeason.js?v={{ asset_version }}"></script>
+    <script src="/js/SelectShow.js?v={{ asset_version }}"></script>
+    <script src="/js/MyWatch.js?v={{ asset_version }}"></script>
 {% endblock %}

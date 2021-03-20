@@ -29,19 +29,4 @@
         window.location.replace(Routing.generate('my_watch_index') + '?season=' + val)
     })
 
-    // $('input[type="radio"].score-choice-danger').next().addClass('text-danger');
-    // $('input[type="radio"].score-choice-secondary').next().addClass('text-secondary');
-    // $('input[type="radio"].score-choice-info').next().addClass('text-info');
-    // $('input[type="radio"].score-choice-primary').next().addClass('text-primary');
-    // $('input[type="radio"].score-choice-success').next().addClass('text-success');
-    // $('input[type="radio"].score-choice-royal').next().addClass('text-royal');
-
-    // $('input[type="radio"]').parent().addClass('recommendation-row');
-    // $('input[type="radio"].score-choice-danger').parent().addClass('recommendation-row-danger');
-    // $('input[type="radio"].score-choice-secondary').parent().addClass('recommendation-row-secondary');
-    // $('input[type="radio"].score-choice-info').parent().addClass('recommendation-row-info');
-    // $('input[type="radio"].score-choice-primary').parent().addClass('recommendation-row-primary');
-    // $('input[type="radio"].score-choice-success').parent().addClass('recommendation-row-success');
-    // $('input[type="radio"].score-choice-royal').parent().addClass('recommendation-row-royal');
-
 })(window, jQuery);
