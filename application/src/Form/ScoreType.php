@@ -22,7 +22,9 @@ class ScoreType extends AbstractType
                 'required' => false,
             ])
             ->add('colorValue')
-            ->add('icon')
+//            ->add('icon', TextType::class, [
+//                'required' => false
+//            ])
         ;
     }
 

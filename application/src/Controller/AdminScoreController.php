@@ -39,6 +39,7 @@ class AdminScoreController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $score->setIcon($score->getIcon());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($score);
             $entityManager->flush();
@@ -76,6 +77,7 @@ class AdminScoreController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $score->setIcon($score->getIcon());
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('admin_score_index');

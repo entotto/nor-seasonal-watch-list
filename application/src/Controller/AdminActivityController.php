@@ -17,6 +17,8 @@ class AdminActivityController extends AbstractController
 {
     /**
      * @Route("/", name="admin_activity_index", methods={"GET"})
+     * @param ActivityRepository $activityRepository
+     * @return Response
      */
     public function index(ActivityRepository $activityRepository): Response
     {
@@ -27,6 +29,8 @@ class AdminActivityController extends AbstractController
 
     /**
      * @Route("/new", name="admin_activity_new", methods={"GET","POST"})
+     * @param Request $request
+     * @return Response
      */
     public function new(Request $request): Response
     {
@@ -35,6 +39,7 @@ class AdminActivityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $activity->setIcon($activity->getIcon());
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($activity);
             $entityManager->flush();
@@ -50,6 +55,8 @@ class AdminActivityController extends AbstractController
 
     /**
      * @Route("/{id}", name="admin_activity_show", methods={"GET"})
+     * @param Activity $activity
+     * @return Response
      */
     public function show(Activity $activity): Response
     {
@@ -60,6 +67,9 @@ class AdminActivityController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="admin_activity_edit", methods={"GET","POST"})
+     * @param Request $request
+     * @param Activity $activity
+     * @return Response
      */
     public function edit(Request $request, Activity $activity): Response
     {
@@ -67,6 +77,7 @@ class AdminActivityController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $activity->setIcon($activity->getIcon());
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('admin_activity_index');
@@ -80,6 +91,9 @@ class AdminActivityController extends AbstractController
 
     /**
      * @Route("/{id}", name="admin_activity_delete", methods={"DELETE"})
+     * @param Request $request
+     * @param Activity $activity
+     * @return Response
      */
     public function delete(Request $request, Activity $activity): Response
     {
