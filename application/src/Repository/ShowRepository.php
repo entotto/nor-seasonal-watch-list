@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Season;
 use App\Entity\Show;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -39,15 +40,17 @@ class ShowRepository extends ServiceEntityRepository
 
     /**
      * @param Season $season
+     * @param User|null $user
      * @param string|null $sortName
      * @return Show[]
      */
     public function getShowsForSeason(
         Season $season,
+        ?User $user = null,
         ?string $sortName = 'show_asc'
     ): array {
         $qb = $this->getShowsForSeasonQb($season);
-        $this->setOrderByName($qb, $season, $sortName);
+        $this->setOrderByName($qb, $season, $user, $sortName);
         return $qb->getQuery()->getResult();
     }
 
@@ -125,7 +128,12 @@ class ShowRepository extends ServiceEntityRepository
         }
     }
 
-    private function setOrderByName(QueryBuilder $qb, ?Season $season = null, ?string $sortName = ''): void
+    private function setOrderByName(
+        QueryBuilder $qb,
+        ?Season $season = null,
+        ?User $user = null,
+        ?string $sortName = ''
+    ): void
     {
         switch ($sortName) {
             case 'show_asc':
@@ -137,35 +145,103 @@ class ShowRepository extends ServiceEntityRepository
                 $sortOrder = 'desc';
                 break;
             case 'statistics_highest':
-                $qb->leftJoin('s.scores', 'scores');
-                $qb->leftJoin('scores.score', 'score');
-                if ($season !== null) {
-                    $qb->andWhere('scores.season = :season')
-                        ->setParameter('season', $season);
-                }
-                $qb->groupBy('s.id');
-                $qb->select('s, avg(score.value) AS avg_score');
+                $this->filterByAvgScore($qb, $season);
                 $orderBy = 'avg_score';
                 $sortOrder = 'desc';
                 break;
             case 'statistics_lowest':
-                $qb->leftJoin('s.scores', 'scores');
-                $qb->leftJoin('scores.score', 'score');
-                if ($season !== null) {
-                    $qb->andWhere('scores.season = :season')
-                        ->setParameter('season', $season);
-                }
-                $qb->groupBy('s.id');
-                $qb->select('s, avg(score.value) AS avg_score');
+                $this->filterByAvgScore($qb, $season);
                 $orderBy = 'avg_score';
                 $sortOrder = 'asc';
                 break;
+            case 'activity_highest':
+                $this->filterByBestActivity($qb, $season, $user);
+                $orderBy = 'activity_rank';
+                // 'Best' activity has the lowest rank value
+                $sortOrder = 'asc';
+                break;
+            case 'activity_lowest':
+                $this->filterByBestActivity($qb, $season, $user);
+                $orderBy = 'activity_rank';
+                // 'Worst activity has the highest rank value
+                $sortOrder = 'desc';
+                break;
+            case 'recommendation_highest':
+                $this->filterByBestScore($qb, $season, $user);
+                $orderBy = 'score_rank';
+                // 'Best' score has the lowest rank value
+                $sortOrder = 'asc';
+                break;
+            case 'recommendation_lowest':
+                $this->filterByBestScore($qb, $season, $user);
+                $orderBy = 'score_rank';
+                // 'Worst' score has the highest rank value
+                $sortOrder = 'desc';
+                break;
             default:
-                $orderBy = null;
+                $orderBy = 's.japaneseTitle';
                 $sortOrder = 'asc';
         }
         if ($orderBy !== null) {
             $qb->orderBy($orderBy, $sortOrder);
         }
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param Season|null $season
+     * @param User|null $user
+     */
+    private function filterByBestScore(QueryBuilder $qb, ?Season $season, ?User $user): void
+    {
+        $qb->leftJoin('s.scores', 'scores');
+        $qb->leftJoin('scores.score', 'score');
+        if ($season !== null) {
+            $qb->andWhere('scores.season = :season')
+                ->setParameter('season', $season);
+        }
+        if ($user !== null) {
+            $qb->andWhere('scores.user = :user')
+                ->setParameter('user', $user);
+        }
+        $qb->groupBy('s.id');
+        $qb->select('s, min(score.rankOrder) AS score_rank');
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param Season|null $season
+     * @param User|null $user
+     */
+    private function filterByBestActivity(QueryBuilder $qb, ?Season $season, ?User $user): void
+    {
+        $qb->leftJoin('s.scores', 'scores');
+        $qb->leftJoin('scores.activity', 'activity');
+        if ($season !== null) {
+            $qb->andWhere('scores.season = :season')
+                ->setParameter('season', $season);
+        }
+        if ($user !== null) {
+            $qb->andWhere('scores.user = :user')
+                ->setParameter('user', $user);
+        }
+        $qb->groupBy('s.id');
+        $qb->select('s, min(activity.rankOrder) AS activity_rank');
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param Season|null $season
+     */
+    private function filterByAvgScore(QueryBuilder $qb, ?Season $season): void
+    {
+        $qb->leftJoin('s.scores', 'scores');
+        $qb->leftJoin('scores.score', 'score');
+        if ($season !== null) {
+            $qb->andWhere('scores.season = :season')
+                ->setParameter('season', $season);
+        }
+        $qb->groupBy('s.id');
+        $qb->select('s, avg(score.value) AS avg_score');
     }
 }

@@ -47,6 +47,12 @@ class AllWatchController extends AbstractController
         $seasons = $seasonRepository->getAllInRankOrder();
         $season = $selectedSeasonHelper->getSelectedSeason($request);
         $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
+        $sortOptions = [
+            'show_asc' => 'Show &darr;',
+            'show_desc' => 'Show &uarr;',
+            'statistics_highest' => 'Statistics &darr;',
+            'statistics_lowest' => 'Statistics &uarr;',
+        ];
         $users = $userRepository->getAllSorted();
         $userKeys = [];
         foreach ($users as $user) {
@@ -57,7 +63,7 @@ class AllWatchController extends AbstractController
         $maxActivityCount = 0;
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
-            $shows = $showRepository->getShowsForSeason($season, $selectedSortName);
+            $shows = $showRepository->getShowsForSeason($season, null, $selectedSortName);
             if ($selectedSortName === 'statistics_highest' || $selectedSortName === 'statistics_lowest') {
                 // When sorting by a calculated value (avg in this case), Doctrine returns an array of
                 // arrays, with each entry looking like this:
@@ -168,6 +174,7 @@ class AllWatchController extends AbstractController
             'data' => $data,
             'total_columns' => 2 + count($users),
             'selectedSortName' => $selectedSortName,
+            'sortOptions' => $sortOptions,
         ]);
     }
 }
