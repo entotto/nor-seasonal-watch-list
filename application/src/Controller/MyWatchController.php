@@ -13,6 +13,7 @@ use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
 use App\Service\SelectedSeasonHelper;
+use App\Service\SelectedSortHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,6 +35,7 @@ class MyWatchController extends AbstractController
      * @param ActivityRepository $activityRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param FormFactoryInterface $formFactory
+     * @param SelectedSortHelper $selectedSortHelper
      * @return Response
      * @throws NonUniqueResultException
      */
@@ -46,7 +48,8 @@ class MyWatchController extends AbstractController
         ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
-        FormFactoryInterface $formFactory
+        FormFactoryInterface $formFactory,
+        SelectedSortHelper $selectedSortHelper
     ): Response {
         $seasons = $seasonRepository->getAllInRankOrder();
 
@@ -56,13 +59,33 @@ class MyWatchController extends AbstractController
         $selectedSeasonId = null;
 
         $season = $selectedSeasonHelper->getSelectedSeason($request);
+        $selectedSortName = $selectedSortHelper->getSelectedSort($request,'personal_watch');
+        $sortOptions = [
+            'show_asc' => 'Show &darr;',
+            'show_desc' => 'Show &uarr;',
+            'activity_highest' => 'Activity &darr;',
+            'activity_lowest' => 'Activity &uarr;',
+            'recommendation_highest' => 'Recommendation &darr;',
+            'recommendation_lowest' => 'Recommendation &uarr;',
+        ];
 
         $defaultScore = $scoreRepository->getDefaultScore();
         $defaultActivity = $activityRepository->getDefaultActivity();
 
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
-            $shows = $showRepository->getShowsForSeason($season);
+            $shows = $showRepository->getShowsForSeason($season, $user, $selectedSortName);
+            if ($selectedSortName !== 'show_asc' && $selectedSortName !== 'show_desc') {
+                // When sorting by a calculated value (max in this case), Doctrine returns an array of
+                // arrays, with each entry looking like this:
+                //   [ 0 => $show, 'max_score' => "1.000" ]
+                $actualShows = [];
+                foreach ($shows as $showContainer) {
+                    $actualShows[] = $showContainer[0];
+                }
+                $shows = $actualShows;
+            }
+
             foreach ($shows as $key => $show) {
                 $score = $showSeasonScoreRepository->getForUserAndShowAndSeason(
                     $user,
@@ -123,6 +146,8 @@ class MyWatchController extends AbstractController
             'seasons' => $seasons,
             'selectedSeasonId' => $selectedSeasonId,
             'data' => $data,
+            'selectedSortName' => $selectedSortName,
+            'sortOptions' => $sortOptions,
         ]);
     }
 
