@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block second_navbar %}
-    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none" style="top:3.53rem;z-index:1000;">
+    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none" style="top:4.1rem;z-index:1000;">
         <div class="container-fluid">
             <form class="d-flex">
                 <label class="pe-2 pt-2" for="select_show">Show</label>
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-md-10" style="margin-top: 1rem;">&nbsp;</div>
+            <div class="col-md-10" style="margin-top: 2rem;">&nbsp;</div>
         </div>
     </div>
 
@@ -41,7 +41,7 @@
             <div class="float-end pb-2 ps-1">
                 {% include '_shared/sort_selector_form.html.twig' %}
             </div>
-            <h1>Community Watch List</h1>
+            <h1 class="text-nor-red">Community Watch List</h1>
         </div>
     </div>
 
@@ -61,7 +61,7 @@
             <a href="{{ path('all_watch_index') }}?sort={% if selectedSortName == 'show_asc' %}show_desc{% else %}show_asc{% endif %}">
                 <strong>
                         Show
-                        {% if selectedSortName == 'show_asc' %}&darr;{% elseif selectedSortName == 'show_desc'%}&uarr;{% endif %}
+                        {% if selectedSortName == 'show_asc' %}<i class="bi bi-caret-down-fill"></i>{% elseif selectedSortName == 'show_desc'%}<i class="bi bi-caret-up-fill"></i>{% endif %}
                 </strong>
             </a>
         </div>
@@ -70,7 +70,7 @@
             <a href="{{ path('all_watch_index') }}?sort={% if selectedSortName == 'statistics_highest' %}statistics_lowest{% else %}statistics_highest{% endif %}">
                 <strong>
                     Statistics
-                    {% if selectedSortName == 'statistics_highest' %}&darr;{% elseif selectedSortName == 'statistics_lowest'%}&uarr;{% endif %}
+                    {% if selectedSortName == 'statistics_highest' %}<i class="bi bi-caret-down-fill"></i>{% elseif selectedSortName == 'statistics_lowest'%}<i class="bi bi-caret-up-fill"></i>{% endif %}
                 </strong>
             </a>
         </div>
@@ -88,7 +88,7 @@
     {% for key, row in data %}
         <div class="row mb-2 pb-2 border-bottom d-none d-lg-flex">
             <div class="col-md-2">
-                <img class="img-fluid" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
             </div>
             <div class="col-md-2">
                 {{ row.show.title|raw }}
@@ -288,7 +288,7 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <img class="img-fluid" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                        <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                     </div>
                     <div class="col">
                         {{ row.show.title|raw }}

@@ -61,12 +61,12 @@ class MyWatchController extends AbstractController
         $season = $selectedSeasonHelper->getSelectedSeason($request);
         $selectedSortName = $selectedSortHelper->getSelectedSort($request,'personal_watch');
         $sortOptions = [
-            'show_asc' => 'Show &darr;',
-            'show_desc' => 'Show &uarr;',
-            'activity_highest' => 'Activity &darr;',
-            'activity_lowest' => 'Activity &uarr;',
-            'recommendation_highest' => 'Recommendation &darr;',
-            'recommendation_lowest' => 'Recommendation &uarr;',
+            'show_asc' => 'Show &or;',
+            'show_desc' => 'Show &and;',
+            'activity_highest' => 'Activity &or;',
+            'activity_lowest' => 'Activity &and;',
+            'recommendation_highest' => 'Recommendation &or;',
+            'recommendation_lowest' => 'Recommendation &and;',
         ];
 
         $defaultScore = $scoreRepository->getDefaultScore();

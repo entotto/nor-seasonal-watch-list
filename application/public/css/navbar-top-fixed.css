@@ -76,3 +76,18 @@ body {
     --bs-table-bg: rgb(64, 64, 64);
     color: #fff;
 }
+
+.text-nor-red {
+    color: #c80d0d;
+    text-decoration: none;
+}
+.text-nor-red-highlight {
+    color: rgb(214, 74, 74);
+}
+
+a.nor-red {
+    color: #c80d0d;
+}
+a.nor-red:hover {
+    color: rgb(217, 74, 74);
+}

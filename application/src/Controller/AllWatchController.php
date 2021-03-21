@@ -48,10 +48,10 @@ class AllWatchController extends AbstractController
         $season = $selectedSeasonHelper->getSelectedSeason($request);
         $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
         $sortOptions = [
-            'show_asc' => 'Show &darr;',
-            'show_desc' => 'Show &uarr;',
-            'statistics_highest' => 'Statistics &darr;',
-            'statistics_lowest' => 'Statistics &uarr;',
+            'show_asc' => 'Show &or;',
+            'show_desc' => 'Show &and;',
+            'statistics_highest' => 'Statistics &or;',
+            'statistics_lowest' => 'Statistics &and;',
         ];
         $users = $userRepository->getAllSorted();
         $userKeys = [];
