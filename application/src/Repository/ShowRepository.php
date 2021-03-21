@@ -241,6 +241,8 @@ class ShowRepository extends ServiceEntityRepository
             $qb->andWhere('scores.season = :season')
                 ->setParameter('season', $season);
         }
+        $qb->andWhere('score.slug != :slug')
+            ->setParameter('slug', 'none');
         $qb->groupBy('s.id');
         $qb->select('s, avg(score.value) AS avg_score');
     }
