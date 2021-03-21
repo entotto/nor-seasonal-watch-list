@@ -49,10 +49,19 @@ class Show
     private ?string $fullEnglishTitle;
 
     /**
+     * @var Collection|Season[]
+     *
      * @ORM\ManyToMany(targetEntity=Season::class, inversedBy="shows")
      * @OrderBy({"rankOrder" = "ASC"})
      */
     private Collection $seasons;
+
+    /**
+     * @var Collection|ShowSeasonScore[]
+     *
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="show")
+     */
+    private Collection $scores;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -117,6 +126,7 @@ class Show
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
+        $this->scores = new ArrayCollection();
     }
 
     /**
@@ -261,6 +271,39 @@ class Show
 
         return $this;
     }
+
+    /**
+     * @return Collection|ShowSeasonScore[]
+     */
+    public function getScores()
+    {
+        return $this->scores;
+    }
+
+    /**
+     * @param ShowSeasonScore $score
+     * @return $this
+     */
+    public function addScore(ShowSeasonScore $score): self
+    {
+        if (!$this->scores->contains($score)) {
+            $this->scores[] = $score;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ShowSeasonScore $score
+     * @return $this
+     */
+    public function removeScore(ShowSeasonScore $score): self
+    {
+        $this->scores->removeElement($score);
+
+        return $this;
+    }
+
 
     /**
      * @return string|null

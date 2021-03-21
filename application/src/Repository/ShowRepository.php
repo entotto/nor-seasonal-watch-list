@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
+
+/** @noinspection PhpUnused */
 
 namespace App\Repository;
 
@@ -37,17 +39,15 @@ class ShowRepository extends ServiceEntityRepository
 
     /**
      * @param Season $season
-     * @param string|null $sortColumn
-     * @param string|null $sortOrder
+     * @param string|null $sortName
      * @return Show[]
      */
     public function getShowsForSeason(
         Season $season,
-        ?string $sortColumn = 'romaji',
-        ?string $sortOrder = 'ASC'
+        ?string $sortName = 'show_asc'
     ): array {
         $qb = $this->getShowsForSeasonQb($season);
-        $this->setOrderBy($qb, $sortColumn, $sortOrder);
+        $this->setOrderByName($qb, $season, $sortName);
         return $qb->getQuery()->getResult();
     }
 
@@ -122,6 +122,50 @@ class ShowRepository extends ServiceEntityRepository
         }
         if ($orderBy !== null) {
             $qb->orderBy("s.{$orderBy}", $sortOrder);
+        }
+    }
+
+    private function setOrderByName(QueryBuilder $qb, ?Season $season = null, ?string $sortName = ''): void
+    {
+        switch ($sortName) {
+            case 'show_asc':
+                $orderBy = 's.japaneseTitle';
+                $sortOrder = 'asc';
+                break;
+            case 'show_desc':
+                $orderBy = 's.japaneseTitle';
+                $sortOrder = 'desc';
+                break;
+            case 'statistics_highest':
+                $qb->leftJoin('s.scores', 'scores');
+                $qb->leftJoin('scores.score', 'score');
+                if ($season !== null) {
+                    $qb->andWhere('scores.season = :season')
+                        ->setParameter('season', $season);
+                }
+                $qb->groupBy('s.id');
+                $qb->select('s, avg(score.value) AS avg_score');
+                $orderBy = 'avg_score';
+                $sortOrder = 'desc';
+                break;
+            case 'statistics_lowest':
+                $qb->leftJoin('s.scores', 'scores');
+                $qb->leftJoin('scores.score', 'score');
+                if ($season !== null) {
+                    $qb->andWhere('scores.season = :season')
+                        ->setParameter('season', $season);
+                }
+                $qb->groupBy('s.id');
+                $qb->select('s, avg(score.value) AS avg_score');
+                $orderBy = 'avg_score';
+                $sortOrder = 'asc';
+                break;
+            default:
+                $orderBy = null;
+                $sortOrder = 'asc';
+        }
+        if ($orderBy !== null) {
+            $qb->orderBy($orderBy, $sortOrder);
         }
     }
 }
