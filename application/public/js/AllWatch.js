@@ -37,7 +37,7 @@
             const hsl = d3.hsl(rgba);
             //const isLight = hsl.l > 0.5;
             // Trying out the datalabel-always-outside strategy ('outside' is always light, unless we support dark mode)
-            const isLight = true;
+            const isLight = !isDarkMode; // true;
             hsl.l += isLight ? -0.6 : 0.6;
             return hsl + "";
         });

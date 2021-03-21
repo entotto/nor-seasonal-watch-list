@@ -171,6 +171,7 @@ class AllWatchController extends AbstractController
             'seasons' => $seasons,
             'selectedSeasonId' => $selectedSeasonId,
             'users' => $userKeys,
+            'user' => $this->getUser(),
             'data' => $data,
             'total_columns' => 2 + count($users),
             'selectedSortName' => $selectedSortName,

@@ -437,4 +437,13 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function getPreferences(): UserPreferences
+    {
+        static $preferences = null;
+        if ($preferences === null) {
+            $preferences = new UserPreferences();
+        }
+        return $preferences;
+    }
 }
