@@ -9,6 +9,7 @@ use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
 use App\Repository\UserRepository;
 use App\Service\SelectedSeasonHelper;
+use App\Service\SelectedSortHelper;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +28,7 @@ class AllWatchController extends AbstractController
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
      * @param UserRepository $userRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
+     * @param SelectedSortHelper $selectedSortHelper
      * @return Response
      * @throws Exception
      * @throws NonUniqueResultException
@@ -38,11 +40,13 @@ class AllWatchController extends AbstractController
         ShowRepository $showRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
         UserRepository $userRepository,
-        SelectedSeasonHelper $selectedSeasonHelper
+        SelectedSeasonHelper $selectedSeasonHelper,
+        SelectedSortHelper $selectedSortHelper
     ): Response {
         $selectedSeasonId = null;
         $seasons = $seasonRepository->getAllInRankOrder();
         $season = $selectedSeasonHelper->getSelectedSeason($request);
+        $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
         $users = $userRepository->getAllSorted();
         $userKeys = [];
         foreach ($users as $user) {
@@ -53,7 +57,17 @@ class AllWatchController extends AbstractController
         $maxActivityCount = 0;
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
-            $shows = $showRepository->getShowsForSeason($season);
+            $shows = $showRepository->getShowsForSeason($season, $selectedSortName);
+            if ($selectedSortName === 'statistics_highest' || $selectedSortName === 'statistics_lowest') {
+                // When sorting by a calculated value (avg in this case), Doctrine returns an array of
+                // arrays, with each entry looking like this:
+                //   [ 0 => $show, 'ave_score' => "1.000" ]
+                $actualShows = [];
+                foreach ($shows as $showContainer) {
+                    $actualShows[] = $showContainer[0];
+                }
+                $shows = $actualShows;
+            }
             $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
             $keyedConsolidatedShowActivities = [];
             foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
@@ -153,6 +167,7 @@ class AllWatchController extends AbstractController
             'users' => $userKeys,
             'data' => $data,
             'total_columns' => 2 + count($users),
+            'selectedSortName' => $selectedSortName,
         ]);
     }
 }
