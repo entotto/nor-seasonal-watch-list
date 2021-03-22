@@ -65,11 +65,8 @@
     }
 
     const activityBarColors = [
-        "#007eb9", // blue / finished
-        whiten("#007eb9", 0.25), // mid blue / watching
-        whiten("#007eb9", 0.5),  // weaker blue / paused
-        whiten("#007eb9", 0.75), // weakest blue / ptw
-        whiten("#000", 0.85)     // grey / dropped
+        "#007eb9", // blue : watching/finished
+        whiten("#007eb9", 0.5),  // weaker blue : ptw
     ];
     const activityTextColors = calcTextColors(activityBarColors)
     const activityDarkerColors = calcDarkerColors(activityBarColors)
@@ -94,11 +91,8 @@
             },
             data: {
                 labels: [
-                    'Finished',
                     'Watching',
-                    'Paused',
-                    'PTW',
-                    'Dropped'
+                    'PTW'
                 ],
                 datasets: [{
                     data: data,
@@ -182,7 +176,7 @@
             },
             data: {
                 labels: [
-                    'Th8a should',
+                    'Th8a should cover',
                     'Highly favorable',
                     'Favorable',
                     'Neutral',

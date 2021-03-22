@@ -79,18 +79,12 @@ class AllWatchController extends AbstractController
             foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
                 $maxActivityCount = max([
                     $maxActivityCount,
-                    $consolidatedShowActivity['finished_count'],
                     $consolidatedShowActivity['watching_count'],
-                    $consolidatedShowActivity['paused_count'],
                     $consolidatedShowActivity['ptw_count'],
-                    $consolidatedShowActivity['dropped_count'],
                 ]);
                 $consolidatedShowActivity['activities_array'] = '[' .
-                    $consolidatedShowActivity['finished_count'] . ',' .
                     $consolidatedShowActivity['watching_count'] . ',' .
-                    $consolidatedShowActivity['paused_count'] . ',' .
-                    $consolidatedShowActivity['ptw_count'] . ',' .
-                    $consolidatedShowActivity['dropped_count'] . ']';
+                    $consolidatedShowActivity['ptw_count'] . ']';
                 $keyedConsolidatedShowActivities[$consolidatedShowActivity['show_id']] = $consolidatedShowActivity;
             }
 
