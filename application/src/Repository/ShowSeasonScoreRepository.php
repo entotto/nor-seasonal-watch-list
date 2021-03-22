@@ -159,10 +159,7 @@ class ShowSeasonScoreRepository extends ServiceEntityRepository
 SELECT
     ss.show_id,
     coalesce(ptw_j.my_count, 0) as ptw_count,
-    coalesce(watching_j.my_count, 0) as watching_count,
-    coalesce(finished_j.my_count, 0) as finished_count,
-    coalesce(paused_j.my_count, 0) as paused_count,
-    coalesce(dropped_j.my_count, 0) as dropped_count
+    coalesce(watching_j.my_count, 0) as watching_count
 FROM show_season ss
 LEFT JOIN (
     SELECT
@@ -182,33 +179,6 @@ LEFT JOIN (
     WHERE sss4.season_id = :season_id
     GROUP BY sss4.show_id
 ) AS watching_j ON watching_j.show_id = ss.show_id
-LEFT JOIN (
-    SELECT
-        sss5.show_id AS show_id,
-        count(*) AS my_count
-    FROM show_season_score sss5
-    JOIN activity a5 on sss5.activity_id = a5.id AND a5.slug = 'finished'
-    WHERE sss5.season_id = :season_id
-    GROUP BY sss5.show_id
-) AS finished_j ON finished_j.show_id = ss.show_id
-LEFT JOIN (
-    SELECT
-        sss6.show_id AS show_id,
-        count(*) AS my_count
-    FROM show_season_score sss6
-    JOIN activity a6 on sss6.activity_id = a6.id AND a6.slug = 'paused'
-    WHERE sss6.season_id = :season_id
-    GROUP BY sss6.show_id
-) AS paused_j ON paused_j.show_id = ss.show_id
-LEFT JOIN (
-    SELECT
-        sss7.show_id AS show_id,
-        count(*) AS my_count
-    FROM show_season_score sss7
-    JOIN activity a7 on sss7.activity_id = a7.id AND a7.slug = 'dropped'
-    WHERE sss7.season_id = :season_id
-    GROUP BY sss7.show_id
-) AS dropped_j ON dropped_j.show_id = ss.show_id
 WHERE ss.season_id = :season_id
 ;
 
