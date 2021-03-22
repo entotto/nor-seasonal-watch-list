@@ -10,11 +10,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link href="/bootstrap/css/bootstrap.min.css?v={{ asset_version }}" rel="stylesheet">
-        <link href="/css/darkly-bootstrap.min.css" rel="stylesheet">
         {% if isDarkMode %}
-            <link href="/bootstrap-icons/font/bootstrap-icons.css?v={{ asset_version }}" rel="stylesheet">
+            <link href="/css/darkly-bootstrap.min.css" rel="stylesheet">
         {% endif %}
-        <link href="/css/navbar-top-fixed.css?v={{ asset_version }}" rel="stylesheet">
+        <link href="/bootstrap-icons/font/bootstrap-icons.css?v={{ asset_version }}" rel="stylesheet">
+        <link href="/css/main.css?v={{ asset_version }}" rel="stylesheet">
+        {% if isDarkMode %}
+            <link href="/css/dark-main.css?v={{ asset_version }}" rel="stylesheet">
+        {% endif %}
 
         <title>{% block title %}Seasonal Watch List{% endblock %}</title>
         {% block stylesheets %}{% endblock %}

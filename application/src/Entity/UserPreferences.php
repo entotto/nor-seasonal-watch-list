@@ -7,7 +7,7 @@ final class UserPreferences
     private bool $darkMode;
 
     public function __construct() {
-        $this->darkMode = true;
+        $this->darkMode = false;
     }
 
     /**

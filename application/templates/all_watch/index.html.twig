@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block second_navbar %}
-    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none" style="top:4.1rem;z-index:1000;">
+    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none second-nav">
         <div class="container-fluid">
             <form class="d-flex">
                 <label class="pe-2 pt-2" for="select_show">Show</label>
@@ -25,11 +25,11 @@
     <div class="d-block d-lg-none">
         <div class="row">
             <div class="col">
-                <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_top"></a>
+                <a class="show-target-offset" id="show_target_top"></a>
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-md-10" style="margin-top: 2rem;">&nbsp;</div>
+            <div class="col-md-10 watch-list-top-margin">&nbsp;</div>
         </div>
     </div>
 
@@ -283,7 +283,7 @@
             <div id="show_container_{{ key }}" class="show_container" data-anchorid="{{ key }}">
                 <div class="row">
                     <div class="col">
-                        <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_{{ key }}">&nbsp;</a>
+                        <a class="show-target-offset" id="show_target_{{ key }}">&nbsp;</a>
                     </div>
                 </div>
                 <div class="row">
@@ -439,7 +439,7 @@
         {% endfor %}
 
         {% if data is not empty %}
-            <a class="btn btn-primary rounded-pill d-block d-lg-none" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
+            <a class="btn btn-primary rounded-pill d-block d-lg-none back-to-top-button-position" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
             <div class="row">
                 <div class="col mb-5 mr-3">&nbsp;</div>
             </div>
