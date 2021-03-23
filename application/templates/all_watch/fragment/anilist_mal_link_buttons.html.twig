@@ -1,0 +1,14 @@
+{% if row.show.anilistShowUrl %}
+    <a
+            href="{{ row.show.anilistShowUrl }}"
+            target="_blank"
+            class="btn btn-outline-primary m-1 ms-0"
+    >Anilist</a>
+{% endif %}
+{% if row.show.malShowUrl %}
+    <a
+            href="{{ row.show.malShowUrl }}"
+            target="_blank"
+            class="btn btn-outline-primary m-1 ms-0"
+    >MAL</a>
+{% endif %}
