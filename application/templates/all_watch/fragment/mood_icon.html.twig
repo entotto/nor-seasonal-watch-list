@@ -1,0 +1,17 @@
+<span class="fs-4 fw-bold">
+    {% if row.consolidatedScores is not null %}
+        {% if row.consolidatedScores.mood_array is not null %}
+            <div
+                    class="mood-emoji-container d-inline"
+                    data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
+            >
+                <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
+            </div>
+        {% else %}
+            &nbsp;
+        {% endif %}
+    {% else %}
+        &nbsp;
+    {% endif %}
+    {{ row.consolidatedScores.mood_array.mood_average_value|round(2) }}
+</span>

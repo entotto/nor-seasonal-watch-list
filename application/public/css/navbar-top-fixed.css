@@ -36,6 +36,17 @@ body {
     background-color: #6f42c122;
 }
 
+.watching-legend-pip {
+    width: 16px;
+    height: 16px;
+}
+.activity-watching {
+    background-color: #007eb9;
+}
+.activity-ptw {
+    background-color: rgb(128, 191, 220);
+}
+
 .table-field-activity-finished {
     --bs-table-bg: #007eb9;
     color: #ffffff;
@@ -56,6 +67,24 @@ body {
     --bs-table-bg: rgb(217, 217, 217);
     color: #000;
 }
+
+.score-th8a {
+    background-color: #c80d0d;
+}
+.score-highly, .score-highly-favorable {
+    background-color: rgb(214, 74, 74);
+}
+.score-favorable {
+    background-color: rgb(228, 134, 134);
+}
+.score-neutral {
+    background-color: rgb(217, 217, 217);
+}
+.score-unfavorable {
+    background-color: rgb(64, 64, 64);
+}
+
+
 .table-field-score-th8a {
     --bs-table-bg: #c80d0d;
     color: #fff;

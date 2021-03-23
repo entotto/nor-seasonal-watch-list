@@ -50,8 +50,10 @@ class AllWatchController extends AbstractController
         $sortOptions = [
             'show_asc' => 'Show &or;',
             'show_desc' => 'Show &and;',
-            'statistics_highest' => 'Statistics &or;',
-            'statistics_lowest' => 'Statistics &and;',
+            'activity_desc' => 'Activity &or;',
+            'activity_asc' => 'Activity &and;',
+            'recommendations_desc' => 'Recommendations &or;',
+            'recommendations_asc' => 'Recommendations &and;',
         ];
         $users = $userRepository->getAllSorted();
         $userKeys = [];
@@ -64,10 +66,10 @@ class AllWatchController extends AbstractController
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
             $shows = $showRepository->getShowsForSeason($season, null, $selectedSortName);
-            if ($selectedSortName === 'statistics_highest' || $selectedSortName === 'statistics_lowest') {
-                // When sorting by a calculated value (avg in this case), Doctrine returns an array of
-                // arrays, with each entry looking like this:
-                //   [ 0 => $show, 'ave_score' => "1.000" ]
+            if ($selectedSortName !== 'show_asc' && $selectedSortName !== 'show_desc') {
+                // When sorting by a calculated value (avg or sum in this case), Doctrine returns
+                // an array of arrays, with each entry looking like this:
+                //   [ 0 => $show, 'calculated_value' => "1.000" ]
                 $actualShows = [];
                 foreach ($shows as $showContainer) {
                     $actualShows[] = $showContainer[0];
@@ -77,10 +79,10 @@ class AllWatchController extends AbstractController
             $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
             $keyedConsolidatedShowActivities = [];
             foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
+                $consolidatedShowActivity['total_count'] = $consolidatedShowActivity['watching_count'] + $consolidatedShowActivity['ptw_count'];
                 $maxActivityCount = max([
                     $maxActivityCount,
-                    $consolidatedShowActivity['watching_count'],
-                    $consolidatedShowActivity['ptw_count'],
+                    $consolidatedShowActivity['total_count']
                 ]);
                 $consolidatedShowActivity['activities_array'] = '[' .
                     $consolidatedShowActivity['watching_count'] . ',' .
@@ -93,11 +95,11 @@ class AllWatchController extends AbstractController
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
                 $moodAverageValue = ($consolidatedShowScore['all_count'] > 0) ?
                     $consolidatedShowScore['score_total'] / $consolidatedShowScore['all_count'] : 0;
-                if ($moodAverageValue > 1) {
+                if ($moodAverageValue > 5) {
                     $moodEmoji = 'emoji-heart-eyes-fill';
-                } elseif ($moodAverageValue > 0.1) {
+                } elseif ($moodAverageValue > 1) {
                     $moodEmoji = 'emoji-smile-fill';
-                } elseif ($moodAverageValue > -0.1) {
+                } elseif ($moodAverageValue > -1) {
                     $moodEmoji = 'emoji-neutral-fill';
                 } else {
                     $moodEmoji = 'emoji-frown-fill';
