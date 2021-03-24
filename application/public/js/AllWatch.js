@@ -19,13 +19,13 @@
         });
     })
 
-    const calcMaxChartTick = function (maxScore) {
-        return maxScore
+    const calcMaxChartTick = function (maxScoreCount) {
+        return maxScoreCount
         // let maxChartTick
-        // if (maxScore < 6) {
-        //     maxChartTick = maxScore + 1
+        // if (maxScoreCount < 6) {
+        //     maxChartTick = maxScoreCount + 1
         // } else {
-        //     const stepSize = Math.max(Math.floor(maxScore / 6), 1)
+        //     const stepSize = Math.max(Math.floor(maxScoreCount / 6), 1)
         //     maxChartTick = stepSize * (6 + 1)
         // }
         // return maxChartTick
@@ -79,8 +79,8 @@
     $('.all_watch_bar_activity_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
-        const maxScore = $(this).data('maxscore')
-        const maxChartTick = calcMaxChartTick(maxScore)
+        const maxActivityCount = $(this).data('maxactivitycount')
+        const maxChartTick = calcMaxChartTick(maxActivityCount)
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -189,8 +189,8 @@
     $('.all_watch_bar_score_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
-        const maxScore = $(this).data('maxscore')
-        const maxChartTick = calcMaxChartTick(maxScore)
+        const maxScoreCount = $(this).data('maxscorecount')
+        const maxChartTick = calcMaxChartTick(maxScoreCount)
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {

@@ -69,7 +69,7 @@ class AllWatchController extends AbstractController
             $userKeys[$user->getUsername()] = false;
         }
         $data = [];
-        $maxScore = 0;
+        $maxScoreCount = 0;
         $maxActivityCount = 0;
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
@@ -114,13 +114,13 @@ class AllWatchController extends AbstractController
                 } else {
                     $moodEmoji = 'emoji-frown-fill';
                 }
-                $maxScore = max([
-                    $maxScore,
-                    $consolidatedShowScore['th8a_count'],
-                    $consolidatedShowScore['highly_favorable_count'],
-                    $consolidatedShowScore['favorable_count'],
-                    $consolidatedShowScore['neutral_count'],
-                    $consolidatedShowScore['unfavorable_count'],
+                $maxScoreCount = max([
+                    $maxScoreCount,
+                    ($consolidatedShowScore['th8a_count'] +
+                    $consolidatedShowScore['highly_favorable_count'] +
+                    $consolidatedShowScore['favorable_count'] +
+                    $consolidatedShowScore['neutral_count'] +
+                    $consolidatedShowScore['unfavorable_count'])
                 ]);
                 $consolidatedShowScore['scores_array'] = '[' .
                     $consolidatedShowScore['th8a_count'] . ',' .
@@ -166,7 +166,7 @@ class AllWatchController extends AbstractController
                     'consolidatedScores' => $keyedConsolidatedShowScores[$show->getId()] ?? null,
                     'scores' => $filteredScores,
                     'scoreCount' => count($filteredScores),
-                    'maxScore' => $maxScore,
+                    'maxScoreCount' => $maxScoreCount,
                     'maxActivityCount' => $maxActivityCount,
                 ];
             }
