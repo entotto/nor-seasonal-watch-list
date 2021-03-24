@@ -4,6 +4,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ActivityRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
@@ -27,6 +28,7 @@ class AllWatchController extends AbstractController
      * @param ShowRepository $showRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
      * @param UserRepository $userRepository
+     * @param ActivityRepository $activityRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param SelectedSortHelper $selectedSortHelper
      * @return Response
@@ -40,6 +42,7 @@ class AllWatchController extends AbstractController
         ShowRepository $showRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
         UserRepository $userRepository,
+        ActivityRepository $activityRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
         SelectedSortHelper $selectedSortHelper
     ): Response {
@@ -55,6 +58,11 @@ class AllWatchController extends AbstractController
             'recommendations_desc' => 'Recommendations &or;',
             'recommendations_asc' => 'Recommendations &and;',
         ];
+        $activities = $activityRepository->findAll();
+        $activityValues = [];
+        foreach ($activities as $activity) {
+            $activityValues[$activity->getSlug()] = $activity->getValue();
+        }
         $users = $userRepository->getAllSorted();
         $userKeys = [];
         foreach ($users as $user) {
@@ -79,14 +87,16 @@ class AllWatchController extends AbstractController
             $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
             $keyedConsolidatedShowActivities = [];
             foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
-                $consolidatedShowActivity['total_count'] = $consolidatedShowActivity['watching_count'] + $consolidatedShowActivity['ptw_count'];
+                $consolidatedShowActivity['total_count'] =
+                    ($consolidatedShowActivity['watching_count'] * $activityValues['watching']) +
+                    ($consolidatedShowActivity['ptw_count'] * $activityValues['ptw']);
                 $maxActivityCount = max([
                     $maxActivityCount,
                     $consolidatedShowActivity['total_count']
                 ]);
                 $consolidatedShowActivity['activities_array'] = '[' .
-                    $consolidatedShowActivity['watching_count'] . ',' .
-                    $consolidatedShowActivity['ptw_count'] . ']';
+                    ($consolidatedShowActivity['watching_count'] * $activityValues['watching']) . ',' .
+                    ($consolidatedShowActivity['ptw_count'] * $activityValues['ptw']) . ']';
                 $keyedConsolidatedShowActivities[$consolidatedShowActivity['show_id']] = $consolidatedShowActivity;
             }
 

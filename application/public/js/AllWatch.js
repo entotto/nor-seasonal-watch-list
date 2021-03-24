@@ -20,28 +20,29 @@
     })
 
     const calcMaxChartTick = function (maxScore) {
-        let maxChartTick
-        if (maxScore < 6) {
-            maxChartTick = maxScore + 1
-        } else {
-            const stepSize = Math.max(Math.floor(maxScore / 6), 1)
-            maxChartTick = stepSize * (6 + 1)
-        }
-        return maxChartTick
+        return maxScore
+        // let maxChartTick
+        // if (maxScore < 6) {
+        //     maxChartTick = maxScore + 1
+        // } else {
+        //     const stepSize = Math.max(Math.floor(maxScore / 6), 1)
+        //     maxChartTick = stepSize * (6 + 1)
+        // }
+        // return maxChartTick
     }
 
     const whiten = (color, ratio) => d3.interpolateRgb(color, "#fff")(ratio);
 
-    const calcTextColors = (barColors) => {
-        return barColors.map((rgba) => {
-            const hsl = d3.hsl(rgba);
-            const isLight = hsl.l > 0.5;
-            // Trying out the datalabel-always-outside strategy ('outside' is always light, unless we support dark mode)
-            //const isLight = false;
-            hsl.l += isLight ? -0.6 : 0.6;
-            return hsl + "";
-        });
-    }
+    // const calcTextColors = (barColors) => {
+    //     return barColors.map((rgba) => {
+    //         const hsl = d3.hsl(rgba);
+    //         const isLight = hsl.l > 0.5;
+    //         // Trying out the datalabel-always-outside strategy ('outside' is always light, unless we support dark mode)
+    //         //const isLight = false;
+    //         hsl.l += isLight ? -0.6 : 0.6;
+    //         return hsl + "";
+    //     });
+    // }
 
     const calcDarkerColors = (barColors) => {
         // noinspection JSUnusedLocalSymbols
@@ -67,15 +68,19 @@
     const activityBarColors = [
         "#007eb9", // blue : watching/finished
         whiten("#007eb9", 0.5),  // weaker blue : ptw
-    ];
-    const activityTextColors = calcTextColors(activityBarColors)
+    ]
+    const activityTextColors = [
+        '#fff',
+        '#fff'
+    ]
+
     const activityDarkerColors = calcDarkerColors(activityBarColors)
 
     $('.all_watch_bar_activity_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
         const maxScore = $(this).data('maxscore')
-        // const maxChartTick = calcMaxChartTick(maxScore)
+        const maxChartTick = calcMaxChartTick(maxScore)
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -99,8 +104,7 @@
                         backgroundColor: activityBarColors[1],
                         datalabels: {
                             display: data[1] > 0,
-                            color: activityTextColors[1],
-                            align: "start"
+                            color: activityTextColors[1]
                         }
                     },
                     {
@@ -111,8 +115,7 @@
                         backgroundColor: activityBarColors[0],
                         datalabels: {
                             display: data[0] > 0,
-                            color: activityTextColors[0],
-                            align: "start"
+                            color: activityTextColors[0]
                         }
                     }
                 ]
@@ -130,7 +133,7 @@
                             display: false,
                             ticks: {
                                 display: false,
-                                max: maxScore
+                                max: maxChartTick
                             },
                         }
                     ],
@@ -141,7 +144,18 @@
                         }
                     ]
                 },
+                plugins: {
+                    datalabels: {
+                        anchor: 'center',
+                        font: {
+                            size: 16,
+                            weight: 'bold',
+                            family: 'san-serif'
+                        }
+                    }
+                },
                 responsive: true,
+                aspectRatio: 8,
                 legend: {
                     display: false
                 },
@@ -163,7 +177,13 @@
         whiten("#000", 0.25)     // black / unfavorable
     ];
     // Use dark text on light background and vice versa.
-    const scoreTextColors = calcTextColors(scoreBarColors);
+    const scoreTextColors = [
+        "#fff",
+        "#fff",
+        "#fff",
+        "#000",
+        "#fff"
+    ];
     const scoreDarkerColors = calcDarkerColors(scoreBarColors);
 
     $('.all_watch_bar_score_chart').each( function () {
@@ -181,7 +201,8 @@
                 global: {
                     title: {
                         display: false
-                    }
+                    },
+                    defaultFontSize: 20
                 }
             },
             data: {
@@ -194,8 +215,7 @@
                         backgroundColor: scoreBarColors[4],
                         datalabels: {
                             display: data[4] > 0,
-                            color: scoreTextColors[4],
-                            align: "start"
+                            color: scoreTextColors[4]
                         }
                     },
                     {
@@ -206,8 +226,7 @@
                         backgroundColor: scoreBarColors[3],
                         datalabels: {
                             display: data[3] > 0,
-                            color: scoreTextColors[3],
-                            align: "start"
+                            color: scoreTextColors[3]
                         }
                     },
                     {
@@ -218,8 +237,7 @@
                         backgroundColor: scoreBarColors[2],
                         datalabels: {
                             display: data[2] > 0,
-                            color: scoreTextColors[2],
-                            align: "start"
+                            color: scoreTextColors[2]
                         }
                     },
                     {
@@ -230,8 +248,7 @@
                         backgroundColor: scoreBarColors[1],
                         datalabels: {
                             display: data[1] > 0,
-                            color: scoreTextColors[1],
-                            align: "start"
+                            color: scoreTextColors[1]
                         }
                     },
                     {
@@ -242,8 +259,7 @@
                         backgroundColor: scoreBarColors[0],
                         datalabels: {
                             display: data[0] > 0,
-                            color: scoreTextColors[0],
-                            align: "start"
+                            color: scoreTextColors[0]
                         }
                     }
                 ]
@@ -263,7 +279,8 @@
                                 display: false,
                                 maxRotation: 0,
                                 min: 0,
-                                max: maxChartTick
+                                max: maxChartTick,
+                                fontSize: 20
                             },
                             gridLines: {
                                 drawTicks: false,
@@ -279,7 +296,18 @@
                         }
                     ]
                 },
+                plugins: {
+                    datalabels: {
+                        anchor: 'center',
+                        font: {
+                            size: 16,
+                            weight: 'bold',
+                            family: 'san-serif'
+                        }
+                    }
+                },
                 responsive: true,
+                aspectRatio: 8,
                 legend: {
                     display: false
                 },

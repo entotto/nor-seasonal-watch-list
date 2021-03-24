@@ -272,6 +272,6 @@ class ShowRepository extends ServiceEntityRepository
             ->setParameter('slug', 'none');
         $qb->andWhere('activity IS NOT NULL');
         $qb->groupBy('s.id');
-        $qb->select('s, count(activity.id) AS total_activity');
+        $qb->select('s, sum(activity.value) AS total_activity');
     }
 }
