@@ -51,12 +51,12 @@ class AllWatchController extends AbstractController
         $season = $selectedSeasonHelper->getSelectedSeason($request);
         $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
         $sortOptions = [
-            'show_asc' => 'Show &or;',
-            'show_desc' => 'Show &and;',
-            'activity_desc' => 'Activity &or;',
-            'activity_asc' => 'Activity &and;',
-            'recommendations_desc' => 'Recommendations &or;',
-            'recommendations_asc' => 'Recommendations &and;',
+            'show_asc' => 'Show &#9660;',
+            'show_desc' => 'Show &#9650;',
+            'activity_desc' => 'Activity &#9660;',
+            'activity_asc' => 'Activity &#9650;',
+            'recommendations_desc' => 'Recommendations &#9660;',
+            'recommendations_asc' => 'Recommendations &#9650;',
         ];
         $activities = $activityRepository->findAll();
         $activityValues = [];

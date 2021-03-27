@@ -1,17 +1,24 @@
-<span class="fs-4 fw-bold">
+<span class="d-none d-lg-inline fs-3 fw-bold">
     {% if row.consolidatedScores is not null %}
-        {% if row.consolidatedScores.mood_array is not null %}
-            <div
-                    class="mood-emoji-container d-inline"
-                    data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
-            >
-                <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
-            </div>
-        {% else %}
-            &nbsp;
-        {% endif %}
+        <div
+                class="mood-emoji-container d-inline pe-2"
+                data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
+        >
+            <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
+        </div>
     {% else %}
         &nbsp;
     {% endif %}
-    {{ row.consolidatedScores.mood_array.mood_average_value|round(2) }}
+</span>
+<span class="d-inline d-lg-none fs-1 fw-bold">
+    {% if row.consolidatedScores is not null %}
+        <div
+                class="mood-emoji-container d-inline pe-2"
+                data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
+        >
+            <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
+        </div>
+    {% else %}
+        &nbsp;
+    {% endif %}
 </span>
