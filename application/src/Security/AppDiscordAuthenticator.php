@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Security;
 
@@ -7,6 +7,7 @@ use App\Service\DiscordApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
@@ -185,7 +186,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
      * @param array $existingRoles
      * @param string $userDiscordId
      * @return array
-     * @throws GuzzleException
+     * @throws GuzzleException|JsonException
      */
     private function updateDiscordRoles(string $userToken, array $existingRoles, string $userDiscordId): array
     {
@@ -193,12 +194,22 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         $rolesToAdd = [];
         $rolesToRemove = [];
         $userDiscordRoles = $this->discordApi->getGuildRolesForMember($this->norGuildId, $userDiscordId);
-        if (isset($userDiscordRoles['807643180349915176'])) {
+        if (
+            isset($userDiscordRoles['807643180349915176'])      // Unheppcat server SWL_ADMIN
+            || isset($userDiscordRoles['667818223374172183'])   // NOR Moderator
+            || isset($userDiscordRoles['596493343354126346'])   // NOR Admin
+            || isset($userDiscordRoles['596493451810570254'])   // NOR Th8a
+            || isset($userDiscordRoles['596493645046218754'])   // NOR Community Manager
+        ) {
             $rolesToAdd[] = 'ROLE_SWL_ADMIN';
         } else {
             $rolesToRemove[] = 'ROLE_SWL_ADMIN';
         }
-        if (isset($userDiscordRoles['807642761338945546'])) {
+        if (
+            isset($userDiscordRoles['807642761338945546'])      // Unheppcat server SWL_USER
+            || isset($userDiscordRoles['596496447386419213'])   // NOR New User
+            || isset($userDiscordRoles['596493814152036352'])   // NOR Regular
+        ) {
             $rolesToAdd[] = 'ROLE_SWL_USER';
         } else {
             $rolesToRemove[] = 'ROLE_SWL_USER';

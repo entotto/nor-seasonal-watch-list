@@ -1,17 +1,18 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Service;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 class DiscordApi
 {
-    private $rootUrl;
-    private $token;
-    private $botToken;
+    private string $rootUrl;
+    private string $token;
+    private string $botToken;
 
     /**
      * DiscordApi constructor.
@@ -34,12 +35,13 @@ class DiscordApi
     /**
      * @return array|null
      * @throws GuzzleException
+     * @throws JsonException
      */
     public function getMe(): ?array
     {
         $result = $this->sendRequest('GET', '/users/@me');
         if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
-            return json_decode($result->getBody(), true);
+            return json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
         }
         return null;
     }
@@ -47,12 +49,13 @@ class DiscordApi
     /**
      * @return array|null
      * @throws GuzzleException
+     * @throws JsonException
      */
     public function getMyGuilds(): ?array
     {
         $result = $this->sendRequest('GET', '/users/@me/guilds');
         if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
-            return json_decode($result->getBody(), true);
+            return json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
         }
         return null;
     }
@@ -62,6 +65,7 @@ class DiscordApi
      * @param string $memberId
      * @return array|null
      * @throws GuzzleException
+     * @throws JsonException
      */
     public function getGuildMemberInfo(string $guildId, string $memberId): ?array
     {
@@ -71,7 +75,7 @@ class DiscordApi
         }
         $result = $this->sendRequest('GET', '/guilds/' . $guildId . '/members/' . $memberId, null, true);
         if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
-            $data = json_decode($result->getBody(), true);
+            $data = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
             $info["{$guildId}:{$memberId}"] = $data;
             return $data;
         }
@@ -82,6 +86,7 @@ class DiscordApi
      * @param string $guildId
      * @return array|null
      * @throws GuzzleException
+     * @throws JsonException
      */
     public function getGuild(string $guildId): ?array
     {
@@ -91,7 +96,7 @@ class DiscordApi
         }
         $result = $this->sendRequest('GET', '/guilds/' . $guildId, null, true);
         if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
-            $data = json_decode($result->getBody(), true);
+            $data = json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
             $guilds[$guildId] = $data;
             return $data;
         }
@@ -101,7 +106,7 @@ class DiscordApi
     /**
      * @param string $guildId
      * @return array|null
-     * @throws GuzzleException
+     * @throws GuzzleException|JsonException
      */
     public function getGuildRoles(string $guildId): ?array
     {
@@ -117,6 +122,7 @@ class DiscordApi
      * @param string $memberId
      * @return array|null
      * @throws GuzzleException
+     * @throws JsonException
      */
     public function getGuildRolesForMember(string $guildId, string $memberId): ?array
     {
