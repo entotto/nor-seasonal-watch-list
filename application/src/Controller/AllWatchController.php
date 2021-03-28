@@ -4,7 +4,10 @@
 
 namespace App\Controller;
 
+use App\Entity\ShowSeasonScore;
+use App\Entity\User;
 use App\Repository\ActivityRepository;
+use App\Repository\ScoreRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
@@ -12,6 +15,7 @@ use App\Repository\UserRepository;
 use App\Service\SelectedSeasonHelper;
 use App\Service\SelectedSortHelper;
 use Doctrine\DBAL\Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,10 +28,12 @@ class AllWatchController extends AbstractController
     /**
      * @Route("/community/watch", name="all_watch_index", options={"expose"=true})
      * @param Request $request
+     * @param EntityManagerInterface $em
      * @param SeasonRepository $seasonRepository
      * @param ShowRepository $showRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
      * @param UserRepository $userRepository
+     * @param ScoreRepository $scoreRepository
      * @param ActivityRepository $activityRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param SelectedSortHelper $selectedSortHelper
@@ -38,10 +44,12 @@ class AllWatchController extends AbstractController
      */
     public function index(
         Request $request,
+        EntityManagerInterface $em,
         SeasonRepository $seasonRepository,
         ShowRepository $showRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
         UserRepository $userRepository,
+        ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
         SelectedSortHelper $selectedSortHelper
@@ -84,6 +92,31 @@ class AllWatchController extends AbstractController
                 }
                 $shows = $actualShows;
             }
+
+            // Add in any missing individual score rows
+            /** @var User $user */
+            $user = $this->getUser();
+            $defaultScore = $scoreRepository->getDefaultScore();
+            $defaultActivity = $activityRepository->getDefaultActivity();
+            foreach ($shows as $key => $show) {
+                $score = $showSeasonScoreRepository->getForUserAndShowAndSeason(
+                    $user,
+                    $show,
+                    $season
+                );
+                if ($score === null) {
+                    $score = new ShowSeasonScore();
+                    $score->setUser($user);
+                    $score->setShow($show);
+                    $score->setSeason($season);
+                    $score->setScore($defaultScore);
+                    $score->setActivity($defaultActivity);
+                    $em->persist($score);
+                    $em->flush();
+                }
+            }
+            // End of adding missing score rows
+
             $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
             $keyedConsolidatedShowActivities = [];
             foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
