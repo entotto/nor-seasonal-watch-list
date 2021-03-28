@@ -250,14 +250,12 @@ class ShowRepository extends ServiceEntityRepository
         $qb->leftJoin('s.scores', 'scores');
         $qb->leftJoin('scores.score', 'score');
         if ($season !== null) {
-            $qb->andWhere('scores.season = :season')
+            $qb->andWhere('scores.season = :season OR scores.season IS NULL')
                 ->setParameter('season', $season);
         }
-        $qb->andWhere('score.slug != :slug')
-            ->setParameter('slug', 'none');
-        $qb->andWhere('score IS NOT NULL');
         $qb->groupBy('s.id');
-        $qb->select('s, avg(score.value) AS avg_score');
+        // Null rows are not included in the avg calculation.
+        $qb->select('s, AVG(score.value) AS avg_score');
     }
 
     private function addActivityTotalField(QueryBuilder $qb, ?Season $season): void
@@ -265,13 +263,11 @@ class ShowRepository extends ServiceEntityRepository
         $qb->leftJoin('s.scores', 'scores');
         $qb->leftJoin('scores.activity', 'activity');
         if ($season !== null) {
-            $qb->andWhere('scores.season = :season')
+            $qb->andWhere('scores.season = :season OR scores.season IS NULL')
                 ->setParameter('season', $season);
         }
-        $qb->andWhere('activity.slug != :slug')
-            ->setParameter('slug', 'none');
-        $qb->andWhere('activity IS NOT NULL');
         $qb->groupBy('s.id');
+        // Null rows are not included in the avg calculation.
         $qb->select('s, sum(activity.value) AS total_activity');
     }
 }
