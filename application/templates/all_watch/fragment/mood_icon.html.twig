@@ -1,15 +1,15 @@
-<span class="d-none d-lg-inline fs-3 fw-bold">
-    {% if row.consolidatedScores is not null %}
-        <div
-                class="mood-emoji-container d-inline pe-2"
-                data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
-        >
-            <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
-        </div>
-    {% else %}
+{% if row.consolidatedScores is not null %}
+    <span
+            class="mood-emoji-container d-none d-lg-inline fs-3 fw-bold pe-2"
+            data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
+    >
+        <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
+    </span>
+{% else %}
+    <span class="mood-emoji-container d-none d-lg-inline fs-3 fw-bold pe-2">
         &nbsp;
-    {% endif %}
-</span>
+    </span>
+{% endif %}
 <span class="d-inline d-lg-none fs-1 fw-bold">
     {% if row.consolidatedScores is not null %}
         <div
