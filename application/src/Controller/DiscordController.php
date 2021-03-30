@@ -2,127 +2,14 @@
 
 namespace App\Controller;
 
-use App\Service\DiscordApi;
-use DateTime;
-use Exception;
-use GuzzleHttp\Exception\GuzzleException;
-use http\Exception\RuntimeException;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Wohali\OAuth2\Client\Provider\Discord;
 
 class DiscordController extends AbstractController
 {
-    /**
-     * @Route("/admin/discord", name="discord_index")
-     * @param Request $request
-     * @param DiscordApi $discordApi
-     * @param string $discordClientId
-     * @param string $discordClientSecret
-     * @param string $norGuildId
-     * @param string $discordTestRedirectUri
-     * @return Response
-     * @throws GuzzleException
-     * @throws IdentityProviderException
-     * @throws Exception
-     * @noinspection PhpPossiblePolymorphicInvocationInspection
-     */
-    public function index(
-        Request $request,
-        DiscordApi $discordApi,
-        string $discordClientId,
-        string $discordClientSecret,
-        string $norGuildId,
-        string $discordTestRedirectUri
-    ): Response {
-        $options = [
-            'state' => bin2hex(random_bytes(20)),
-            'scope' => [
-                'identify',
-                'guilds',
-            ]
-        ];
-        $provider = new Discord([
-            'clientId' => $discordClientId,
-            'clientSecret' => $discordClientSecret,
-            'redirectUri' => $discordTestRedirectUri,
-            'options' => $options,
-        ]);
-
-        $session = $request->getSession();
-
-        $code = $request->get('code');
-        $state = $request->get('state');
-        $oauth2state = $session->get('oauth2state');
-
-        if (!$code) {
-            $authUrl = $provider->getAuthorizationUrl($options);
-            $session->set('oauth2state', $provider->getState());
-            return $this->redirect($authUrl);
-        }
-
-        if (!$state || $state !== $oauth2state) {
-            $session->remove('oauth2state');
-            throw new RuntimeException('Invalid oauth state while authenticating with Discord');
-        }
-
-        $token = $provider->getAccessToken('authorization_code', [
-            'code' => $code
-        ]);
-
-        try {
-            $user = $provider->getResourceOwner($token);
-            $username = $user->getUsername();
-            $discriminator = $user->getDiscriminator();
-            $userArray = $user->toArray();
-            $userId = $user->getId();
-            $expiresDT = new DateTime('@' . $token->getExpires());
-
-            $discordApi->initialize($token->getToken());
-            $meInfo = $discordApi->getMe();
-
-            $myGuildsInfo = $discordApi->getMyGuilds();
-
-            $myUHCGuildInfo = $discordApi->getGuildMemberInfo($norGuildId, $userId);
-            $guildInfo = $discordApi->getGuild($norGuildId);
-            $guildRoles = $discordApi->getGuildRoles($norGuildId);
-            $guildRolesForMember = $discordApi->getGuildRolesForMember($norGuildId, $userId);
-        } catch (Exception $e) {
-            $username = 'unknown (error: ' . $e->getMessage() . ')';
-            $discriminator = '';
-            $userArray = [];
-            $expiresDT = null;
-            $meInfo = [];
-            $myGuildsInfo = [];
-            $myUHCGuildInfo = [];
-            $guildInfo = null;
-            $guildRoles = null;
-            $guildRolesForMember = null;
-        }
-        return $this->render('discord/index.html.twig', [
-            'controller_name' => 'DiscordController',
-            'token' => $token->getToken(),
-            'refreshToken' => $token->getRefreshToken(),
-            'expires' => $token->getExpires(),
-            'expiresDt' => $expiresDT,
-            'tokenHasExpired' => ($token->hasExpired() ? 'yes' : 'no'),
-            'username' => $username,
-            'discriminator' => $discriminator,
-            'userArray' => $userArray,
-            'meInfo' => $meInfo,
-            'myGuildsInfo' => $myGuildsInfo,
-            'myUHCGuildInfo' => $myUHCGuildInfo,
-            'guildInfo' => $guildInfo,
-            'guildRoles' => $guildRoles,
-            'guildRolesForMember' => $guildRolesForMember,
-        ]);
-    }
-
     /**
      * Link to this controller to start the "connect" process
      *
@@ -136,7 +23,7 @@ class DiscordController extends AbstractController
         return $clientRegistry
             ->getClient('discord')
             ->redirect(
-                ['identify', 'guilds'],
+                ['identify'],
                 ['redirect_uri' => $discordRedirectUri]
             );
     }
