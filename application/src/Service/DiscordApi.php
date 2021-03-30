@@ -46,19 +46,19 @@ class DiscordApi
         return null;
     }
 
-    /**
-     * @return array|null
-     * @throws GuzzleException
-     * @throws JsonException
-     */
-    public function getMyGuilds(): ?array
-    {
-        $result = $this->sendRequest('GET', '/users/@me/guilds');
-        if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
-            return json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
-        }
-        return null;
-    }
+//    /**
+//     * @return array|null
+//     * @throws GuzzleException
+//     * @throws JsonException
+//     */
+//    public function getMyGuilds(): ?array
+//    {
+//        $result = $this->sendRequest('GET', '/users/@me/guilds');
+//        if ($result && (int)$result->getStatusCode() > 100 && (int)$result->getStatusCode() < 300) {
+//            return json_decode($result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+//        }
+//        return null;
+//    }
 
     /**
      * @param string $guildId
