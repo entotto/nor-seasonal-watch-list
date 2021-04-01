@@ -101,28 +101,7 @@
                                 <div class="d-flex d-md-none mt-3">
                                 </div>
                                 {{ row.score.show.getAllTitles|raw }}<br>
-                                {% if row.score.show.getAnilistId %}
-                                    <a
-                                            href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
-                                            class="btn btn-outline-primary mt-1 mb-1 d-inline-block d-lg-none"
-                                    >Anilist</a>
-                                    <a
-                                            href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
-                                            target="_blank"
-                                            class="btn btn-outline-primary mt-1 mb-1 d-none d-lg-inline-block"
-                                    >Anilist</a>
-                                {% endif %}
-                                {% if row.score.show.getMalId %}
-                                    <a
-                                            href="https://myanimelist.net/anime/{{ row.score.show.getMalId }}"
-                                            class="btn btn-outline-primary mt-1 mb-1 d-inline-block d-lg-none"
-                                    >MAL</a>
-                                    <a
-                                            href="https://myanimelist.net/anime/{{ row.score.show.getMalId }}"
-                                            target="_blank"
-                                            class="btn btn-outline-primary mt-1 mb-1 d-none d-lg-inline-block"
-                                    >MAL</a>
-                                {% endif %}
+                                {{ include("my_watch/fragment/jump_link_buttons.html.twig") }}
                             </div>
                             <div class="col-xs-12 col-md-4 col-lg-3 col-xl-2">
                                 <div class="d-flex d-md-none mt-2">
