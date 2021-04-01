@@ -7,13 +7,25 @@
 {% endblock %}
 
 {% block second_navbar %}
-    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none" style="top:4.1rem;z-index:1000;">
+    <nav id="second_nav_wide" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-none d-lg-block second-nav-bar">
+        <div class="container">
+            <form class="d-flex" style="width:100%;">
+                <label class="pe-2 pt-2" for="select_show_wide">Show</label>
+                <select id="select_show_wide" class="form-control me-2">
+                    {% for key, row in data %}
+                        <option value="show_target_wide_{{ row.show.id }}">{{ row.show.shortTitle }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </nav>
+    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none second-nav-bar">
         <div class="container-fluid">
             <form class="d-flex">
                 <label class="pe-2 pt-2" for="select_show">Show</label>
                 <select id="select_show" class="form-control me-2">
                     {% for key, row in data %}
-                        <option value="show_target_{{ key }}">{{ row.show.shortTitle }}</option>
+                        <option value="show_target_{{ row.show.id }}">{{ row.show.shortTitle }}</option>
                     {% endfor %}
                 </select>
             </form>
@@ -22,14 +34,14 @@
 {% endblock %}
 
 {% block body %}
-    <div class="d-block d-lg-none">
+    <div class="d-block">
         <div class="row">
             <div class="col">
-                <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_top"></a>
+                <a class="show-anchor" id="show_target_top"></a>
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-md-10" style="margin-top: 2rem;">&nbsp;</div>
+            <div class="col-md-10 second-nav-clearance-padding">&nbsp;</div>
         </div>
     </div>
 
@@ -88,14 +100,19 @@
         </div>
     </div>
     {% for key, row in data %}
-        <div class="row mb-2 pb-2 border-bottom d-none d-lg-flex">
+        <div  id="show_container_wide_{{ row.show.id }}" data-anchorid="{{ row.show.id }}" class="show_container_wide row mb-2 pb-2 border-bottom d-none d-lg-flex">
+            <div class="row">
+                <div class="col">
+                    <a class="show-anchor" id="show_target_wide_{{ row.show.id }}">&nbsp;</a>
+                </div>
+            </div>
             <div class="col-md-2">
                 <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
             </div>
             <div class="col-md-2">
                 {{ row.show.title|raw }}
                 <br>
-                {% include 'all_watch/fragment/anilist_mal_link_buttons.html.twig' %}
+                {% include 'all_watch/fragment/jump_link_buttons.html.twig' %}
             </div>
 
             <div class="col-md-8">
@@ -195,20 +212,20 @@
 
     <div class="d-block d-lg-none">
         {% for key, row in data %}
-            <div id="show_container_{{ key }}" class="show_container" data-anchorid="{{ key }}">
+            <div id="show_container_{{ row.show.id }}" class="show_container" data-anchorid="{{ row.show.id }}">
                 <div class="row">
                     <div class="col">
-                        <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_{{ key }}">&nbsp;</a>
+                        <a class="show-anchor" id="show_target_{{ row.show.id }}">&nbsp;</a>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-4">
                         <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                     </div>
-                    <div class="col-8">
+                    <div class="col-8 position-relative">
                         {{ row.show.title|raw }}
                         <br>
-                        {% include 'all_watch/fragment/anilist_mal_link_buttons.html.twig' %}
+                        {% include 'all_watch/fragment/jump_link_buttons.html.twig' %}
                     </div>
                 </div>
                 {% if row.consolidatedActivities %}
@@ -291,13 +308,14 @@
             </div>
         {% endfor %}
 
-        {% if data is not empty %}
-            <a class="btn btn-primary rounded-pill d-block d-lg-none" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
-            <div class="row">
-                <div class="col mb-5 mr-3">&nbsp;</div>
-            </div>
-        {% endif %}
     </div>
+
+    {% if data is not empty %}
+        <a class="btn btn-primary rounded-pill d-block back-to-top-button" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
+        <div class="row">
+            <div class="col mb-5 mr-3">&nbsp;</div>
+        </div>
+    {% endif %}
 
 {% endblock %}
 

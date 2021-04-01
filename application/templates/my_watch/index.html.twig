@@ -3,13 +3,13 @@
 {% block title %}Personal Watch List{% endblock %}
 
 {% block second_navbar %}
-    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none" style="top:4.1rem;z-index:1000;">
-        <div class="container-fluid">
-            <form class="d-flex">
+    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block second-nav-bar">
+        <div class="container">
+            <form class="d-flex" style="width:100%;">
                 <label class="pe-2 pt-2" for="select_show">Show</label>
                 <select id="select_show" class="form-control me-2">
                     {% for key, row in data %}
-                        <option value="show_target_{{ key }}">{{ row.score.show.getJapaneseTitle }}</option>
+                        <option value="show_target_{{ row.score.show.getId }}">{{ row.score.show.getJapaneseTitle }}</option>
                     {% endfor %}
                 </select>
             </form>
@@ -18,14 +18,14 @@
 {% endblock %}
 
 {% block body %}
-    <div class="d-block d-lg-none">
+    <div class="d-block">
         <div class="row">
             <div class="col">
-                <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_top"></a>
+                <a class="show-anchor" id="show_target_top"></a>
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-md-10" style="margin-top: 2rem;">&nbsp;</div>
+            <div class="col-md-10 second-nav-clearance-padding">&nbsp;</div>
         </div>
     </div>
 
@@ -82,13 +82,13 @@
             </div>
             {% if data is not empty %}
                 {% for key, row in data %}
-                    <div id="show_container_{{ key }}" class="show_container" data-anchorid="{{ key }}">
+                    <div id="show_container_{{ row.score.show.getId }}" class="show_container" data-anchorid="{{ row.score.show.getId }}">
                         {% if row.form %}
                             {{ form_start(row.form) }}
                         {% endif %}
                         <div class="row">
                             <div class="col">
-                                <a style="position:relative;top:-7rem;z-index:-100;" id="show_target_{{ key }}">&nbsp;</a>
+                                <a class="show-anchor" id="show_target_{{ row.score.show.getId }}">&nbsp;</a>
                             </div>
                         </div>
                         <div class="row border-bottom mb-2 pb-md-2 pb-4">
@@ -132,7 +132,7 @@
                                     {{ form_widget(
                                         row.form.activity,
                                         {
-                                            'id': "show_season_score_activity_" ~ key,
+                                            'id': "show_season_score_activity_" ~ row.score.show.getId,
                                             'attr': {
                                             'class': 'show_season_score_activity'
                                         }
@@ -148,7 +148,7 @@
                                     {{ form_widget(
                                         row.form.score,
                                         {
-                                            'id': "show_season_score_score_" ~ key,
+                                            'id': "show_season_score_score_" ~ row.score.show.getId,
                                             'attr': {
                                                 'class': 'show_season_score_score'
                                             }
@@ -183,7 +183,7 @@
         <div class="col-xs-12">&nbsp;</div>
     </div>
 
-    <a class="btn btn-primary rounded-pill d-block d-lg-none" style="position: fixed; bottom: 1rem; right: 1rem; z-index:100;" href="#show_target_top">Top</a>
+    <a class="btn btn-primary rounded-pill d-block back-to-top-button" href="#show_target_top">Top</a>
 
 {% endblock %}
 

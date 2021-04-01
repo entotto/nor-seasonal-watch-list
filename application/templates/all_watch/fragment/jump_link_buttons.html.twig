@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="col-6 d-grid gap-0">
+        {% if row.show.anilistShowUrl %}
+            <a
+                    href="{{ row.show.anilistShowUrl }}"
+                    target="_blank"
+                    class="btn btn-sm btn-outline-primary m-1 ms-0"
+            >Anilist</a>
+        {% endif %}
+        {% if row.show.malShowUrl %}
+            <a
+                    href="{{ row.show.malShowUrl }}"
+                    target="_blank"
+                    class="btn btn-sm btn-outline-primary m-1 ms-0"
+            >MAL</a>
+        {% endif %}
+        <a class="btn btn-sm btn-outline-success m-1 ms-0" href="{{ path('my_watch_index') }}?#show_target_{{ row.show.id }}">
+            Personal
+        </a>
+    </div>
+</div>

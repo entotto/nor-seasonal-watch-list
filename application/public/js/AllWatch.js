@@ -33,17 +33,6 @@
 
     const whiten = (color, ratio) => d3.interpolateRgb(color, "#fff")(ratio);
 
-    // const calcTextColors = (barColors) => {
-    //     return barColors.map((rgba) => {
-    //         const hsl = d3.hsl(rgba);
-    //         const isLight = hsl.l > 0.5;
-    //         // Trying out the datalabel-always-outside strategy ('outside' is always light, unless we support dark mode)
-    //         //const isLight = false;
-    //         hsl.l += isLight ? -0.6 : 0.6;
-    //         return hsl + "";
-    //     });
-    // }
-
     const calcDarkerColors = (barColors) => {
         // noinspection JSUnusedLocalSymbols
         return barColors.map((rgba, i) => {
@@ -51,18 +40,6 @@
             hsl.l -= 0.1;
             return hsl + "";
         });
-    }
-
-    // noinspection JSUnusedLocalSymbols
-    const isBarTooNarrow = (context) => {
-        // Trying out the datalabel-always-outside strategy
-        return true;
-        // const currentValue = context.dataset.data[context.dataIndex];
-        // const yAxisLabelWidth = 60; // magic number
-        // const totalWidth = Number($(this).attr("width"));
-        // const approxBarLength = (totalWidth - yAxisLabelWidth) * currentValue / maxChartTick;
-        //// more magic numbers.. maybe it's better to always render the datalabel outside the bar
-        // return currentValue.toString().length * 10 + 26 > approxBarLength;
     }
 
     const activityBarColors = [
