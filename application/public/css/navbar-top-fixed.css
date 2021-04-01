@@ -120,3 +120,25 @@ a.nor-red {
 a.nor-red:hover {
     color: rgb(217, 74, 74);
 }
+
+.second-nav-bar {
+    top:4.1rem;
+    z-index:1000;
+}
+
+.second-nav-clearance-padding {
+    margin-top: 2rem;
+}
+
+a.show-anchor {
+    position:relative;
+    top:-7rem;
+    z-index:-100;
+}
+
+a.back-to-top-button {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index:100;
+}
