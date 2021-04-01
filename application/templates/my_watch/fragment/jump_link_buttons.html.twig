@@ -22,7 +22,10 @@
                     class="btn btn-sm btn-outline-primary m-1 ms-0 d-none d-lg-inline-block"
             >MAL</a>
         {% endif %}
-        <a class="btn btn-sm btn-outline-success m-1 ms-0" href="{{ path('all_watch_index') }}?#show_target_{{ row.score.show.getId }}">
+        <a class="btn btn-sm btn-outline-success m-1 ms-0 d-inline-block d-lg-none" href="{{ path('all_watch_index') }}?#show_target_{{ row.score.show.getId }}">
+            Community
+        </a>
+        <a class="btn btn-sm btn-outline-success m-1 ms-0 d-none d-lg-inline-block" href="{{ path('all_watch_index') }}?#show_target_wide_{{ row.score.show.getId }}">
             Community
         </a>
     </div>
