@@ -84,6 +84,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         $discordId = $discordUser->getId();
         $localUsername = $discordUser->getUsername() . '#' . $discordUser->getDiscriminator();
 
+        /** @var User $existingUser */
         $existingUser = $this->em->getRepository(User::class)
             ->findOneBy(['username' => $localUsername]);
         if ($existingUser) {
@@ -92,6 +93,12 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
                 $newRoles = $this->updateDiscordRoles($credentials->getToken(), $existingRoles, $discordId);
                 if (!$this->arraysHaveSameValues($existingRoles, $newRoles)) {
                     $existingUser->setRoles($newRoles);
+                    $this->em->persist($existingUser);
+                    $this->em->flush();
+                }
+                $nickname = $this->getDiscordNickname($credentials->getToken(), $discordId);
+                if ($nickname !== null) {
+                    $existingUser->setDisplayName($nickname);
                     $this->em->persist($existingUser);
                     $this->em->flush();
                 }
@@ -115,6 +122,14 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
             $user->setRoles($this->updateDiscordRoles($credentials->getToken(), ['ROLE_USER'], $discordId));
         } catch (GuzzleException|Exception $e) {
             $user->setRoles(['ROLE_USER']);
+        }
+        try {
+            $nickname = $this->getDiscordNickname($credentials->getToken(), $discordId);
+            if ($nickname !== null) {
+                $existingUser->setDisplayName($nickname);
+            }
+        } catch (GuzzleException|Exception $e) {
+            $user->setDisplayName(null);
         }
 
         $this->em->persist($user);
@@ -179,6 +194,19 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
     private function getDiscordClient(): OAuth2ClientInterface
     {
         return $this->clientRegistry->getClient('discord');
+    }
+
+    /**
+     * @param string $userToken
+     * @param string $userDiscordId
+     * @return string|null
+     * @throws GuzzleException
+     * @throws JsonException
+     */
+    private function getDiscordNickname(string $userToken, string $userDiscordId): ?string
+    {
+        $this->discordApi->initialize($userToken);
+        return $this->discordApi->getNicknameForMember($this->norGuildId, $userDiscordId);
     }
 
     /**
