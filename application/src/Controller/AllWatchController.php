@@ -180,9 +180,10 @@ class AllWatchController extends AbstractController
                     'anilistShowUrl' => $show->getSiteUrl() ?: "https://anilist.co/anime/" . $show->getAnilistId(),
                     'malShowUrl' => $show->getMalId() ? "https://myanimelist.net/anime/" . $show->getMalId() : '',
                 ];
-                $scores = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show);
+                $scoreValues = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show, 'displayname');
                 $filteredScores = [];
-                foreach ($scores as $score) {
+                foreach ($scoreValues as $scoreValue) {
+                    $score = $scoreValue[0];
                     if ($score->getScore() !== null && $score->getScore()->getValue() !== 0) {
                         $userKeys[$score->getUser()->getUsername()] = true;
                     }
