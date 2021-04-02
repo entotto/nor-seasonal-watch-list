@@ -93,15 +93,11 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
                 $newRoles = $this->updateDiscordRoles($credentials->getToken(), $existingRoles, $discordId);
                 if (!$this->arraysHaveSameValues($existingRoles, $newRoles)) {
                     $existingUser->setRoles($newRoles);
-                    $this->em->persist($existingUser);
-                    $this->em->flush();
                 }
                 $nickname = $this->getDiscordNickname($credentials->getToken(), $discordId);
-                if ($nickname !== null) {
-                    $existingUser->setDisplayName($nickname);
-                    $this->em->persist($existingUser);
-                    $this->em->flush();
-                }
+                $existingUser->setDisplayName($nickname);
+                $this->em->persist($existingUser);
+                $this->em->flush();
             } catch (GuzzleException|Exception $e) {
                 // Leave existing roles for now
             }
