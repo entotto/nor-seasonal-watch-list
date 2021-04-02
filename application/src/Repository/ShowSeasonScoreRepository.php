@@ -55,19 +55,20 @@ class ShowSeasonScoreRepository extends ServiceEntityRepository
         string $sortOrder = 'username',
         string $sortDirection = 'ASC'
     ): array {
-        /** @noinspection DegradedSwitchInspection */
+        $qb = $this->findAllForSeasonAndShowQb($season, $show)
+            ->join('s.user', 'u');
         switch ($sortOrder) {
+            case 'displayname':
+                $qb->select('s, u, COALESCE(u.displayName, u.username) AS sortColumn')
+                    ->orderBy('sortColumn', $sortDirection);
+                break;
             case 'username':
-                $orderColumn = 'u.username';
+                $qb->orderBy('u.username', $sortDirection);
                 break;
             default:
                 throw new RuntimeException('Unknown sort order requested.');
         }
-        return $this->findAllForSeasonAndShowQb($season, $show)
-            ->join('s.user', 'u')
-            ->orderBy($orderColumn, $sortDirection)
-            ->getQuery()
-            ->getResult();
+        return $qb->getQuery()->getResult();
     }
 
     /**
