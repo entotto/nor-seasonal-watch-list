@@ -140,6 +140,19 @@ class DiscordApi
     }
 
     /**
+     * @param string $norGuildId
+     * @param string $userDiscordId
+     * @return string|null
+     * @throws GuzzleException
+     * @throws JsonException
+     */
+    public function getNicknameForMember(string $norGuildId, string $userDiscordId): ?string
+    {
+        $memberInfo = $this->getGuildMemberInfo($norGuildId, $userDiscordId);
+        return $memberInfo['nick'];
+    }
+
+    /**
      * @param string $roleId
      * @param array $allRolesInfo
      * @return array|null

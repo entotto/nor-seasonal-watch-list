@@ -7,7 +7,7 @@
     {% for scoreField in row.scores %}
         <tr>
             <td class="col-4">
-                {{ scoreField.getUser.getDiscordUsername }}
+                {{ scoreField.getUser.getDisplayName }}
             </td>
             {% if scoreField.activity and scoreField.activity.getSlug != 'none' %}
                 <td class="col-4">
