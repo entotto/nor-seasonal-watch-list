@@ -19,29 +19,19 @@
         });
     })
 
-    const calcMaxChartTick = function (maxScore) {
-        let maxChartTick
-        if (maxScore < 6) {
-            maxChartTick = maxScore + 1
-        } else {
-            const stepSize = Math.max(Math.floor(maxScore / 6), 1)
-            maxChartTick = stepSize * (6 + 1)
-        }
-        return maxChartTick
+    const calcMaxChartTick = function (maxScoreCount) {
+        return maxScoreCount
+        // let maxChartTick
+        // if (maxScoreCount < 6) {
+        //     maxChartTick = maxScoreCount + 1
+        // } else {
+        //     const stepSize = Math.max(Math.floor(maxScoreCount / 6), 1)
+        //     maxChartTick = stepSize * (6 + 1)
+        // }
+        // return maxChartTick
     }
 
     const whiten = (color, ratio) => d3.interpolateRgb(color, "#fff")(ratio);
-
-    const calcTextColors = (barColors) => {
-        return barColors.map((rgba) => {
-            const hsl = d3.hsl(rgba);
-            //const isLight = hsl.l > 0.5;
-            // Trying out the datalabel-always-outside strategy ('outside' is always light, unless we support dark mode)
-            const isLight = !isDarkMode; // true;
-            hsl.l += isLight ? -0.6 : 0.6;
-            return hsl + "";
-        });
-    }
 
     const calcDarkerColors = (barColors) => {
         // noinspection JSUnusedLocalSymbols
@@ -52,33 +42,22 @@
         });
     }
 
-    // noinspection JSUnusedLocalSymbols
-    const isBarTooNarrow = (context) => {
-        // Trying out the datalabel-always-outside strategy
-        return true;
-        // const currentValue = context.dataset.data[context.dataIndex];
-        // const yAxisLabelWidth = 60; // magic number
-        // const totalWidth = Number($(this).attr("width"));
-        // const approxBarLength = (totalWidth - yAxisLabelWidth) * currentValue / maxChartTick;
-        //// more magic numbers.. maybe it's better to always render the datalabel outside the bar
-        // return currentValue.toString().length * 10 + 26 > approxBarLength;
-    }
-
     const activityBarColors = [
-        "#007eb9", // blue / finished
-        whiten("#007eb9", 0.25), // mid blue / watching
-        whiten("#007eb9", 0.5),  // weaker blue / paused
-        whiten("#007eb9", 0.75), // weakest blue / ptw
-        whiten("#000", 0.85)     // grey / dropped
-    ];
-    const activityTextColors = calcTextColors(activityBarColors)
+        "#007eb9", // blue : watching/finished
+        whiten("#007eb9", 0.5),  // weaker blue : ptw
+    ]
+    const activityTextColors = [
+        '#fff',
+        '#fff'
+    ]
+
     const activityDarkerColors = calcDarkerColors(activityBarColors)
 
     $('.all_watch_bar_activity_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
-        const maxScore = $(this).data('maxscore')
-        const maxChartTick = calcMaxChartTick(maxScore)
+        const maxActivityCount = $(this).data('maxactivitycount')
+        const maxChartTick = calcMaxChartTick(maxActivityCount)
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -93,51 +72,67 @@
                 }
             },
             data: {
-                labels: [
-                    'Finished',
-                    'Watching',
-                    'Paused',
-                    'PTW',
-                    'Dropped'
-                ],
-                datasets: [{
-                    data: data,
-                    borderColor: activityDarkerColors,
-                    borderSkipped: false,
-                    borderWidth: 1,
-                    backgroundColor: activityBarColors,
-                    categoryPercentage: 0.9, // Tighten up the space between bars
-                    datalabels: {
-                        color: activityTextColors,
-                        align: (context) => isBarTooNarrow(context) ? "end" : "start"
+                datasets: [
+                    {
+                        data: [data[1]],
+                        borderColor: activityDarkerColors[1],
+                        borderSkipped: false,
+                        borderWidth: 1,
+                        backgroundColor: activityBarColors[1],
+                        datalabels: {
+                            display: data[1] > 0,
+                            color: activityTextColors[1]
+                        }
+                    },
+                    {
+                        data: [data[0]],
+                        borderColor: activityDarkerColors[0],
+                        borderSkipped: false,
+                        borderWidth: 1,
+                        backgroundColor: activityBarColors[0],
+                        datalabels: {
+                            display: data[0] > 0,
+                            color: activityTextColors[0]
+                        }
                     }
-                }]
+                ]
             },
             options: {
+                layout: {
+                    padding: {
+                        left: -15
+                    }
+                },
                 scales: {
                     xAxes: [
                         {
-                            display: true,
+                            stacked: true,
+                            display: false,
                             ticks: {
                                 display: false,
-                                maxRotation: 0,
-                                min: 0,
                                 max: maxChartTick
                             },
-                            gridLines: {
-                                drawTicks: false,
-                                lineWidth: 0,
-                                zeroLineWidth: 1
-                            }
                         }
                     ],
                     yAxes: [
                         {
+                            stacked: true,
                             gridLines: { display: false }
                         }
                     ]
                 },
-                responsive: false,
+                plugins: {
+                    datalabels: {
+                        anchor: 'center',
+                        font: {
+                            size: 16,
+                            weight: 'bold',
+                            family: 'san-serif'
+                        }
+                    }
+                },
+                responsive: true,
+                aspectRatio: 8,
                 legend: {
                     display: false
                 },
@@ -159,14 +154,20 @@
         whiten("#000", 0.25)     // black / unfavorable
     ];
     // Use dark text on light background and vice versa.
-    const scoreTextColors = calcTextColors(scoreBarColors);
+    const scoreTextColors = [
+        "#fff",
+        "#fff",
+        "#fff",
+        "#000",
+        "#fff"
+    ];
     const scoreDarkerColors = calcDarkerColors(scoreBarColors);
 
     $('.all_watch_bar_score_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
-        const maxScore = $(this).data('maxscore')
-        const maxChartTick = calcMaxChartTick(maxScore)
+        const maxScoreCount = $(this).data('maxscorecount')
+        const maxChartTick = calcMaxChartTick(maxScoreCount)
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -177,42 +178,86 @@
                 global: {
                     title: {
                         display: false
-                    }
+                    },
+                    defaultFontSize: 20
                 }
             },
             data: {
-                labels: [
-                    'Th8a should',
-                    'Highly favorable',
-                    'Favorable',
-                    'Neutral',
-                    'Unfavorable'
-                ],
                 datasets: [
                     {
-                        data: data,
-                        borderColor: scoreDarkerColors,
+                        data: [data[4]],
+                        borderColor: scoreDarkerColors[4],
                         borderSkipped: false,
                         borderWidth: 1,
-                        backgroundColor: scoreBarColors,
-                        categoryPercentage: 0.9,
+                        backgroundColor: scoreBarColors[4],
                         datalabels: {
-                            color: scoreTextColors,
-                            align: (context) => isBarTooNarrow(context) ? "end" : "start"
+                            display: data[4] > 0,
+                            color: scoreTextColors[4]
+                        }
+                    },
+                    {
+                        data: [data[3]],
+                        borderColor: scoreDarkerColors[3],
+                        borderSkipped: false,
+                        borderWidth: 1,
+                        backgroundColor: scoreBarColors[3],
+                        datalabels: {
+                            display: data[3] > 0,
+                            color: scoreTextColors[3]
+                        }
+                    },
+                    {
+                        data: [data[2]],
+                        borderColor: scoreDarkerColors[2],
+                        borderSkipped: false,
+                        borderWidth: 1,
+                        backgroundColor: scoreBarColors[2],
+                        datalabels: {
+                            display: data[2] > 0,
+                            color: scoreTextColors[2]
+                        }
+                    },
+                    {
+                        data: [data[1]],
+                        borderColor: scoreDarkerColors[1],
+                        borderSkipped: false,
+                        borderWidth: 1,
+                        backgroundColor: scoreBarColors[1],
+                        datalabels: {
+                            display: data[1] > 0,
+                            color: scoreTextColors[1]
+                        }
+                    },
+                    {
+                        data: [data[0]],
+                        borderColor: scoreDarkerColors[0],
+                        borderSkipped: false,
+                        borderWidth: 1,
+                        backgroundColor: scoreBarColors[0],
+                        datalabels: {
+                            display: data[0] > 0,
+                            color: scoreTextColors[0]
                         }
                     }
                 ]
             },
             options: {
+                layout: {
+                    padding: {
+                        left: -15
+                    }
+                },
                 scales: {
                     xAxes: [
                         {
-                            display: true,
+                            stacked: true,
+                            display: false,
                             ticks: {
                                 display: false,
                                 maxRotation: 0,
                                 min: 0,
-                                max: maxChartTick
+                                max: maxChartTick,
+                                fontSize: 20
                             },
                             gridLines: {
                                 drawTicks: false,
@@ -223,11 +268,23 @@
                     ],
                     yAxes: [
                         {
+                            stacked: true,
                             gridLines: { display: false }
                         }
                     ]
                 },
-                responsive: false,
+                plugins: {
+                    datalabels: {
+                        anchor: 'center',
+                        font: {
+                            size: 16,
+                            weight: 'bold',
+                            family: 'san-serif'
+                        }
+                    }
+                },
+                responsive: true,
+                aspectRatio: 8,
                 legend: {
                     display: false
                 },
@@ -243,15 +300,26 @@
 
     $('.mood-emoji-container').each( function () {
         const moodValue = $(this).data('moodValue')
-        if (moodValue > 1) {
-            $(this).css('color', '#eeb408')
-        } else if (moodValue > 0.1) {
-            $(this).css('color', '#eeb408')
-        } else if (moodValue > -0.1) {
+        if (moodValue > 5) {
+            $(this).css('color', '#ee9e47') // #eeb408
+        } else if (moodValue > 1) {
+            $(this).css('color', '#eecb62')
+        } else if (moodValue > -1) {
             $(this).css('color', '#bbbbbb')
         } else {
             $(this).css('color', '#555555')
         }
     })
+
+    // Work around scroll-to-anchor bug in chrome
+    const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    if (window.location.hash && isChrome) {
+        setTimeout(function () {
+            const hash = window.location.hash;
+            window.location.hash = "";
+            window.location.hash = hash;
+        }, 900);
+    }
+
 
 })(window, jQuery);

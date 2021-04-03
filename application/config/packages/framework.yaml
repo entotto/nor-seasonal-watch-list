@@ -15,8 +15,9 @@ framework:
         enabled: true
         handler_id: session.handler.native_file
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
-        # 14 days, 14 * 24 * 60 * 60
-        cookie_lifetime: 1209600
+        # 60 days, 60 * 24 * 60 * 60
+        cookie_lifetime: 5184000
+        gc_maxlifetime: 5184000
         cookie_secure: auto
         cookie_samesite: lax
 

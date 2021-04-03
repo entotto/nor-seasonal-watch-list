@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Security;
 
@@ -7,6 +7,7 @@ use App\Service\DiscordApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
@@ -83,6 +84,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         $discordId = $discordUser->getId();
         $localUsername = $discordUser->getUsername() . '#' . $discordUser->getDiscriminator();
 
+        /** @var User $existingUser */
         $existingUser = $this->em->getRepository(User::class)
             ->findOneBy(['username' => $localUsername]);
         if ($existingUser) {
@@ -91,9 +93,11 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
                 $newRoles = $this->updateDiscordRoles($credentials->getToken(), $existingRoles, $discordId);
                 if (!$this->arraysHaveSameValues($existingRoles, $newRoles)) {
                     $existingUser->setRoles($newRoles);
-                    $this->em->persist($existingUser);
-                    $this->em->flush();
                 }
+                $nickname = $this->getDiscordNickname($credentials->getToken(), $discordId);
+                $existingUser->setDisplayName($nickname);
+                $this->em->persist($existingUser);
+                $this->em->flush();
             } catch (GuzzleException|Exception $e) {
                 // Leave existing roles for now
             }
@@ -114,6 +118,12 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
             $user->setRoles($this->updateDiscordRoles($credentials->getToken(), ['ROLE_USER'], $discordId));
         } catch (GuzzleException|Exception $e) {
             $user->setRoles(['ROLE_USER']);
+        }
+        try {
+            $nickname = $this->getDiscordNickname($credentials->getToken(), $discordId);
+            $existingUser->setDisplayName($nickname);
+        } catch (GuzzleException|Exception $e) {
+            $user->setDisplayName(null);
         }
 
         $this->em->persist($user);
@@ -182,10 +192,23 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
 
     /**
      * @param string $userToken
+     * @param string $userDiscordId
+     * @return string|null
+     * @throws GuzzleException
+     * @throws JsonException
+     */
+    private function getDiscordNickname(string $userToken, string $userDiscordId): ?string
+    {
+        $this->discordApi->initialize($userToken);
+        return $this->discordApi->getNicknameForMember($this->norGuildId, $userDiscordId);
+    }
+
+    /**
+     * @param string $userToken
      * @param array $existingRoles
      * @param string $userDiscordId
      * @return array
-     * @throws GuzzleException
+     * @throws GuzzleException|JsonException
      */
     private function updateDiscordRoles(string $userToken, array $existingRoles, string $userDiscordId): array
     {
@@ -193,12 +216,22 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         $rolesToAdd = [];
         $rolesToRemove = [];
         $userDiscordRoles = $this->discordApi->getGuildRolesForMember($this->norGuildId, $userDiscordId);
-        if (isset($userDiscordRoles['807643180349915176'])) {
+        if (
+            isset($userDiscordRoles['807643180349915176'])      // Unheppcat server SWL_ADMIN
+            || isset($userDiscordRoles['667818223374172183'])   // NOR Moderator
+            || isset($userDiscordRoles['596493343354126346'])   // NOR Admin
+            || isset($userDiscordRoles['596493451810570254'])   // NOR Th8a
+            || isset($userDiscordRoles['596493645046218754'])   // NOR Community Manager
+        ) {
             $rolesToAdd[] = 'ROLE_SWL_ADMIN';
         } else {
             $rolesToRemove[] = 'ROLE_SWL_ADMIN';
         }
-        if (isset($userDiscordRoles['807642761338945546'])) {
+        if (
+            isset($userDiscordRoles['807642761338945546'])      // Unheppcat server SWL_USER
+            || isset($userDiscordRoles['596496447386419213'])   // NOR New User
+            || isset($userDiscordRoles['596493814152036352'])   // NOR Regular
+        ) {
             $rolesToAdd[] = 'ROLE_SWL_USER';
         } else {
             $rolesToRemove[] = 'ROLE_SWL_USER';

@@ -40,7 +40,7 @@ class Score
 
     /**
      * @var float|null
-     * @ORM\Column(type="decimal", precision=5, scale=1, nullable=true)
+     * @ORM\Column(type="decimal", precision=10, scale=3, nullable=true)
      */
     private ?float $value;
 

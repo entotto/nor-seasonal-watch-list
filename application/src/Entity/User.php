@@ -30,6 +30,13 @@ class User implements UserInterface
     private string $username;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $displayName;
+
+    /**
      * @var array
      * @ORM\Column(type="json")
      */
@@ -436,6 +443,22 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDisplayName(): ?string
+    {
+        return (empty($this->displayName)) ? $this->discordUsername : $this->displayName;
+    }
+
+    /**
+     * @param string|null $displayName
+     */
+    public function setDisplayName(?string $displayName): void
+    {
+        $this->displayName = $displayName;
     }
 
     public function getPreferences(): UserPreferences

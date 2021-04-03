@@ -18,7 +18,7 @@ class ScoreType extends AbstractType
             ->add('slug')
             ->add('rankOrder')
             ->add('value', NumberType::class, [
-                'scale' => 1,
+                'scale' => 3,
                 'required' => false,
             ])
             ->add('colorValue')

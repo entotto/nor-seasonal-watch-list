@@ -145,37 +145,49 @@ class ShowRepository extends ServiceEntityRepository
                 $sortOrder = 'desc';
                 break;
             case 'statistics_highest':
-                $this->filterByAvgScore($qb, $season);
+            case 'recommendations_desc':
+                $this->addAvgScoreField($qb, $season);
                 $orderBy = 'avg_score';
                 $sortOrder = 'desc';
                 break;
             case 'statistics_lowest':
-                $this->filterByAvgScore($qb, $season);
+            case 'recommendations_asc':
+                $this->addAvgScoreField($qb, $season);
                 $orderBy = 'avg_score';
                 $sortOrder = 'asc';
                 break;
             case 'activity_highest':
-                $this->filterByBestActivity($qb, $season, $user);
+                $this->addActivityRankField($qb, $season, $user);
                 $orderBy = 'activity_rank';
                 // 'Best' activity has the lowest rank value
                 $sortOrder = 'asc';
                 break;
             case 'activity_lowest':
-                $this->filterByBestActivity($qb, $season, $user);
+                $this->addActivityRankField($qb, $season, $user);
                 $orderBy = 'activity_rank';
                 // 'Worst activity has the highest rank value
                 $sortOrder = 'desc';
                 break;
             case 'recommendation_highest':
-                $this->filterByBestScore($qb, $season, $user);
+                $this->addScoreRankField($qb, $season, $user);
                 $orderBy = 'score_rank';
                 // 'Best' score has the lowest rank value
                 $sortOrder = 'asc';
                 break;
             case 'recommendation_lowest':
-                $this->filterByBestScore($qb, $season, $user);
+                $this->addScoreRankField($qb, $season, $user);
                 $orderBy = 'score_rank';
                 // 'Worst' score has the highest rank value
+                $sortOrder = 'desc';
+                break;
+            case 'activity_asc':
+                $this->addActivityTotalField($qb, $season);
+                $orderBy = 'total_activity';
+                $sortOrder = 'asc';
+                break;
+            case 'activity_desc':
+                $this->addActivityTotalField($qb, $season);
+                $orderBy = 'total_activity';
                 $sortOrder = 'desc';
                 break;
             default:
@@ -192,7 +204,7 @@ class ShowRepository extends ServiceEntityRepository
      * @param Season|null $season
      * @param User|null $user
      */
-    private function filterByBestScore(QueryBuilder $qb, ?Season $season, ?User $user): void
+    private function addScoreRankField(QueryBuilder $qb, ?Season $season, ?User $user): void
     {
         $qb->leftJoin('s.scores', 'scores');
         $qb->leftJoin('scores.score', 'score');
@@ -213,7 +225,7 @@ class ShowRepository extends ServiceEntityRepository
      * @param Season|null $season
      * @param User|null $user
      */
-    private function filterByBestActivity(QueryBuilder $qb, ?Season $season, ?User $user): void
+    private function addActivityRankField(QueryBuilder $qb, ?Season $season, ?User $user): void
     {
         $qb->leftJoin('s.scores', 'scores');
         $qb->leftJoin('scores.activity', 'activity');
@@ -233,17 +245,29 @@ class ShowRepository extends ServiceEntityRepository
      * @param QueryBuilder $qb
      * @param Season|null $season
      */
-    private function filterByAvgScore(QueryBuilder $qb, ?Season $season): void
+    private function addAvgScoreField(QueryBuilder $qb, ?Season $season): void
     {
         $qb->leftJoin('s.scores', 'scores');
         $qb->leftJoin('scores.score', 'score');
         if ($season !== null) {
-            $qb->andWhere('scores.season = :season')
+            $qb->andWhere('scores.season = :season OR scores.season IS NULL')
                 ->setParameter('season', $season);
         }
-        $qb->andWhere('score.slug != :slug')
-            ->setParameter('slug', 'none');
         $qb->groupBy('s.id');
-        $qb->select('s, avg(score.value) AS avg_score');
+        // Null rows are not included in the avg calculation.
+        $qb->select('s, AVG(score.value) AS avg_score');
+    }
+
+    private function addActivityTotalField(QueryBuilder $qb, ?Season $season): void
+    {
+        $qb->leftJoin('s.scores', 'scores');
+        $qb->leftJoin('scores.activity', 'activity');
+        if ($season !== null) {
+            $qb->andWhere('scores.season = :season OR scores.season IS NULL')
+                ->setParameter('season', $season);
+        }
+        $qb->groupBy('s.id');
+        // Null rows are not included in the avg calculation.
+        $qb->select('s, sum(activity.value) AS total_activity');
     }
 }

@@ -1,0 +1,31 @@
+<table class="table table-sm align-middle">
+    <tr>
+        <th class="col-4">User</th>
+        <th class="col-3">Activity</th>
+        <th class="col-3">Recommendation</th>
+    </tr>
+    {% for scoreField in row.scores %}
+        <tr>
+            <td class="col-4">
+                {{ scoreField.getUser.getDisplayName }}
+            </td>
+            {% if scoreField.activity and scoreField.activity.getSlug != 'none' %}
+                <td class="col-4">
+                    <span class="{{ scoreField.activity.getColorValue }} watching-legend-pip d-inline-block"></span>
+                    {{ scoreField.activity.getNickname }}
+                </td>
+            {% else %}
+                <td class="col-4">&nbsp;</td>
+            {% endif %}
+            {% if scoreField.score and scoreField.score.getSlug != 'none' %}
+                <td class="col-4">
+                    <span class="{{ scoreField.score.getColorValue }} watching-legend-pip d-inline-block"></span>
+                    {{ scoreField.score.getNickname }}
+                </td>
+            {% else %}
+                <td class="col-4">&nbsp;</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+
+</table>

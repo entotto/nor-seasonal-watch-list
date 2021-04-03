@@ -4,6 +4,10 @@
 
 namespace App\Controller;
 
+use App\Entity\ShowSeasonScore;
+use App\Entity\User;
+use App\Repository\ActivityRepository;
+use App\Repository\ScoreRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
@@ -11,6 +15,7 @@ use App\Repository\UserRepository;
 use App\Service\SelectedSeasonHelper;
 use App\Service\SelectedSortHelper;
 use Doctrine\DBAL\Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +28,13 @@ class AllWatchController extends AbstractController
     /**
      * @Route("/community/watch", name="all_watch_index", options={"expose"=true})
      * @param Request $request
+     * @param EntityManagerInterface $em
      * @param SeasonRepository $seasonRepository
      * @param ShowRepository $showRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
      * @param UserRepository $userRepository
+     * @param ScoreRepository $scoreRepository
+     * @param ActivityRepository $activityRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param SelectedSortHelper $selectedSortHelper
      * @return Response
@@ -36,10 +44,13 @@ class AllWatchController extends AbstractController
      */
     public function index(
         Request $request,
+        EntityManagerInterface $em,
         SeasonRepository $seasonRepository,
         ShowRepository $showRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
         UserRepository $userRepository,
+        ScoreRepository $scoreRepository,
+        ActivityRepository $activityRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
         SelectedSortHelper $selectedSortHelper
     ): Response {
@@ -48,49 +59,77 @@ class AllWatchController extends AbstractController
         $season = $selectedSeasonHelper->getSelectedSeason($request);
         $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
         $sortOptions = [
-            'show_asc' => 'Show &or;',
-            'show_desc' => 'Show &and;',
-            'statistics_highest' => 'Statistics &or;',
-            'statistics_lowest' => 'Statistics &and;',
+            'show_asc' => 'Show &#9660;',
+            'show_desc' => 'Show &#9650;',
+            'activity_desc' => 'Activity &#9660;',
+            'activity_asc' => 'Activity &#9650;',
+            'recommendations_desc' => 'Recommendations &#9660;',
+            'recommendations_asc' => 'Recommendations &#9650;',
         ];
+        $activities = $activityRepository->findAll();
+        $activityValues = [];
+        foreach ($activities as $activity) {
+            $activityValues[$activity->getSlug()] = $activity->getValue();
+        }
         $users = $userRepository->getAllSorted();
         $userKeys = [];
         foreach ($users as $user) {
             $userKeys[$user->getUsername()] = false;
         }
         $data = [];
-        $maxScore = 0;
+        $maxScoreCount = 0;
         $maxActivityCount = 0;
         if ($season !== null) {
             $selectedSeasonId = $season->getId();
             $shows = $showRepository->getShowsForSeason($season, null, $selectedSortName);
-            if ($selectedSortName === 'statistics_highest' || $selectedSortName === 'statistics_lowest') {
-                // When sorting by a calculated value (avg in this case), Doctrine returns an array of
-                // arrays, with each entry looking like this:
-                //   [ 0 => $show, 'ave_score' => "1.000" ]
+            if ($selectedSortName !== 'show_asc' && $selectedSortName !== 'show_desc') {
+                // When sorting by a calculated value (avg or sum in this case), Doctrine returns
+                // an array of arrays, with each entry looking like this:
+                //   [ 0 => $show, 'calculated_value' => "1.000" ]
                 $actualShows = [];
                 foreach ($shows as $showContainer) {
                     $actualShows[] = $showContainer[0];
                 }
                 $shows = $actualShows;
             }
+
+            // Add in any missing individual score rows
+            /** @var User $user */
+            $user = $this->getUser();
+            $defaultScore = $scoreRepository->getDefaultScore();
+            $defaultActivity = $activityRepository->getDefaultActivity();
+            foreach ($shows as $key => $show) {
+                $score = $showSeasonScoreRepository->getForUserAndShowAndSeason(
+                    $user,
+                    $show,
+                    $season
+                );
+                if ($score === null) {
+                    $score = new ShowSeasonScore();
+                    $score->setUser($user);
+                    $score->setShow($show);
+                    $score->setSeason($season);
+                    $score->setScore($defaultScore);
+                    $score->setActivity($defaultActivity);
+                    $em->persist($score);
+                    $em->flush();
+                }
+            }
+            // End of adding missing score rows
+
             $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
             $keyedConsolidatedShowActivities = [];
             foreach ($consolidatedShowActivities as $consolidatedShowActivity) {
+                $consolidatedShowActivity['total_count'] =
+                    ($consolidatedShowActivity['watching_count'] * $activityValues['watching']) +
+                    ($consolidatedShowActivity['ptw_count'] * $activityValues['ptw']);
                 $maxActivityCount = max([
                     $maxActivityCount,
-                    $consolidatedShowActivity['finished_count'],
-                    $consolidatedShowActivity['watching_count'],
-                    $consolidatedShowActivity['paused_count'],
-                    $consolidatedShowActivity['ptw_count'],
-                    $consolidatedShowActivity['dropped_count'],
+                    $consolidatedShowActivity['total_count']
                 ]);
                 $consolidatedShowActivity['activities_array'] = '[' .
-                    $consolidatedShowActivity['finished_count'] . ',' .
-                    $consolidatedShowActivity['watching_count'] . ',' .
-                    $consolidatedShowActivity['paused_count'] . ',' .
-                    $consolidatedShowActivity['ptw_count'] . ',' .
-                    $consolidatedShowActivity['dropped_count'] . ']';
+                    ($consolidatedShowActivity['watching_count'] * $activityValues['watching']) . ',' .
+                    ($consolidatedShowActivity['ptw_count'] * $activityValues['ptw']) . ']';
                 $keyedConsolidatedShowActivities[$consolidatedShowActivity['show_id']] = $consolidatedShowActivity;
             }
 
@@ -99,22 +138,22 @@ class AllWatchController extends AbstractController
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
                 $moodAverageValue = ($consolidatedShowScore['all_count'] > 0) ?
                     $consolidatedShowScore['score_total'] / $consolidatedShowScore['all_count'] : 0;
-                if ($moodAverageValue > 1) {
+                if ($moodAverageValue > 5) {
                     $moodEmoji = 'emoji-heart-eyes-fill';
-                } elseif ($moodAverageValue > 0.1) {
+                } elseif ($moodAverageValue > 1) {
                     $moodEmoji = 'emoji-smile-fill';
-                } elseif ($moodAverageValue > -0.1) {
+                } elseif ($moodAverageValue > -1) {
                     $moodEmoji = 'emoji-neutral-fill';
                 } else {
                     $moodEmoji = 'emoji-frown-fill';
                 }
-                $maxScore = max([
-                    $maxScore,
-                    $consolidatedShowScore['th8a_count'],
-                    $consolidatedShowScore['highly_favorable_count'],
-                    $consolidatedShowScore['favorable_count'],
-                    $consolidatedShowScore['neutral_count'],
-                    $consolidatedShowScore['unfavorable_count'],
+                $maxScoreCount = max([
+                    $maxScoreCount,
+                    ($consolidatedShowScore['th8a_count'] +
+                    $consolidatedShowScore['highly_favorable_count'] +
+                    $consolidatedShowScore['favorable_count'] +
+                    $consolidatedShowScore['neutral_count'] +
+                    $consolidatedShowScore['unfavorable_count'])
                 ]);
                 $consolidatedShowScore['scores_array'] = '[' .
                     $consolidatedShowScore['th8a_count'] . ',' .
@@ -141,9 +180,10 @@ class AllWatchController extends AbstractController
                     'anilistShowUrl' => $show->getSiteUrl() ?: "https://anilist.co/anime/" . $show->getAnilistId(),
                     'malShowUrl' => $show->getMalId() ? "https://myanimelist.net/anime/" . $show->getMalId() : '',
                 ];
-                $scores = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show);
+                $scoreValues = $showSeasonScoreRepository->findAllForSeasonAndShow($season, $show, 'displayname');
                 $filteredScores = [];
-                foreach ($scores as $score) {
+                foreach ($scoreValues as $scoreValue) {
+                    $score = $scoreValue[0];
                     if ($score->getScore() !== null && $score->getScore()->getValue() !== 0) {
                         $userKeys[$score->getUser()->getUsername()] = true;
                     }
@@ -160,7 +200,7 @@ class AllWatchController extends AbstractController
                     'consolidatedScores' => $keyedConsolidatedShowScores[$show->getId()] ?? null,
                     'scores' => $filteredScores,
                     'scoreCount' => count($filteredScores),
-                    'maxScore' => $maxScore,
+                    'maxScoreCount' => $maxScoreCount,
                     'maxActivityCount' => $maxActivityCount,
                 ];
             }

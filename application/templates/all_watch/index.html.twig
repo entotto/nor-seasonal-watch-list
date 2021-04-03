@@ -7,13 +7,25 @@
 {% endblock %}
 
 {% block second_navbar %}
-    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none second-nav">
+    <nav id="second_nav_wide" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-none d-lg-block second-nav-bar">
+        <div class="container">
+            <form class="d-flex" style="width:100%;">
+                <label class="pe-2 pt-2" for="select_show_wide">Show</label>
+                <select id="select_show_wide" class="form-control me-2">
+                    {% for key, row in data %}
+                        <option value="show_target_wide_{{ row.show.id }}">{{ row.show.shortTitle }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </nav>
+    <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top bg-light d-block d-lg-none second-nav-bar">
         <div class="container-fluid">
             <form class="d-flex">
                 <label class="pe-2 pt-2" for="select_show">Show</label>
                 <select id="select_show" class="form-control me-2">
                     {% for key, row in data %}
-                        <option value="show_target_{{ key }}">{{ row.show.shortTitle }}</option>
+                        <option value="show_target_{{ row.show.id }}">{{ row.show.shortTitle }}</option>
                     {% endfor %}
                 </select>
             </form>
@@ -22,14 +34,14 @@
 {% endblock %}
 
 {% block body %}
-    <div class="d-block d-lg-none">
+    <div class="d-block">
         <div class="row">
             <div class="col">
-                <a class="show-target-offset" id="show_target_top"></a>
+                <a class="show-anchor" id="show_target_top"></a>
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-md-10 watch-list-top-margin">&nbsp;</div>
+            <div class="col-md-10 second-nav-clearance-padding">&nbsp;</div>
         </div>
     </div>
 
@@ -61,161 +73,110 @@
             <a href="{{ path('all_watch_index') }}?sort={% if selectedSortName == 'show_asc' %}show_desc{% else %}show_asc{% endif %}">
                 <strong>
                         Show
-                        {% if selectedSortName == 'show_asc' %}<i class="bi bi-caret-down-fill"></i>{% elseif selectedSortName == 'show_desc'%}<i class="bi bi-caret-up-fill"></i>{% endif %}
+                        {% if selectedSortName == 'show_asc' %}&#9660;{% elseif selectedSortName == 'show_desc'%}&#9650;{% endif %}
                 </strong>
             </a>
         </div>
         <div class="col-md-2"><strong>&nbsp;</strong></div>
-        <div class="col-md-3">
-            <a href="{{ path('all_watch_index') }}?sort={% if selectedSortName == 'statistics_highest' %}statistics_lowest{% else %}statistics_highest{% endif %}">
-                <strong>
-                    Statistics
-                    {% if selectedSortName == 'statistics_highest' %}<i class="bi bi-caret-down-fill"></i>{% elseif selectedSortName == 'statistics_lowest'%}<i class="bi bi-caret-up-fill"></i>{% endif %}
-                </strong>
-            </a>
-        </div>
-        <div class="col-md-5">
+        <div class="col-md-8">
             <div class="row">
                 <div class="col-md-6">
-                    <strong>Activity</strong>
+                    <a href="{{ path('all_watch_index') }}?sort={% if selectedSortName == 'activity_desc' %}activity_asc{% else %}activity_desc{% endif %}">
+                        <strong>
+                            Activity
+                            {% if selectedSortName == 'activity_desc' %}&#9660;{% elseif selectedSortName == 'activity_asc'%}&#9650;{% endif %}
+                        </strong>
+                    </a>
                 </div>
                 <div class="col-md-6">
-                    <strong>Recommendations</strong>
+                    <a href="{{ path('all_watch_index') }}?sort={% if selectedSortName == 'recommendations_desc' %}recommendations_asc{% else %}recommendations_desc{% endif %}">
+                        <strong>
+                            Recommendations
+                            {% if selectedSortName == 'recommendations_desc' %}&#9660;{% elseif selectedSortName == 'recommendations_asc'%}&#9650;{% endif %}
+                        </strong>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     {% for key, row in data %}
-        <div class="row mb-2 pb-2 border-bottom d-none d-lg-flex">
+        <div  id="show_container_wide_{{ row.show.id }}" data-anchorid="{{ row.show.id }}" class="show_container_wide row mb-2 pb-2 border-bottom d-none d-lg-flex">
+            <div class="row">
+                <div class="col">
+                    <a class="show-anchor" id="show_target_wide_{{ row.show.id }}"></a>
+                </div>
+            </div>
             <div class="col-md-2">
                 <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
             </div>
             <div class="col-md-2">
                 {{ row.show.title|raw }}
                 <br>
-                {% if row.show.anilistShowUrl %}
-                    <a
-                            href="{{ row.show.anilistShowUrl }}"
-                            target="_blank"
-                            class="btn btn-outline-primary m-1 ms-0"
-                    >Anilist</a>
-                {% endif %}
-                {% if row.show.malShowUrl %}
-                    <a
-                            href="{{ row.show.malShowUrl }}"
-                            target="_blank"
-                            class="btn btn-outline-primary m-1 ms-0"
-                    >MAL</a>
-                {% endif %}
+                {% include 'all_watch/fragment/jump_link_buttons.html.twig' %}
             </div>
-            <div class="col-md-3">
-                <table>
-                    <tbody>
-                    <tr>
-                        <th class="pe-3">Mood</th>
-                        <td class="text-center">
-                            {% if row.consolidatedScores is not null %}
-                                {% if row.consolidatedScores.mood_array is not null %}
-                                    <div
-                                            class="mood-emoji-container"
-                                            data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
-                                            style="font-size:24px;"
-                                    >
-                                        <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
-                                    </div>
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}
-                            {% else %}
-                                &nbsp;
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="pe-3">Th8a should cover</th>
-                        <td class="text-center">
-                            {% if row.consolidatedScores is not null %}
-                                {{ row.consolidatedScores.th8a_count }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="pe-3">Should watch</th>
-                        <td class="text-center">
-                            {% if row.consolidatedScores is not empty %}
-                                {{ row.consolidatedScores.yes_count }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="pe-3">Should avoid</th>
-                        <td class="text-center">
-                            {% if row.consolidatedScores is not null %}
-                                {{ row.consolidatedScores.no_count }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="pe-3">Recommendations</th>
-                        <td class="text-center">
-                            {% if row.consolidatedScores is not null %}
-                                {% if row.consolidatedScores.all_count is not null %}
-                                    {{ row.consolidatedScores.all_count }}
-                                {% else %}
-                                    0
-                                {% endif %}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="pe-3">Average</th>
-                        <td class="text-center">
-                            {% if row.consolidatedScores is not null %}
-                                {% if row.consolidatedScores.mood_array is not null %}
-                                    {{ row.consolidatedScores.mood_array.mood_average_value|round(1) }}
-                                {% else %}
-                                    0
-                                {% endif %}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-5">
+
+            <div class="col-md-8">
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
                         {% if row.consolidatedActivities %}
-                            <canvas width="250"
-                                    height="200"
-                                    id="bar_activities_{{ row.show.id }}"
-                                    class="all_watch_bar_activity_chart"
-                                    data-scores="{{ row.consolidatedActivities.activities_array }}"
-                                    data-maxscore="{{ row.maxActivityCount }}"
-                            ></canvas>
+                            <div class="row">
+                                <div class="col-1 col-lg-2 col-xl-1 mt-1">
+                                    {% include 'all_watch/fragment/activity_icon.html.twig' %}
+                                </div>
+                                <div class="col-11 col-lg-10 col-xl-11 pt-1 pt-lg-2 pt-xl-1">
+                                    <div class="chart-container position-relative">
+                                        <canvas id="bar_activities_{{ row.show.id }}"
+                                                class="all_watch_bar_activity_chart mb-2"
+                                                data-scores="{{ row.consolidatedActivities.activities_array }}"
+                                                data-maxactivitycount="{{ row.maxActivityCount }}"
+                                        ></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
                         {% else %}
                             &nbsp;
                         {% endif %}
+                        <div class="row">
+                            <div class="col-6">
+                                {% include 'all_watch/fragment/activity_summary_table.html.twig' %}
+                            </div>
+                        </div>
+                        {% if row.scores and row.scoreCount > 0 %}
+                            <div class="">
+                                <a
+                                        class="btn btn-outline-primary mt-3"
+                                        data-bs-toggle="collapse"
+                                        href="#collapseRow{{ key }}"
+                                        aria-expanded="false"
+                                        aria-controls="collapseRow{{ key }}"
+                                >Details</a>
+                            </div>
+                        {% endif %}
+
                     </div>
                     <div class="col-xs-12 col-md-6">
                         {% if row.consolidatedScores.all_count > 0 %}
-                            <canvas width="250"
-                                    height="200"
-                                    id="bar_scores_{{ row.show.id }}"
-                                    class="all_watch_bar_score_chart"
-                                    data-scores="{{ row.consolidatedScores.scores_array }}"
-                                    data-maxscore="{{ row.maxScore }}"
-                            ></canvas>
+                            <div class="row">
+                                <div class="col-1 col-lg-2 col-xl-1 mt-1">
+                                    {% include 'all_watch/fragment/mood_icon.html.twig' %}
+                                </div>
+                                <div class="col-11 col-lg-10 col-xl-11 pt-1 pt-lg-2 pt-xl-1">
+                                    <div class="chart-container">
+                                        <canvas id="bar_scores_{{ row.show.id }}"
+                                                class="all_watch_bar_score_chart mb-2"
+                                                data-scores="{{ row.consolidatedScores.scores_array }}"
+                                                data-maxscorecount="{{ row.maxScoreCount }}"
+                                        ></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    {% include 'all_watch/fragment/recommendations_summary_table.html.twig' %}
+                                </div>
+                            </div>
+
                         {% else %}
                             &nbsp;
                         {% endif %}
@@ -223,46 +184,17 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        {% if row.scores and row.scoreCount > 0%}
-                            <div>
+                        {% if row.scores and row.scoreCount > 0 %}
+                            <div class="collapse" id="collapseRow{{ key }}">
+                                {% include 'all_watch/fragment/individual_values_table.html.twig' %}
                                 <a
-                                        class="btn btn-outline-primary mt-3 mb-3"
+                                        class="btn btn-close mb-2"
                                         data-bs-toggle="collapse"
                                         href="#collapseRow{{ key }}"
                                         aria-expanded="false"
-                                        aria-controls="collapseExample"
-                                >Details</a>
-                            </div>
-                            <div class="collapse" id="collapseRow{{ key }}">
-                                <table class="table table-sm">
-                                    <tr class="d-flex">
-                                        <th class="col-4">User</th>
-                                        <th class="col-4 text-center">Activity</th>
-                                        <th class="col-4 text-center">Recommendation</th>
-                                    </tr>
-                                    {% for scoreField in row.scores %}
-                                        <tr class="d-flex">
-                                            <td class="col-4">
-                                                {{ scoreField.getUser.getDiscordUsername }}
-                                            </td>
-                                            {% if scoreField.activity and scoreField.activity.getSlug != 'none' %}
-                                                <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
-                                                    {{ scoreField.activity.getNickname }}
-                                                </td>
-                                            {% else %}
-                                                <td class="col-4">&nbsp;</td>
-                                            {% endif %}
-                                            {% if scoreField.score and scoreField.score.getSlug != 'none' %}
-                                                <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
-                                                    {{ scoreField.score.getNickname }}
-                                                </td>
-                                            {% else %}
-                                                <td class="col-4">&nbsp;</td>
-                                            {% endif %}
-                                        </tr>
-                                    {% endfor %}
-
-                                </table>
+                                        aria-controls="collapseRow{{ key }}"
+                                        aria-label="Close"
+                                ></a>
                             </div>
                         {% endif %}
                     </div>
@@ -280,171 +212,110 @@
 
     <div class="d-block d-lg-none">
         {% for key, row in data %}
-            <div id="show_container_{{ key }}" class="show_container" data-anchorid="{{ key }}">
+            <div id="show_container_{{ row.show.id }}" class="show_container" data-anchorid="{{ row.show.id }}">
                 <div class="row">
                     <div class="col">
-                        <a class="show-target-offset" id="show_target_{{ key }}">&nbsp;</a>
+                        <a class="show-anchor" id="show_target_{{ row.show.id }}"></a>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-4">
                         <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                     </div>
-                    <div class="col">
+                    <div class="col-8 position-relative">
                         {{ row.show.title|raw }}
                         <br>
-                        {% if row.show.anilistShowUrl %}
-                            <a
-                                    href="{{ row.show.anilistShowUrl }}"
-                                    target="_blank"
-                                    class="btn btn-outline-primary m-1 ms-0"
-                            >Anilist</a>
-                        {% endif %}
-                        {% if row.show.malShowUrl %}
-                            <a
-                                    href="{{ row.show.malShowUrl }}"
-                                    target="_blank"
-                                    class="btn btn-outline-primary m-1 ms-0"
-                            >MAL</a>
-                        {% endif %}
+                        {% include 'all_watch/fragment/jump_link_buttons.html.twig' %}
                     </div>
                 </div>
-                <div class="row mt-2">
-                    <div class="col">
-                        <table class="table table-responsive-sm">
-                            <tbody>
-                            <tr>
-                                <td style="width:33%;"><strong>Recommendations</strong></td>
-                                <td style="width:33%;"><strong>Average</strong></td>
-                                <td style="width:34%;"><strong>Mood</strong></td>
-                            </tr>
-                            <tr>
-                                <td style="width:33%;">
-                                    {% if row.consolidatedScores is not null %}
-                                        {% if row.consolidatedScores.all_count is not null %}
-                                            {{ row.consolidatedScores.all_count }}
-                                        {% else %}
-                                            0
-                                        {% endif %}
-                                    {% else %}
-                                        0
-                                    {% endif %}
-                                </td>
-                                <td style="width:33%;">
-                                    {% if row.consolidatedScores is not null %}
-                                        {% if row.consolidatedScores.mood_array is not null %}
-                                            {{ row.consolidatedScores.mood_array.mood_average_value|round(1) }}
-                                        {% else %}
-                                            0
-                                        {% endif %}
-                                    {% else %}
-                                        0
-                                    {% endif %}
-                                </td>
-                                <td style="width:34%;">
-                                    {% if row.consolidatedScores is not null %}
-                                        {% if row.consolidatedScores.mood_array is not null %}
-                                            <div
-                                                    class="mood-emoji-container"
-                                                    data-mood-value="{{ row.consolidatedScores.mood_array.mood_average_value }}"
-                                                    style="font-size:24px;"
-                                            >
-                                                <i class="bi bi-{{ row.consolidatedScores.mood_array.mood_emoji }}"></i>
-                                            </div>
-                                        {% else %}
-                                            &nbsp;
-                                        {% endif %}
-                                    {% else %}
-                                        &nbsp;
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                {% if row.consolidatedActivities %}
+                    <div class="mt-2">Activity</div>
+                    <div class="row">
+                        <div class="col-1 pt-0 pt-md-2">
+                            {% include 'all_watch/fragment/activity_icon.html.twig' %}
+                        </div>
+                        <div class="col-11">
+                            <canvas id="bar_activities_{{ row.show.id }}_narrow"
+                                    class="all_watch_bar_activity_chart mb-2"
+                                    data-scores="{{ row.consolidatedActivities.activities_array }}"
+                                    data-maxactivitycount="{{ row.maxActivityCount }}"
+                            ></canvas>
+                        </div>
                     </div>
-                </div>
+                {% else %}
+                    <div>(no activity)</div>
+                {% endif %}
+                {% if row.consolidatedScores.all_count > 0 %}
+                    <div class="mt-2">Recommendations</div>
+                    <div class="row">
+                        <div class="col-1 pt-0 pt-md-2">
+                            {% include 'all_watch/fragment/mood_icon.html.twig' %}
+                       </div>
+                        <div class="col-11">
+                            <canvas id="bar_scores_{{ row.show.id }}_narrow"
+                                    class="all_watch_bar_score_chart mb-2"
+                                    data-scores="{{ row.consolidatedScores.scores_array }}"
+                                    data-maxscorecount="{{ row.maxScoreCount }}"
+                            ></canvas>
+                        </div>
+                    </div>
+                {% else %}
+                    <div>(no recommendations)</div>
+                {% endif %}
+
                 <div class="row">
                     <div class="col">
                         <a
-                                class="btn btn-outline-primary mt-0 mb-3"
+                                class="btn btn-outline-primary mt-2 mb-3"
                                 data-bs-toggle="collapse"
                                 href="#collapseRowSmall{{ key }}"
                                 aria-expanded="false"
-                                aria-controls="collapseExample"
+                                aria-controls="collapseRowSmall{{ key }}"
                         >Details</a>
                     </div>
                 </div>
+
                 <div class="collapse" id="collapseRowSmall{{ key }}">
-                    <div class="row mb-3 pb-3">
+                    <div class="row">
                         <div class="col">
-                            <strong>Activity</strong><br>
-                            <canvas width="300"
-                                    height="250"
-                                    id="bar_activity_{{ row.show.id }}_narrow"
-                                    class="all_watch_bar_activity_chart"
-                                    data-scores="{{ row.consolidatedActivities.activities_array }}"
-                                    data-maxscore="{{ row.maxActivityCount }}"
-                            ></canvas>
+                            {% include 'all_watch/fragment/activity_summary_table.html.twig' %}
                         </div>
                     </div>
-                    <div class="row mb-3 pb-3">
+
+                    <div class="row">
                         <div class="col">
-                            <strong>Recommendations</strong><br>
-                            <canvas width="300"
-                                    height="250"
-                                    id="bar_score_{{ row.show.id }}_narrow"
-                                    class="all_watch_bar_score_chart"
-                                    data-scores="{{ row.consolidatedScores.scores_array }}"
-                                    data-maxscore="{{ row.maxScore }}"
-                            ></canvas>
+                            {% include 'all_watch/fragment/recommendations_summary_table.html.twig' %}
                         </div>
                     </div>
-                    <div class="row mb-3 pb-3">
+
+                    <div class="row">
                         <div class="col">
                             {% if row.scores and row.scoreCount > 0 %}
-                                <table class="table table-sm">
-                                    <tr class="d-flex">
-                                        <th class="col-4"><strong>User</strong></th>
-                                        <th class="col-4 text-center"><strong>Activity</strong></th>
-                                        <th class="col-4 text-center"><strong>Recommend</strong></th>
-                                    </tr>
-                                    {% for scoreField in row.scores %}
-                                        <tr class="d-flex">
-                                            <td class="col-4">
-                                                {{ scoreField.getUser.getDiscordUsername }}
-                                            </td>
-                                            {% if scoreField.activity and scoreField.activity.getSlug != 'none' %}
-                                                <td class="col-4 text-center table-field-{{ scoreField.activity.getColorValue }}">
-                                                    {{ scoreField.activity.getNickname }}
-                                                </td>
-                                            {% else %}
-                                                <td class="col-4">&nbsp;</td>
-                                            {% endif %}
-                                            {% if scoreField.score and scoreField.score.getSlug != 'none' %}
-                                                <td class="col-4 text-center table-field-{{ scoreField.score.getColorValue }}">
-                                                    {{ scoreField.score.getNickname }}
-                                                </td>
-                                            {% else %}
-                                                <td class="col-4">&nbsp;</td>
-                                            {% endif %}
-                                        </tr>
-                                    {% endfor %}
-                                </table>
+                                {% include 'all_watch/fragment/individual_values_table.html.twig' %}
                             {% endif %}
                         </div>
                     </div>
+                    <a
+                            class="btn btn-close mt-1 mb-3"
+                            data-bs-toggle="collapse"
+                            href="#collapseRowSmall{{ key }}"
+                            aria-expanded="false"
+                            aria-controls="collapseRowSmall{{ key }}"
+                            aria-label="Close"
+                    ></a>
                 </div>
                 <div class="row mt-2 mb-1 border-bottom"></div>
             </div>
         {% endfor %}
 
-        {% if data is not empty %}
-            <a class="btn btn-primary rounded-pill d-block d-lg-none back-to-top-button-position" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
-            <div class="row">
-                <div class="col mb-5 mr-3">&nbsp;</div>
-            </div>
-        {% endif %}
     </div>
+
+    {% if data is not empty %}
+        <a class="btn btn-primary rounded-pill d-block back-to-top-button" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
+        <div class="row">
+            <div class="col mb-5 mr-3">&nbsp;</div>
+        </div>
+    {% endif %}
 
 {% endblock %}
 
