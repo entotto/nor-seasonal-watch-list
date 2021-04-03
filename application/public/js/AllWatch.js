@@ -68,7 +68,8 @@
                 global: {
                     title: {
                         display: false
-                    }
+                    },
+                    defaultFontSize: 20
                 }
             },
             data: {

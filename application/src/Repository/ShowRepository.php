@@ -209,7 +209,7 @@ class ShowRepository extends ServiceEntityRepository
         $qb->leftJoin('s.scores', 'scores');
         $qb->leftJoin('scores.score', 'score');
         if ($season !== null) {
-            $qb->andWhere('scores.season = :season')
+            $qb->andWhere('scores.season = :season OR scores.season IS NULL')
                 ->setParameter('season', $season);
         }
         if ($user !== null) {

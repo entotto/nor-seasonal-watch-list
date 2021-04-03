@@ -36,6 +36,17 @@ body {
     background-color: #6f42c122;
 }
 
+.watching-legend-pip {
+    width: 16px;
+    height: 16px;
+}
+.activity-watching {
+    background-color: #007eb9;
+}
+.activity-ptw {
+    background-color: rgb(128, 191, 220);
+}
+
 .table-field-activity-finished {
     --bs-table-bg: #007eb9;
     color: #ffffff;
@@ -56,6 +67,24 @@ body {
     --bs-table-bg: rgb(217, 217, 217);
     color: #000;
 }
+
+.score-th8a {
+    background-color: #c80d0d;
+}
+.score-highly, .score-highly-favorable {
+    background-color: rgb(214, 74, 74);
+}
+.score-favorable {
+    background-color: rgb(228, 134, 134);
+}
+.score-neutral {
+    background-color: rgb(217, 217, 217);
+}
+.score-unfavorable {
+    background-color: rgb(64, 64, 64);
+}
+
+
 .table-field-score-th8a {
     --bs-table-bg: #c80d0d;
     color: #fff;
@@ -92,24 +121,38 @@ a.nor-red:hover {
     color: rgb(217, 74, 74);
 }
 
-.second-nav {
+.second-nav-bar {
     top:4.1rem;
     z-index:1000;
+    background-color: #eeeeee !important;
 }
 
-.show-target-offset {
+@media (prefers-color-scheme: dark) {
+
+    .second-nav-bar {
+        background-color: #444 !important;
+    }
+
+}
+.second-nav-clearance-padding {
+    margin-top: 2rem;
+}
+
+a.show-anchor {
     position:relative;
     top:-7rem;
     z-index:-100;
 }
 
-.watch-list-top-margin {
-    margin-top: 2rem;
-}
-
-.back-to-top-button-position {
+a.back-to-top-button {
     position: fixed;
     bottom: 1rem;
     right: 1rem;
     z-index:100;
 }
+
+.d-light-inline { display: inline !important; }
+.d-dark-inline { display: none !important; }
+html.dark .d-light-inline { display: none !important; }
+html.dark .d-dark-inline { display: inline !important; }
+html.dark .second-nav-bar { background-color: #444 !important; }
