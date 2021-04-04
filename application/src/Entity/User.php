@@ -460,4 +460,13 @@ class User implements UserInterface
     {
         $this->displayName = $displayName;
     }
+
+    public function getPreferences(): UserPreferences
+    {
+        static $preferences = null;
+        if ($preferences === null) {
+            $preferences = new UserPreferences();
+        }
+        return $preferences;
+    }
 }

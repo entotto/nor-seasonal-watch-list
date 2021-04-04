@@ -23,6 +23,7 @@ class AdminSeasonController extends AbstractController
     public function index(SeasonRepository $seasonRepository): Response
     {
         return $this->render('season/index.html.twig', [
+            'user' => $this->getUser(),
             'seasons' => $seasonRepository->getAllInRankOrder(),
         ]);
     }
@@ -47,6 +48,7 @@ class AdminSeasonController extends AbstractController
         }
 
         return $this->render('season/new.html.twig', [
+            'user' => $this->getUser(),
             'season' => $season,
             'form' => $form->createView(),
         ]);
@@ -60,6 +62,7 @@ class AdminSeasonController extends AbstractController
     public function show(Season $season): Response
     {
         return $this->render('season/show.html.twig', [
+            'user' => $this->getUser(),
             'season' => $season,
         ]);
     }
@@ -82,6 +85,7 @@ class AdminSeasonController extends AbstractController
         }
 
         return $this->render('season/edit.html.twig', [
+            'user' => $this->getUser(),
             'season' => $season,
             'form' => $form->createView(),
         ]);

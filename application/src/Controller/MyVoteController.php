@@ -47,6 +47,7 @@ class MyVoteController extends AbstractController
         if ($election === null) {
             $election = $electionRepository->getNextAvailableElection();
             return $this->render('my_vote/no_election.html.twig', [
+                'user' => $this->getUser(),
                 'election' => $election
             ]);
         }
@@ -88,6 +89,7 @@ class MyVoteController extends AbstractController
             $data[] = ['vote' => $vote, 'form' => $form->createView()];
         }
         return $this->render('my_vote/index.html.twig', [
+            'user' => $this->getUser(),
             'controller_name' => 'MyVoteController',
             'election' => $election,
             'data' => $data

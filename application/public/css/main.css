@@ -124,8 +124,16 @@ a.nor-red:hover {
 .second-nav-bar {
     top:4.1rem;
     z-index:1000;
+    background-color: #eeeeee !important;
 }
 
+@media (prefers-color-scheme: dark) {
+
+    .second-nav-bar {
+        background-color: #444 !important;
+    }
+
+}
 .second-nav-clearance-padding {
     margin-top: 2rem;
 }
@@ -142,3 +150,12 @@ a.back-to-top-button {
     right: 1rem;
     z-index:100;
 }
+
+.d-light-inline { display: inline !important; }
+.d-dark-inline { display: none !important; }
+html.dark .d-light-inline { display: none !important; }
+html.dark .d-dark-inline { display: inline !important; }
+html.dark .second-nav-bar { background-color: #444 !important; }
+body.color-scheme-dark .d-light-inline { display: none !important; }
+body.color-scheme-dark .d-dark-inline { display: inline !important; }
+body.color-scheme-dark .second-nav-bar { background-color: #444 !important; }

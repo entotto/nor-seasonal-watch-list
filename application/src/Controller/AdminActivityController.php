@@ -23,6 +23,7 @@ class AdminActivityController extends AbstractController
     public function index(ActivityRepository $activityRepository): Response
     {
         return $this->render('activity/index.html.twig', [
+            'user' => $this->getUser(),
             'activities' => $activityRepository->findAll(),
         ]);
     }
@@ -48,6 +49,7 @@ class AdminActivityController extends AbstractController
         }
 
         return $this->render('activity/new.html.twig', [
+            'user' => $this->getUser(),
             'activity' => $activity,
             'form' => $form->createView(),
         ]);
@@ -61,6 +63,7 @@ class AdminActivityController extends AbstractController
     public function show(Activity $activity): Response
     {
         return $this->render('activity/show.html.twig', [
+            'user' => $this->getUser(),
             'activity' => $activity,
         ]);
     }
@@ -84,6 +87,7 @@ class AdminActivityController extends AbstractController
         }
 
         return $this->render('activity/edit.html.twig', [
+            'user' => $this->getUser(),
             'activity' => $activity,
             'form' => $form->createView(),
         ]);

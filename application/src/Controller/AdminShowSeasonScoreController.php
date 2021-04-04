@@ -24,6 +24,7 @@ class AdminShowSeasonScoreController extends AbstractController
     public function index(ShowSeasonScoreRepository $showSeasonScoreRepository): Response
     {
         return $this->render('show_season_score/index.html.twig', [
+            'user' => $this->getUser(),
             'show_season_scores' => $showSeasonScoreRepository->findAll(),
         ]);
     }
@@ -48,6 +49,7 @@ class AdminShowSeasonScoreController extends AbstractController
         }
 
         return $this->render('show_season_score/new.html.twig', [
+            'user' => $this->getUser(),
             'show_season_score' => $showSeasonScore,
             'form' => $form->createView(),
         ]);
@@ -61,6 +63,7 @@ class AdminShowSeasonScoreController extends AbstractController
     public function show(ShowSeasonScore $showSeasonScore): Response
     {
         return $this->render('show_season_score/show.html.twig', [
+            'user' => $this->getUser(),
             'show_season_score' => $showSeasonScore,
         ]);
     }
@@ -105,6 +108,7 @@ class AdminShowSeasonScoreController extends AbstractController
         }
 
         return $this->render('show_season_score/edit.html.twig', [
+            'user' => $this->getUser(),
             'show_season_score' => $showSeasonScore,
             'form' => $form->createView(),
         ]);

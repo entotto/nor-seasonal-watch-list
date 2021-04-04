@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+{% if user is defined %}
+    {% set colorsMode = user.getPreferences.getColorsMode %}
+{% else %}
+    {% set colorsMode = 'os' %}
+{% endif %}
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark">
 
-        <link href="/bootstrap/css/bootstrap.min.css?v={{ asset_version }}" rel="stylesheet">
+        {% if colorsMode == 'os' %}
+            {# Let the browser pick the color mode #}
+            <link href="/css/bootstrap-dark.min.css?v={{ asset_version }}" rel="stylesheet">
+        {% elseif colorsMode == 'light' %}
+            {# Use a light mode stylesheet #}
+            <link href="/bootstrap/css/bootstrap.min.css?v={{ asset_version }}" rel="stylesheet">
+        {% else  %}
+            {# User a dark mode stylesheet #}
+            <link href="/css/bootstrap-unlit.min.css?v={{ asset_version }}" rel="stylesheet">
+        {% endif %}
         <link href="/bootstrap-icons/font/bootstrap-icons.css?v={{ asset_version }}" rel="stylesheet">
-        <link href="/css/navbar-top-fixed.css?v={{ asset_version }}" rel="stylesheet">
+        <link href="/css/main.css?v={{ asset_version }}" rel="stylesheet">
+        {% if colorsMode == 'dark' %}
+            <link href="/css/dark-main.css?v={{ asset_version }}" rel="stylesheet">
+        {% endif %}
 
         <title>{% block title %}Seasonal Watch List{% endblock %}</title>
 
@@ -78,8 +96,19 @@
                 </ul>
                 {% if app.user %}
                 <ul class="navbar-nav navbar-right mb-2 mb-md-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('connect_discord_disconnect') }}">Logout</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if app.request.pathinfo starts with '/account/' %}active{% endif %}" href="#" id="navbarAccountDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarAccountDropdown">
+                            <li>
+                                <a class="dropdown-item {% if app.request.pathinfo == '/account/preferences/' %}active{% endif %}" href="#">Preferences {{ colorsMode }}</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ path('connect_discord_disconnect') }}">Logout</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
                 {% endif %}
@@ -91,13 +120,17 @@
         {% block body %}{% endblock %}
     </div>
     <script src="/js/jquery.min.js?v={{ asset_version }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
+    <script src="/js/popper.min.js?v={{ asset_version }}"></script>
     <script src="/bootstrap/js/bootstrap.bundle.min.js?v={{ asset_version }}"></script>
 {#    <script src="/js/datatables.min.js"></script>#}
 {#    <script src="/js/jquery.dataTables.min.js"></script>#}
 {#    <script src="/js/dataTables.bootstrap5.min.js"></script>#}
     <script src="{{ asset('bundles/fosjsrouting/js/router.min.js') }}?v={{ asset_version }}"></script>
     <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}&v={{ asset_version }}"></script>
+    <!--suppress BadExpressionStatementJS -->
+    <script type="application/javascript">
+        const isDarkMode ={% if colorsMode == 'dark' %} true {% else %} false {% endif %}
+    </script>
     {% block body_javascripts %}{% endblock %}
     </body>
 </html>

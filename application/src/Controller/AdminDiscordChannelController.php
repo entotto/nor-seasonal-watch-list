@@ -23,6 +23,7 @@ class AdminDiscordChannelController extends AbstractController
     public function index(DiscordChannelRepository $discordChannelRepository): Response
     {
         return $this->render('discord_channel/index.html.twig', [
+            'user' => $this->getUser(),
             'discord_channels' => $discordChannelRepository->findAll(),
         ]);
     }
@@ -52,6 +53,7 @@ class AdminDiscordChannelController extends AbstractController
         }
 
         return $this->render('discord_channel/new.html.twig', [
+            'user' => $this->getUser(),
             'discord_channel' => $discordChannel,
             'form' => $form->createView(),
         ]);
@@ -65,6 +67,7 @@ class AdminDiscordChannelController extends AbstractController
     public function show(DiscordChannel $discordChannel): Response
     {
         return $this->render('discord_channel/show.html.twig', [
+            'user' => $this->getUser(),
             'discord_channel' => $discordChannel,
         ]);
     }
@@ -98,6 +101,7 @@ class AdminDiscordChannelController extends AbstractController
         }
 
         return $this->render('discord_channel/edit.html.twig', [
+            'user' => $this->getUser(),
             'discord_channel' => $discordChannel,
             'form' => $form->createView(),
         ]);
