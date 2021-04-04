@@ -18,7 +18,7 @@
             <link href="/bootstrap/css/bootstrap.min.css?v={{ asset_version }}" rel="stylesheet">
         {% else  %}
             {# User a dark mode stylesheet #}
-            <link href="/css/bootstrap-unlit.min.css?v={{ asset_version }}" rel="stylesheet">
+            <link href="/css/bootstrap-dark-only.min.css?v={{ asset_version }}" rel="stylesheet">
         {% endif %}
         <link href="/bootstrap-icons/font/bootstrap-icons.css?v={{ asset_version }}" rel="stylesheet">
         <link href="/css/main.css?v={{ asset_version }}" rel="stylesheet">
@@ -103,7 +103,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarAccountDropdown">
                             <li>
-                                <a class="dropdown-item {% if app.request.pathinfo == '/account/preferences/' %}active{% endif %}" href="#">Preferences {{ colorsMode }}</a>
+                                <a class="dropdown-item {% if app.request.pathinfo == '/account/preferences' %}active{% endif %}" href="{{ path('account_preferences') }}">Preferences {{ colorsMode }}</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ path('connect_discord_disconnect') }}">Logout</a>
