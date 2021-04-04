@@ -1,4 +1,5 @@
-<?php /** @noinspection UnknownInspectionInspection */
+<?php /** @noinspection PhpPrivateFieldCanBeLocalVariableInspection */
+/** @noinspection UnknownInspectionInspection */
 
 /** @noinspection PhpUnused */
 
@@ -107,6 +108,12 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="user", orphanRemoval=true)
      */
     private Collection $electionVotes;
+
+    /**
+     * @var array|null
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $prefsStore;
 
     /**
      * User constructor.
@@ -463,10 +470,14 @@ class User implements UserInterface
 
     public function getPreferences(): UserPreferences
     {
-        static $preferences = null;
-        if ($preferences === null) {
-            $preferences = new UserPreferences();
-        }
+        $preferences = new UserPreferences();
+        $prefsValues = $this->prefsStore;
+        $preferences->setColorsMode($prefsValues['colorsMode'] ?? 'os');
         return $preferences;
+    }
+
+    public function setPreferences(UserPreferences $prefs): void
+    {
+        $this->prefsStore = $prefs->toArray();
     }
 }
