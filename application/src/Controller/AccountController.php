@@ -28,7 +28,9 @@ class AccountController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $colorsMode = $form->get('colors_mode_picker')->getData();
-            $user->getPreferences()->setColorsMode($colorsMode);
+            $prefs = $user->getPreferences();
+            $prefs->setColorsMode($colorsMode);
+            $user->setPreferences($prefs);
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();

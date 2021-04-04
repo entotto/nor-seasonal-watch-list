@@ -11,7 +11,7 @@ final class UserPreferences
     private ?string $colorsMode;
 
     public function __construct() {
-        $this->colorsMode = 'dark';
+        $this->colorsMode = 'os';
     }
 
     public function setColorsMode(string $mode): void
@@ -27,4 +27,10 @@ final class UserPreferences
         return $this->colorsMode ?? 'os';
     }
 
+    public function toArray(): array
+    {
+        return [
+            'colorsMode' => $this->colorsMode
+        ];
+    }
 }

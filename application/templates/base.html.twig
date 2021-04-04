@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-{% if user is defined %}
+{% if user is defined and user is not null %}
     {% set colorsMode = user.getPreferences.getColorsMode %}
 {% else %}
     {% set colorsMode = 'os' %}
@@ -103,7 +103,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarAccountDropdown">
                             <li>
-                                <a class="dropdown-item {% if app.request.pathinfo == '/account/preferences' %}active{% endif %}" href="{{ path('account_preferences') }}">Preferences {{ colorsMode }}</a>
+                                <a class="dropdown-item {% if app.request.pathinfo == '/account/preferences' %}active{% endif %}" href="{{ path('account_preferences') }}">Preferences</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{{ path('connect_discord_disconnect') }}">Logout</a>
