@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Your preferences{% endblock %}
+
+{% block body %}
+    <h1 class="text-nor-red">Your preferences</h1>
+
+    {{ include('account/_form.html.twig', {'button_label': 'Update'}) }}
+
+{% endblock %}

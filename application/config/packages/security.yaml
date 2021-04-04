@@ -39,6 +39,7 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/account, roles: ROLE_SWL_USER }
         - { path: ^/admin, roles: ROLE_SWL_ADMIN }
         - { path: ^/show, roles: ROLE_SWL_USER }
         - { path: ^/your, roles: ROLE_SWL_USER }
