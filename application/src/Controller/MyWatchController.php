@@ -142,6 +142,7 @@ class MyWatchController extends AbstractController
         $em->flush();
 
         return $this->render('my_watch/index.html.twig', [
+            'user' => $user,
             'controller_name' => 'MyWatchController',
             'seasons' => $seasons,
             'selectedSeasonId' => $selectedSeasonId,

@@ -4,17 +4,18 @@ namespace App\Entity;
 
 final class UserPreferences
 {
-    private bool $darkMode;
+    private ?string $colorsMode;
 
     public function __construct() {
-        $this->darkMode = false;
+        $this->colorsMode = 'dark';
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isDarkMode(): bool {
-        return $this->darkMode;
+    public function getColorsMode(): string
+    {
+        return $this->colorsMode ?? 'os';
     }
 
 }
