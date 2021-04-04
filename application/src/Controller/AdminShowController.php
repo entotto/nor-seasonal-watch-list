@@ -25,6 +25,7 @@ class AdminShowController extends AbstractController
     public function index(ShowRepository $showRepository): Response
     {
         return $this->render('show/index.html.twig', [
+            'user' => $this->getUser(),
             'shows' => $showRepository->getShowsSorted('romaji'),
         ]);
     }
@@ -56,6 +57,7 @@ class AdminShowController extends AbstractController
         }
 
         return $this->render('show/new.html.twig', [
+            'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
         ]);
@@ -69,6 +71,7 @@ class AdminShowController extends AbstractController
     public function show(Show $show): Response
     {
         return $this->render('show/show.html.twig', [
+            'user' => $this->getUser(),
             'show' => $show,
         ]);
     }
@@ -98,6 +101,7 @@ class AdminShowController extends AbstractController
         }
 
         return $this->render('show/edit.html.twig', [
+            'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
         ]);

@@ -23,6 +23,7 @@ class AdminElectionVoteController extends AbstractController
     public function index(ElectionVoteRepository $electionVoteRepository): Response
     {
         return $this->render('election_vote/index.html.twig', [
+            'user' => $this->getUser(),
             'election_votes' => $electionVoteRepository->findAll(),
         ]);
     }
@@ -47,6 +48,7 @@ class AdminElectionVoteController extends AbstractController
         }
 
         return $this->render('election_vote/new.html.twig', [
+            'user' => $this->getUser(),
             'election_vote' => $electionVote,
             'form' => $form->createView(),
         ]);
@@ -60,6 +62,7 @@ class AdminElectionVoteController extends AbstractController
     public function show(ElectionVote $electionVote): Response
     {
         return $this->render('election_vote/show.html.twig', [
+            'user' => $this->getUser(),
             'election_vote' => $electionVote,
         ]);
     }
@@ -82,6 +85,7 @@ class AdminElectionVoteController extends AbstractController
         }
 
         return $this->render('election_vote/edit.html.twig', [
+            'user' => $this->getUser(),
             'election_vote' => $electionVote,
             'form' => $form->createView(),
         ]);

@@ -23,6 +23,7 @@ class AdminScoreController extends AbstractController
     public function index(ScoreRepository $scoreRepository): Response
     {
         return $this->render('score/index.html.twig', [
+            'user' => $this->getUser(),
             'scores' => $scoreRepository->findAllInRankOrder(),
         ]);
     }
@@ -48,6 +49,7 @@ class AdminScoreController extends AbstractController
         }
 
         return $this->render('score/new.html.twig', [
+            'user' => $this->getUser(),
             'score' => $score,
             'form' => $form->createView(),
         ]);
@@ -61,6 +63,7 @@ class AdminScoreController extends AbstractController
     public function show(Score $score): Response
     {
         return $this->render('score/show.html.twig', [
+            'user' => $this->getUser(),
             'score' => $score,
         ]);
     }
@@ -84,6 +87,7 @@ class AdminScoreController extends AbstractController
         }
 
         return $this->render('score/edit.html.twig', [
+            'user' => $this->getUser(),
             'score' => $score,
             'form' => $form->createView(),
         ]);
