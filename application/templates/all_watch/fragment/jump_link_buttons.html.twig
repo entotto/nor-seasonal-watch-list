@@ -4,17 +4,17 @@
             <a
                     href="{{ row.show.anilistShowUrl }}"
                     target="_blank"
-                    class="btn btn-sm btn-outline-primary m-1 ms-0"
+                    class="btn btn-sm btn-info m-1 ms-0"
             >Anilist</a>
         {% endif %}
         {% if row.show.malShowUrl %}
             <a
                     href="{{ row.show.malShowUrl }}"
                     target="_blank"
-                    class="btn btn-sm btn-outline-primary m-1 ms-0"
+                    class="btn btn-sm btn-info m-1 ms-0"
             >MAL</a>
         {% endif %}
-        <a class="btn btn-sm btn-outline-success m-1 ms-0" href="{{ path('my_watch_index') }}#show_target_{{ row.show.id }}">
+        <a class="btn btn-sm btn-primary m-1 ms-0" href="{{ path('my_watch_index') }}#show_target_{{ row.show.id }}">
             Personal
         </a>
     </div>

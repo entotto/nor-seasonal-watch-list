@@ -3,29 +3,29 @@
         {% if row.score.show.getAnilistId %}
             <a
                     href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
-                    class="btn btn-sm btn-outline-primary m-1 ms-0 d-inline-block d-lg-none"
+                    class="btn btn-sm btn-info m-1 ms-0 d-inline-block d-lg-none"
             >Anilist</a>
             <a
                     href="https://anilist.co/anime/{{ row.score.show.getAnilistId }}"
                     target="_blank"
-                    class="btn btn-sm btn-outline-primary m-1 ms-0 d-none d-lg-inline-block"
+                    class="btn btn-sm btn-info m-1 ms-0 d-none d-lg-inline-block"
             >Anilist</a>
         {% endif %}
         {% if row.score.show.getMalId %}
             <a
                     href="https://myanimelist.net/anime/{{ row.score.show.getMalId }}"
-                    class="btn btn-sm btn-outline-primary m-1 ms-0 d-inline-block d-lg-none"
+                    class="btn btn-sm btn-info m-1 ms-0 d-inline-block d-lg-none"
             >MAL</a>
             <a
                     href="https://myanimelist.net/anime/{{ row.score.show.getMalId }}"
                     target="_blank"
-                    class="btn btn-sm btn-outline-primary m-1 ms-0 d-none d-lg-inline-block"
+                    class="btn btn-sm btn-info m-1 ms-0 d-none d-lg-inline-block"
             >MAL</a>
         {% endif %}
-        <a class="btn btn-sm btn-outline-success m-1 ms-0 d-inline-block d-lg-none" href="{{ path('all_watch_index') }}#show_target_{{ row.score.show.getId }}">
+        <a class="btn btn-sm btn-primary m-1 ms-0 d-inline-block d-lg-none" href="{{ path('all_watch_index') }}#show_target_{{ row.score.show.getId }}">
             Community
         </a>
-        <a class="btn btn-sm btn-outline-success m-1 ms-0 d-none d-lg-inline-block" href="{{ path('all_watch_index') }}#show_target_wide_{{ row.score.show.getId }}">
+        <a class="btn btn-sm btn-primary m-1 ms-0 d-none d-lg-inline-block" href="{{ path('all_watch_index') }}#show_target_wide_{{ row.score.show.getId }}">
             Community
         </a>
     </div>
