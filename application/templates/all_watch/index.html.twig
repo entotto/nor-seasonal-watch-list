@@ -20,8 +20,8 @@
         </div>
     </nav>
     <nav id="second_nav" class="navbar navbar-expand-md navbar-light fixed-top d-block d-lg-none second-nav-bar">
-        <div class="container-fluid">
-            <form class="d-flex">
+        <div class="container">
+            <form class="d-flex" style="width:100%;">
                 <label class="pe-2 pt-2" for="select_show">Show</label>
                 <select id="select_show" class="form-control me-2">
                     {% for key, row in data %}
@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-md-10 second-nav-clearance-padding">&nbsp;</div>
+            <div class="col-md-10 second-nav-clearance-padding"></div>
         </div>
     </div>
 
@@ -77,7 +77,7 @@
                 </strong>
             </a>
         </div>
-        <div class="col-md-2"><strong>&nbsp;</strong></div>
+        <div class="col-md-2"><strong></strong></div>
         <div class="col-md-8">
             <div class="row">
                 <div class="col-md-6">
@@ -145,7 +145,7 @@
                         {% if row.scores and row.scoreCount > 0 %}
                             <div class="">
                                 <a
-                                        class="btn btn-outline-primary mt-3"
+                                        class="btn btn-sm btn-info mt-3"
                                         data-bs-toggle="collapse"
                                         href="#collapseRow{{ key }}"
                                         aria-expanded="false"
@@ -266,7 +266,7 @@
                 <div class="row">
                     <div class="col">
                         <a
-                                class="btn btn-outline-primary mt-2 mb-3"
+                                class="btn btn-sm btn-info mt-2 mb-3"
                                 data-bs-toggle="collapse"
                                 href="#collapseRowSmall{{ key }}"
                                 aria-expanded="false"
@@ -313,7 +313,7 @@
     {% if data is not empty %}
         <a class="btn btn-primary rounded-pill d-block back-to-top-button" href="{{ path('all_watch_index') }}#show_target_top">Top</a>
         <div class="row">
-            <div class="col mb-5 mr-3">&nbsp;</div>
+            <div class="col mb-5 mr-3"></div>
         </div>
     {% endif %}
 

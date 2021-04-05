@@ -37,19 +37,31 @@
         // noinspection JSUnusedLocalSymbols
         return barColors.map((rgba, i) => {
             const hsl = d3.hsl(rgba);
-            hsl.l -= 0.1;
+            hsl.l -= isDarkMode ? 0.0 : 0.1;
             return hsl + "";
         });
     }
 
-    const activityBarColors = [
-        "#007eb9", // blue : watching/finished
-        whiten("#007eb9", 0.5),  // weaker blue : ptw
-    ]
-    const activityTextColors = [
-        '#fff',
-        '#fff'
-    ]
+    let activityBarColors, activityTextColors;
+    if (isDarkMode) {
+        activityBarColors = [
+            "#007eb9", // blue : watching/finished
+            whiten("#007eb9", 0.5),  // weaker blue : ptw
+        ]
+        activityTextColors = [
+            '#fff',
+            '#000'
+        ]
+    } else {
+        activityBarColors = [
+            "#007eb9", // blue : watching/finished
+            whiten("#007eb9", 0.5),  // weaker blue : ptw
+        ]
+        activityTextColors = [
+            '#fff',
+            '#fff'
+        ]
+    }
 
     const activityDarkerColors = calcDarkerColors(activityBarColors)
 
@@ -147,21 +159,40 @@
         })
     })
 
-    const scoreBarColors = [
-        "#c80d0d",                         // th8a red / th8a should
-        whiten("#c80d0d", 0.25), // weak red / highly favorable
-        whiten("#c80d0d", 0.5),  // weaker red / favorable
-        whiten("#000", 0.85),    // grey / neutral
-        whiten("#000", 0.25)     // black / unfavorable
-    ];
-    // Use dark text on light background and vice versa.
-    const scoreTextColors = [
-        "#fff",
-        "#fff",
-        "#fff",
-        "#000",
-        "#fff"
-    ];
+    let scoreBarColors, scoreTextColors;
+    if (isDarkMode) {
+        scoreBarColors = [
+            "#c90d0d",                         // th8a red / th8a should
+            whiten("#c90d0d", 0.25), // weak red / highly favorable
+            whiten("#c90d0d", 0.5),  // weaker red / favorable
+            whiten("#000", 0.85),    // grey / neutral
+            whiten("#000", 0.25)     // black / unfavorable
+        ];
+        // Use dark text on light background and vice versa.
+        scoreTextColors = [
+            "#fff",
+            "#fff",
+            "#000",
+            "#000",
+            "#fff"
+        ];
+    } else {
+        scoreBarColors = [
+            "#c90d0d",                         // th8a red / th8a should
+            whiten("#c90d0d", 0.25), // weak red / highly favorable
+            whiten("#c90d0d", 0.5),  // weaker red / favorable
+            whiten("#000", 0.85),    // grey / neutral
+            whiten("#000", 0.25)     // black / unfavorable
+        ];
+        // Use dark text on light background and vice versa.
+        scoreTextColors = [
+            "#fff",
+            "#fff",
+            "#fff",
+            "#000",
+            "#fff"
+        ];
+    }
     const scoreDarkerColors = calcDarkerColors(scoreBarColors);
 
     $('.all_watch_bar_score_chart').each( function () {

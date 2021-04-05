@@ -74,7 +74,7 @@ body {
 }
 
 .score-th8a {
-    background-color: #c80d0d;
+    background-color: #c90d0d;
 }
 .score-highly, .score-highly-favorable {
     background-color: rgb(214, 74, 74);
@@ -91,7 +91,7 @@ body {
 
 
 .table-field-score-th8a {
-    --bs-table-bg: #c80d0d;
+    --bs-table-bg: #c90d0d;
     color: #fff;
 }
 .table-field-score-highly, .table-field-score-highly-favorable {
@@ -112,15 +112,18 @@ body {
 }
 
 .text-nor-red {
-    color: #c80d0d;
+    color: #c90d0d;
     text-decoration: none;
 }
 .text-nor-red-highlight {
     color: rgb(214, 74, 74);
 }
 
+a {
+    color: #4591df;
+}
 a.nor-red {
-    color: #c80d0d;
+    color: #c90d0d;
 }
 a.nor-red:hover {
     color: rgb(217, 74, 74);
@@ -133,12 +136,12 @@ a.nor-red:hover {
 }
 
 .second-nav-clearance-padding {
-    margin-top: 2rem;
+    margin-top: 3rem;
 }
 
 a.show-anchor {
     position:relative;
-    top:-7rem;
+    top:-8rem;
     z-index:-100;
 }
 
