@@ -139,13 +139,30 @@ class AllWatchController extends AbstractController
                 $moodAverageValue = ($consolidatedShowScore['all_count'] > 0) ?
                     $consolidatedShowScore['score_total'] / $consolidatedShowScore['all_count'] : 0;
                 if ($moodAverageValue > 5) {
-                    $moodEmoji = 'emoji-heart-eyes-fill';
+//                    $moodEmoji = 'emoji-heart-eyes-fill';
+                    $moodEmoji = <<<EOF
+<i class="bi bi-circle-fill bi-x-upper-half position-absolute mood-emoji-heart-eyes-color"></i>
+<i class="bi bi-circle-fill bi-x-lower-half position-absolute mood-emoji-dark-mouth-color"></i>
+<i class="bi bi-emoji-heart-eyes-fill position-absolute mood-emoji-favorable-color"></i>
+EOF;
                 } elseif ($moodAverageValue > 1) {
-                    $moodEmoji = 'emoji-smile-fill';
+                    // $moodEmoji = 'emoji-smile-fill';
+                    $moodEmoji = <<<EOF
+<i class="bi bi-circle-fill bi-x-shrunk-circle position-absolute mood-emoji-dark-mouth-color"></i>
+<i class="bi bi-emoji-smile-fill position-absolute mood-emoji-favorable-color"></i>
+EOF;
                 } elseif ($moodAverageValue > -1) {
-                    $moodEmoji = 'emoji-neutral-fill';
+                    // $moodEmoji = 'emoji-neutral-fill';
+                    $moodEmoji = <<<EOF
+<i class="bi bi-circle-fill bi-x-shrunk-circle position-absolute mood-emoji-dark-mouth-color"></i>
+<i class="bi bi-emoji-neutral-fill position-absolute mood-emoji-neutral-color"></i>
+EOF;
                 } else {
-                    $moodEmoji = 'emoji-frown-fill';
+                    // $moodEmoji = 'emoji-frown-fill';
+                    $moodEmoji = <<<EOF
+<i class="bi bi-circle-fill bi-x-shrunk-circle position-absolute mood-emoji-light-mouth-color"></i>
+<i class="bi bi-emoji-frown-fill position-absolute mood-emoji-unfavorable-color"></i>
+EOF;
                 }
                 $maxScoreCount = max([
                     $maxScoreCount,

@@ -330,18 +330,18 @@
         })
     })
 
-    $('.mood-emoji-container').each( function () {
-        const moodValue = $(this).data('moodValue')
-        if (moodValue > 5) {
-            $(this).css('color', '#ee9e47') // #eeb408
-        } else if (moodValue > 1) {
-            $(this).css('color', '#eecb62')
-        } else if (moodValue > -1) {
-            $(this).css('color', '#bbbbbb')
-        } else {
-            $(this).css('color', '#555555')
-        }
-    })
+    // $('.mood-emoji-container').each( function () {
+    //     const moodValue = $(this).data('moodValue')
+    //     if (moodValue > 5) {
+    //         $(this).css('color', '#ee9e47') // #eeb408
+    //     } else if (moodValue > 1) {
+    //         $(this).css('color', '#eecb62')
+    //     } else if (moodValue > -1) {
+    //         $(this).css('color', '#bbbbbb')
+    //     } else {
+    //         $(this).css('color', '#555555')
+    //     }
+    // })
 
     // Work around scroll-to-anchor bug in chrome
     const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
