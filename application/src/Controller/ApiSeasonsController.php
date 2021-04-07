@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApiSeasonsController extends AbstractController
 {
     /**
-     * @Route("/api/v1/seasons", name="api_seasons", methods={"GET"})
+     * @Route("/api/v1/seasons", name="api_seasons", methods={"GET"}, options={"expose"=false})
      * @param SeasonRepository $seasonRepository
      * @return JsonResponse
      */

@@ -480,4 +480,12 @@ class User implements UserInterface
     {
         $this->prefsStore = $prefs->toArray();
     }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'displayName' => $this->getDisplayName(),
+        ];
+    }
 }

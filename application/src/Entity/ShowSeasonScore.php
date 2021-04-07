@@ -157,4 +157,26 @@ class ShowSeasonScore
 
         return $this;
     }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'activity' => $this->getActivity() ? $this->getActivity()->jsonSerialize() : [],
+            'score' => $this->getScore() ? $this->getScore()->jsonSerialize() : [],
+            'season' => $this->getSeason() ? $this->getSeason()->jsonSerialize() : [],
+            'show' => $this->getShow() ? $this->getShow()->jsonSerialize() : [],
+            'user' => $this->getUser()->jsonSerialize(),
+        ];
+    }
+
+    public function jsonSerializeForWatch(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'activity' => $this->getActivity() ? $this->getActivity()->jsonSerialize() : [],
+            'recommendation' => $this->getScore() ? $this->getScore()->jsonSerialize() : [],
+            'user' => $this->getUser()->jsonSerialize(),
+        ];
+    }
 }
