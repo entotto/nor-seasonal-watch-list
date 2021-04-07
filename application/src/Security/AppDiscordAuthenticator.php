@@ -121,7 +121,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         }
         try {
             $nickname = $this->getDiscordNickname($credentials->getToken(), $discordId);
-            $existingUser->setDisplayName($nickname);
+            $user->setDisplayName($nickname);
         } catch (GuzzleException|Exception $e) {
             $user->setDisplayName(null);
         }
