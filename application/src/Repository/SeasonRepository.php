@@ -22,6 +22,9 @@ class SeasonRepository extends ServiceEntityRepository
         parent::__construct($registry, Season::class);
     }
 
+    /**
+     * @return Season[]
+     */
     public function getAllInRankOrder(): array
     {
         return $this->createQueryBuilder('s')
