@@ -483,4 +483,23 @@ class Show
     {
         $this->malId = $malId;
     }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'japaneseTitle' => $this->getJapaneseTitle(),
+            'englishTitle' => $this->getEnglishTitle(),
+            'fullJapaneseTitle' => $this->getFullJapaneseTitle(),
+            'anilistId' => $this->getAnilistId(),
+            'malId' => $this->getMalId(),
+            'description' => $this->getDescription(),
+            'hashtag' => $this->getHashtag(),
+            'coverImageMedium' => $this->getCoverImageMedium(),
+            'coverImageLarge' => $this->getCoverImageLarge(),
+            'siteUrl' => $this->getSiteUrl(),
+            'synonyms' => $this->getSynonyms(),
+            'excludeFromElections' => $this->getExcludeFromElections(),
+        ];
+    }
 }

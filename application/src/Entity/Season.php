@@ -9,6 +9,7 @@ use App\Repository\SeasonRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonException;
 
 /**
  * @ORM\Entity(repositoryClass=SeasonRepository::class)
@@ -266,4 +267,15 @@ class Season
 
         return $this;
     }
+
+    public function jsonSerialize(): array {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'year' => $this->getYear(),
+            'yearPart' => $this->getYearPart(),
+            'rankOrder' => $this->getRankOrder(),
+        ];
+    }
+
 }

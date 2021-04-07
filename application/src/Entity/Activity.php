@@ -198,4 +198,18 @@ class Activity
     {
         $this->slug = $slug;
     }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'nickname' => $this->getNickname(),
+            'rankOrder' => $this->getRankOrder(),
+            'value' => $this->getValue(),
+            'colorValue' => $this->getColorValue(),
+            'icon' => $this->getIcon(),
+            'slug' => $this->getSlug(),
+        ];
+    }
 }
