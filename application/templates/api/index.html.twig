@@ -6,7 +6,123 @@
     <div class="row">
         <div class="col">
             <h1>API Documentation ({{ api_version }})</h1>
-            <p>API documentation goes here....</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h2>Seasons</h2>
+            <p>Retrieve a list of all available seasons.</p>
+            <p><code>GET /api/v1/seasons</code></p>
+            <p>The request returns data with this structure:</p>
+            <pre class="border border-1 border-dark rounded p-3 overflow-auto" style="max-height: 30rem;">[
+    {
+        "id": 1,
+        "name": "Winter 2020",
+        "year": 2020,
+        "yearPart": "Winter",
+        "rankOrder": 1
+    }
+]</pre>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h2 class="mt-3">Community Watches</h2>
+            <p>Retrieve data for a single season.</p>
+            <p>API endpoint 1:</p>
+            <p><code>GET /api/v1/seasons/{year}/{yearPart}/community-watches</code></p>
+            <p>
+                where {year} is the 4 digit year, and {yearPart} is the text &quot;winter&quot;,
+                &quot;spring&quot;, &quot;summer&quot;, or &quot;fall&quot; (case insensitive).
+            </p>
+            <p>API endpoint 2:</p>
+            <p><code>GET /api/v1/seasons/{id}/community-watches</code></p>
+            <p>
+                where {id} is the internal ID of the season (as indicated in the above seasons
+                API response).
+            </p>
+            <p>
+                Both API requests return the same data set:
+            </p>
+            <pre class="border border-1 border-dark rounded p-3 overflow-auto" style="max-height:30rem;">{
+    "shows": [
+        {
+            "show": {
+                "id": 9,
+                "title": "Eizouken ni wa Te wo Dasu na!\u003Cbr\u003E\u6620\u50cf\u7814\u306b\u306f\u624b\u3092\u51fa\u3059\u306a\uff01\u003Cbr\u003EKeep Your Hands Off Eizouken!",
+                "shortTitle": "Eizouken ni wa Te wo Dasu na!",
+                "coverImage": "https:\/\/s4.anilist.co\/file\/anilistcdn\/media\/anime\/cover\/medium\/bx109298-YvjfI88hX76T.png",
+                "coverImageMedium": "https:\/\/s4.anilist.co\/file\/anilistcdn\/media\/anime\/cover\/small\/bx109298-YvjfI88hX76T.png",
+                "anilistId": "109298",
+                "anilistShowUrl": "https:\/\/anilist.co\/anime\/109298",
+                "malShowUrl": "https:\/\/myanimelist.net\/anime\/39792"
+            },
+            "consolidatedActivities": {
+                "ptw_count": 0,
+                "watching_count": 1
+            },
+            "consolidatedRecommendations": {
+                "yes_count": 1,
+                "no_count": 0,
+                "unfavorable_count": 0,
+                "neutral_count": 0,
+                "favorable_count": 0,
+                "highly_favorable_count": 0,
+                "th8a_count": 1,
+                "all_count": 1,
+                "score_total": 10,
+                "mood_average_value": 10
+            },
+            "scores": [
+                {
+                    "id": 20,
+                    "activity": {
+                        "id": 2,
+                        "name": "Watching\/Finished",
+                        "nickname": "Watching",
+                        "rankOrder": 2,
+                        "value": 1,
+                        "colorValue": "activity-watching",
+                        "icon": "",
+                        "slug": "watching"
+                    },
+                    "recommendation": {
+                        "id": 4,
+                        "name": "Th8a should cover",
+                        "nickname": "Th8a",
+                        "rankOrder": 1,
+                        "value": 10,
+                        "colorValue": "score-th8a",
+                        "icon": "bi-exclamation-triangle",
+                        "slug": "th8a"
+                    },
+                    "user": {
+                        "id": 2,
+                        "displayName": "Unheppcat"
+                    }
+                }
+            ],
+            "scoreCount": 1,
+            "maxScore": 1,
+            "maxActivityCount": 1
+        }
+    ],
+    "status": 200,
+    "season": {
+        "id": 6,
+        "name": "Winter 2020",
+        "year": 2020,
+        "yearPart": "Winter",
+        "rankOrder": 1
+    }
+}</pre>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mb-3">
+            &nbsp;
         </div>
     </div>
 
