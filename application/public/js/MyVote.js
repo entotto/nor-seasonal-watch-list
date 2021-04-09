@@ -17,6 +17,11 @@
             }
         })
     })
+    $('#utcTimeStartShow').click(function (e) {
+        e.preventDefault()
+        $('#utcTimeStartShow').addClass('d-none');
+        $('#utcStartTime').removeClass('d-none');
+    })
     $('#utcTimeEndShow').click(function (e) {
         e.preventDefault()
         $('#utcTimeEndShow').addClass('d-none');

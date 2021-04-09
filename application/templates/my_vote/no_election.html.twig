@@ -13,7 +13,9 @@
                 <p>
                     The election for the {{ election.season.name }} season
                     starts on <span id="localStartTime"></span>
-                    ({{ election.getStartDate|date('l Y-m-d g:i A') }} +00:00/UTC).<br>
+                    <a id="utcTimeStartShow" href="#" style="font-size:small;">(see UTC)</a>
+                    <span id="utcStartTime" class="d-none"> / {{ election.getStartDate|date('l Y-m-d g:i A') }} +00:00/UTC
+                    </span><br>
                     Countdown: <strong><span id="countdownStartOutput"></span></strong>
                 </p>
             {% else %}
