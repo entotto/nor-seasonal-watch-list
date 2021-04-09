@@ -17,6 +17,11 @@
             }
         })
     })
+    $('#utcTimeEndShow').click(function (e) {
+        e.preventDefault()
+        $('#utcTimeEndShow').addClass('d-none');
+        $('#utcEndTime').removeClass('d-none');
+    })
     const formatDate = function (originalDate) {
         const day = originalDate.getDate()
         const formattedDay = day < 10 ? "0" + day : day

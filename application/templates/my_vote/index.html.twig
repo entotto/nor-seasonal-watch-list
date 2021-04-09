@@ -11,7 +11,10 @@
             </h1>
             <p>
                 Voting ends <span id="localEndTime"></span>
-                ({{ election.getEndDate|date('l Y-m-d g:i A') }} +00:00/UTC)<br>
+{#                <a id="utcTimeEndShow" style="font-size:small;" href="javascript:void(0);" onclick="document.getElementById('utcTimeEndShow').classList.add('d-none');document.getElementById('utcEndTime').classList.remove('d-none');">(see UTC)</a>#}
+                <a id="utcTimeEndShow" href="#" style="font-size:small;">(see UTC)</a>
+                <span id="utcEndTime" class="d-none"> / {{ election.getEndDate|date('l Y-m-d g:i A') }} +00:00/UTC
+                </span><br>
                 Remaining: <strong><span id="countdownOutput"></span></strong>
             </p>
             <p>

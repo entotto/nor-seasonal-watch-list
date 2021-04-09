@@ -28,7 +28,7 @@ class AdminElectionController extends AbstractController
     {
         return $this->render('election/index.html.twig', [
             'user' => $this->getUser(),
-            'elections' => $electionRepository->findAll(),
+            'elections' => $electionRepository->findBy([], ['startDate' => 'desc']),
         ]);
     }
 
