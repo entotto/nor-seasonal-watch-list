@@ -9,37 +9,42 @@ class VoteTally
     /**
      * @var int $id
      */
-    private int $id;
+    private int $id = 0;
 
     /**
      * @var string $showJapaneseTitle
      */
-    private string $showJapaneseTitle;
+    private string $showJapaneseTitle = '';
 
     /**
      * @var string $showEnglishTitle
      */
-    private string $showEnglishTitle;
+    private string $showEnglishTitle = '';
 
     /**
      * @var string $showFullJapaneseTitle
      */
-    private string $showFullJapaneseTitle;
+    private string $showFullJapaneseTitle = '';
 
     /**
      * @var int $showId
      */
-    private int $showId;
+    private int $showId = 0;
 
     /**
      * @var int $voteCount
      */
-    private int $voteCount;
+    private int $voteCount = 0;
 
     /**
      * @var float $votePercentOfTotal
      */
-    private float $votePercentOfTotal;
+    private float $votePercentOfTotal = 0.0;
+
+    /**
+     * @var float $votePercentOfVoterTotal
+     */
+    private float $votePercentOfVoterTotal = 0.0;
 
     /**
      * @return int
@@ -151,5 +156,21 @@ class VoteTally
     public function setVotePercentOfTotal(float $votePercentOfTotal): void
     {
         $this->votePercentOfTotal = $votePercentOfTotal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getVotePercentOfVoterTotal(): float
+    {
+        return $this->votePercentOfVoterTotal;
+    }
+
+    /**
+     * @param float $votePercentOfVoterTotal
+     */
+    public function setVotePercentOfVoterTotal(float $votePercentOfVoterTotal): void
+    {
+        $this->votePercentOfVoterTotal = $votePercentOfVoterTotal;
     }
 }

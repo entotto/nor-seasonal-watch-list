@@ -74,13 +74,16 @@ class AdminElectionController extends AbstractController
     ): Response {
         $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         $votesInfo = $electionVoteRepository->getCountsForElection($election);
+        $totalVoterCount = $electionVoteRepository->getVoterCountForElection($election);
 
-        $voteTallies = $this->getVoteTallies($votesInfo, $shows);
+        $voteTallies = $this->getVoteTallies($votesInfo, $totalVoterCount, $shows);
+
 
         return $this->render('election/show.html.twig', [
             'user' => $this->getUser(),
             'election' => $election,
             'votesInfo' => $votesInfo,
+            'totalVoterCount' => $totalVoterCount,
             'voteTallies' => $voteTallies
         ]);
     }
@@ -103,6 +106,7 @@ class AdminElectionController extends AbstractController
     ): Response {
         $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         $votesInfo = $electionVoteRepository->getCountsForElection($election);
+        $totalVoterCount = $electionVoteRepository->getVoterCountForElection($election);
 
         $filenameParts = [
             str_replace(' ', '-', $election->getSeason()->getName()),
@@ -111,16 +115,17 @@ class AdminElectionController extends AbstractController
         ];
         $filename = implode('-', $filenameParts) . '.csv';
 
-        $voteTallies = $this->getVoteTallies($votesInfo, $shows);
+        $voteTallies = $this->getVoteTallies($votesInfo, $totalVoterCount, $shows);
 
         $fp = fopen('php://temp', 'wb');
-        fputcsv($fp, ['Show', 'Votes', '% of Total']);
+        fputcsv($fp, ['Show', 'Votes', '% of Voters', '% of Total']);
         foreach ($voteTallies as $voteTally) {
             fputcsv($fp, [
                 $voteTally->getShowJapaneseTitle() . ' (' .
                 $voteTally->getShowFullJapaneseTitle() . ') ' .
                 $voteTally->getShowEnglishTitle(),
                 $voteTally->getVoteCount(),
+                $voteTally->getVotePercentOfVoterTotal(),
                 $voteTally->getVotePercentOfTotal()
             ]);
         }
@@ -177,10 +182,11 @@ class AdminElectionController extends AbstractController
 
     /**
      * @param array $votesInfo
+     * @param int $totalVoterCount
      * @param array $shows
      * @return VoteTally[]
      */
-    private function getVoteTallies(array $votesInfo, array $shows): array
+    private function getVoteTallies(array $votesInfo, int $totalVoterCount, array $shows): array
     {
         $voteTallies = [];
         $totalVotes = 0;
@@ -196,6 +202,7 @@ class AdminElectionController extends AbstractController
             $voteTally->setShowEnglishTitle((string)$voteInfo['english_title']);
             $voteTally->setVoteCount((int)$voteInfo['vote_count']);
             $voteTally->setVotePercentOfTotal($this->calculatePercent($voteInfo['vote_count'], $totalVotes));
+            $voteTally->setVotePercentOfVoterTotal($this->calculatePercent($voteInfo['vote_count'], $totalVoterCount));
             $voteTallies[] = $voteTally;
             foreach ($shows as $showsKey => $show) {
                 if ($show->getId() === $voteTally->getShowId()) {
@@ -224,6 +231,9 @@ class AdminElectionController extends AbstractController
 
     private function calculatePercent(int $count, int $totalCount): float
     {
-        return round(($count / $totalCount) * 100, 1);
+        if ($totalCount > 0) {
+            return round(($count / $totalCount) * 100, 1);
+        }
+        return 0;
     }
 }
