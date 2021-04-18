@@ -1,6 +1,6 @@
 {
     "name": "unheppcat/nor-seasonal-watch-list",
-    "description": "NoR Seasonal Watch List",
+    "description": "NOR Seasonal Watch List",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "dev",
@@ -51,7 +51,7 @@
         "wohali/oauth2-discord-new": "^1.1"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master",
+        "roave/security-advisories": "dev-latest",
         "symfony/browser-kit": "^5.2",
         "symfony/css-selector": "^5.2",
         "symfony/debug-bundle": "^5.2",

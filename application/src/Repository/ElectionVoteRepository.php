@@ -76,4 +76,40 @@ EOF;
         $stmt->execute(['election_id' => $election->getId()]);
         return $stmt->fetchAllAssociative();
     }
+
+    /**
+     * @param Election $election
+     * @return int
+     * @throws DoctrineException
+     * @throws Exception
+     */
+    public function getVoterCountForElection(
+        Election $election
+    ): int {
+        $sql = <<<EOF
+SELECT COUNT(ev2.user_id) AS voter_count
+FROM 
+    (SELECT ev.user_id
+    FROM election_vote ev
+    WHERE ev.chosen = 1
+    AND ev.election_id = :election_id
+    GROUP BY ev.user_id) as ev2
+EOF;
+        $conn = $this->getEntityManager()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['election_id' => $election->getId()]);
+        return $stmt->fetchOne();
+    }
 }
+
+/*
+
+SELECT ev.user_id
+FROM election_vote ev
+WHERE ev.chosen = 1
+AND ev.election_id = 2
+GROUP BY ev.user_id
+
+
+
+ */

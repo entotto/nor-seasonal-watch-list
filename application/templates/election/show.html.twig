@@ -28,26 +28,34 @@
                 <td>{{ election.isActive ? 'Yes' : 'No' }}</td>
             </tr>
             <tr>
+                <th>Voters</th>
+                <td>{{ totalVoterCount }}</td>
+            </tr>
+            <tr>
                 <th>Results</th>
                 <td class="pt-0">
                     <table class="table">
                         <thead>
                         <tr>
-                            <th class="col-md-9 border-top-0">Show</th>
+                            <th class="col-md-7 border-top-0">Show</th>
                             <th class="col-md-1 text-end border-top-0">Votes</th>
+                            <th class="col-md-2 text-end border-top-0">% of Voters</th>
                             <th class="col-md-2 text-end border-top-0">% of Total</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for voteTally in voteTallies %}
                             <tr>
-                                <td class="col-md-9">
+                                <td class="col-md-7">
                                     {{ voteTally.getShowJapaneseTitle }}
                                     ({{ voteTally.getShowFullJapaneseTitle }})
                                     {{ voteTally.getShowEnglishTitle }}
                                 </td>
                                 <td class="col-md-1 text-end">
                                     {{ voteTally.getVoteCount }}
+                                </td>
+                                <td class="col-md-2 text-end">
+                                    {{ voteTally.getVotePercentOfVoterTotal|round(1) }}%
                                 </td>
                                 <td class="col-md-2 text-end">
                                     {{ voteTally.getVotePercentOfTotal|round(1) }}%
