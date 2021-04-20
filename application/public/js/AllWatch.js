@@ -198,8 +198,8 @@
     $('.all_watch_bar_score_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
-        const maxScoreCount = $(this).data('maxscorecount')
-        const maxChartTick = calcMaxChartTick(maxScoreCount)
+        // const maxScoreCount = $(this).data('maxscorecount')
+        // const maxChartTick = calcMaxChartTick(maxScoreCount)
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -288,7 +288,7 @@
                                 display: false,
                                 maxRotation: 0,
                                 min: 0,
-                                max: maxChartTick,
+                                // max: maxChartTick,
                                 fontSize: 20
                             },
                             gridLines: {
