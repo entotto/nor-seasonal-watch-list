@@ -198,6 +198,7 @@
     $('.all_watch_bar_score_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
+        const total = data.reduce((a, b) => a + b, 0)
         // const maxScoreCount = $(this).data('maxscorecount')
         // const maxChartTick = calcMaxChartTick(maxScoreCount)
 
@@ -224,6 +225,12 @@
                         backgroundColor: scoreBarColors[4],
                         datalabels: {
                             display: data[4] > 0,
+                            formatter: (value) => {
+                                if (total > 0) {
+                                    return Math.round((value / total) * 100) + '%'
+                                }
+                                return '0%'
+                            },
                             color: scoreTextColors[4]
                         }
                     },
@@ -235,6 +242,12 @@
                         backgroundColor: scoreBarColors[3],
                         datalabels: {
                             display: data[3] > 0,
+                            formatter: (value) => {
+                                if (total > 0) {
+                                    return Math.round((value / total) * 100) + '%'
+                                }
+                                return '0%'
+                            },
                             color: scoreTextColors[3]
                         }
                     },
@@ -246,6 +259,12 @@
                         backgroundColor: scoreBarColors[2],
                         datalabels: {
                             display: data[2] > 0,
+                            formatter: (value) => {
+                                if (total > 0) {
+                                    return Math.round((value / total) * 100) + '%'
+                                }
+                                return '0%'
+                            },
                             color: scoreTextColors[2]
                         }
                     },
@@ -257,6 +276,12 @@
                         backgroundColor: scoreBarColors[1],
                         datalabels: {
                             display: data[1] > 0,
+                            formatter: (value) => {
+                                if (total > 0) {
+                                    return Math.round((value / total) * 100) + '%'
+                                }
+                                return '0%'
+                            },
                             color: scoreTextColors[1]
                         }
                     },
@@ -268,6 +293,12 @@
                         backgroundColor: scoreBarColors[0],
                         datalabels: {
                             display: data[0] > 0,
+                            formatter: (value) => {
+                                if (total > 0) {
+                                    return Math.round((value / total) * 100) + '%'
+                                }
+                                return '0%'
+                            },
                             color: scoreTextColors[0]
                         }
                     }
