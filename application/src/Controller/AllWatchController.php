@@ -136,6 +136,21 @@ class AllWatchController extends AbstractController
             $consolidatedShowScores = $showSeasonScoreRepository->getScoresForSeason($season);
             $keyedConsolidatedShowScores = [];
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
+
+                if ($consolidatedShowScore['all_count'] > 0) {
+                    $consolidatedShowScore['th8a_percent'] = round(($consolidatedShowScore['th8a_count'] / $consolidatedShowScore['all_count']) * 100);
+                    $consolidatedShowScore['highly_favorable_percent'] = round(($consolidatedShowScore['highly_favorable_count'] / $consolidatedShowScore['all_count']) * 100);
+                    $consolidatedShowScore['favorable_percent'] = round(($consolidatedShowScore['favorable_count'] / $consolidatedShowScore['all_count']) * 100);
+                    $consolidatedShowScore['neutral_percent'] = round(($consolidatedShowScore['neutral_count'] / $consolidatedShowScore['all_count']) * 100);
+                    $consolidatedShowScore['unfavorable_percent'] = round(($consolidatedShowScore['unfavorable_count'] / $consolidatedShowScore['all_count']) * 100);
+                } else {
+                    $consolidatedShowScore['th8a_percent'] = 0;
+                    $consolidatedShowScore['highly_favorable_percent'] = 0;
+                    $consolidatedShowScore['favorable_percent'] = 0;
+                    $consolidatedShowScore['neutral_percent'] = 0;
+                    $consolidatedShowScore['unfavorable_percent'] = 0;
+                }
+
                 $moodAverageValue = ($consolidatedShowScore['all_count'] > 0) ?
                     $consolidatedShowScore['score_total'] / $consolidatedShowScore['all_count'] : 0;
                 if ($moodAverageValue > 5) {
