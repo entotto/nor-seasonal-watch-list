@@ -285,7 +285,7 @@
                                 display: false,
                                 maxRotation: 0,
                                 min: 0,
-                                // max: maxChartTick,
+                                max: data[0] + data[1] + data[2] + data[3] + data[4],
                                 fontSize: 20
                             },
                             gridLines: {
