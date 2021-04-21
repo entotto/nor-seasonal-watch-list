@@ -145,7 +145,6 @@
                     }
                 },
                 responsive: true,
-                aspectRatio: 8,
                 legend: {
                     display: false
                 },
@@ -314,7 +313,6 @@
                     }
                 },
                 responsive: true,
-                aspectRatio: 8,
                 legend: {
                     display: false
                 },
