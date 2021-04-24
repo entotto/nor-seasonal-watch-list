@@ -148,8 +148,8 @@ class AllWatchController extends AbstractController
         $usersWithData = [];
         foreach ($data as $show) {
             foreach ($show['scores'] as $showSeasonScore) {
-                $usersWithData[$showSeasonScore->getUser()->getDiscordUsername().' reco'] = '';
                 $usersWithData[$showSeasonScore->getUser()->getDiscordUsername().' activity'] = '';
+                $usersWithData[$showSeasonScore->getUser()->getDiscordUsername().' rec'] = '';
             }
         }
         $header = null;
@@ -162,7 +162,7 @@ class AllWatchController extends AbstractController
             $myRow['title'] = $row['show']['title'];
             foreach($row['scores'] as $score) {
                 if ($score->getUser() && $score->getScore()) {
-                    $userData[$score->getUser()->getDiscordUsername() . ' reco'] = $score->getScore()->getName();
+                    $userData[$score->getUser()->getDiscordUsername() . ' rec'] = $score->getScore()->getName();
                 }
             }
             foreach($row['scores'] as $activity) {
@@ -181,7 +181,7 @@ class AllWatchController extends AbstractController
             $myRow['Highly favorable'] = (int)$row['consolidatedScores']['highly_favorable_count'];
             $myRow['Th8a should'] = (int)$row['consolidatedScores']['th8a_count'];
             $myRow['Total count'] = (int)$row['consolidatedScores']['all_count'];
-            $myRow['Calculated reco'] = (float)$row['consolidatedScores']['score_total'];
+            $myRow['Calculated rec'] = (float)$row['consolidatedScores']['score_total'];
 
             if ($header === null) {
                 $header = array_keys($myRow);
