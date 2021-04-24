@@ -161,10 +161,14 @@ class AllWatchController extends AbstractController
             $myRow = [];
             $myRow['title'] = $row['show']['title'];
             foreach($row['scores'] as $score) {
-                $userData[$score->getUser()->getDiscordUsername().' reco'] = $score->getScore()->getName();
+                if ($score->getUser() && $score->getScore()) {
+                    $userData[$score->getUser()->getDiscordUsername() . ' reco'] = $score->getScore()->getName();
+                }
             }
             foreach($row['scores'] as $activity) {
-                $userData[$activity->getUser()->getDiscordUsername().' activity'] = $activity->getActivity()->getNickname();
+                if ($activity->getUser() && $activity->getActivity()) {
+                    $userData[$activity->getUser()->getDiscordUsername() . ' activity'] = $activity->getActivity()->getNickname();
+                }
             }
             foreach($userData as $key => $value) {
                 $myRow[$key] = $value;
