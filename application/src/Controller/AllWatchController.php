@@ -4,6 +4,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Season;
 use App\Entity\ShowSeasonScore;
 use App\Entity\User;
 use App\Repository\ActivityRepository;
@@ -54,10 +55,25 @@ class AllWatchController extends AbstractController
         SelectedSeasonHelper $selectedSeasonHelper,
         SelectedSortHelper $selectedSortHelper
     ): Response {
-        $selectedSeasonId = null;
-        $seasons = $seasonRepository->getAllInRankOrder();
-        $season = $selectedSeasonHelper->getSelectedSeason($request);
+        $userKeys = $this->loadUserKeys($userRepository);
+        $userCount = count($userKeys);
         $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
+        $data = [];
+        $season = $selectedSeasonHelper->getSelectedSeason($request);
+
+        $showData = $this->getShowData(
+            $season,
+            $showRepository,
+            $selectedSortName,
+            $scoreRepository,
+            $activityRepository,
+            $showSeasonScoreRepository,
+            $em,
+            $userKeys,
+            $data
+        );
+
+        $selectedSeasonId = ($season === null) ? null : $season->getId();
         $sortOptions = [
             'show_asc' => 'Show &#9660;',
             'show_desc' => 'Show &#9650;',
@@ -66,21 +82,162 @@ class AllWatchController extends AbstractController
             'recommendations_desc' => 'Recommendations &#9660;',
             'recommendations_asc' => 'Recommendations &#9650;',
         ];
-        $activities = $activityRepository->findAll();
-        $activityValues = [];
-        foreach ($activities as $activity) {
-            $activityValues[$activity->getSlug()] = $activity->getValue();
-        }
-        $users = $userRepository->getAllSorted();
-        $userKeys = [];
-        foreach ($users as $user) {
-            $userKeys[$user->getUsername()] = false;
-        }
+        $seasons = $seasonRepository->getAllInRankOrder();
+
+        return $this->render('all_watch/index.html.twig', [
+            'controller_name' => 'AllWatchController',
+            'seasons' => $seasons,
+            'selectedSeasonId' => $selectedSeasonId,
+            'users' => $showData['userKeys'],
+            'user' => $this->getUser(),
+            'data' => $showData['data'],
+            'total_columns' => 2 + $userCount,
+            'selectedSortName' => $selectedSortName,
+            'sortOptions' => $sortOptions,
+        ]);
+    }
+
+    /**
+     * @Route("/community/export", name="all_watch_export", options={"expose"=true})
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @param ShowRepository $showRepository
+     * @param ShowSeasonScoreRepository $showSeasonScoreRepository
+     * @param UserRepository $userRepository
+     * @param ScoreRepository $scoreRepository
+     * @param ActivityRepository $activityRepository
+     * @param SelectedSeasonHelper $selectedSeasonHelper
+     * @param SelectedSortHelper $selectedSortHelper
+     * @return Response
+     * @throws Exception
+     * @throws NonUniqueResultException
+     * @throws \Doctrine\DBAL\Driver\Exception
+     */
+    public function export(
+        Request $request,
+        EntityManagerInterface $em,
+        ShowRepository $showRepository,
+        ShowSeasonScoreRepository $showSeasonScoreRepository,
+        UserRepository $userRepository,
+        ScoreRepository $scoreRepository,
+        ActivityRepository $activityRepository,
+        SelectedSeasonHelper $selectedSeasonHelper,
+        SelectedSortHelper $selectedSortHelper
+
+    ): Response {
+        /** @noinspection DuplicatedCode */
+        $userKeys = $this->loadUserKeys($userRepository);
+        $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
         $data = [];
-        $maxScoreCount = 0;
-        $maxActivityCount = 0;
+        $season = $selectedSeasonHelper->getSelectedSeason($request);
+
+        $showData = $this->getShowData(
+            $season,
+            $showRepository,
+            $selectedSortName,
+            $scoreRepository,
+            $activityRepository,
+            $showSeasonScoreRepository,
+            $em,
+            $userKeys,
+            $data
+        );
+        $data = $showData['data'];
+        $output = [];
+
+        $usersWithData = [];
+        foreach ($data as $show) {
+            foreach ($show['scores'] as $showSeasonScore) {
+                $usersWithData[$showSeasonScore->getUser()->getDiscordUsername().' reco'] = '';
+                $usersWithData[$showSeasonScore->getUser()->getDiscordUsername().' activity'] = '';
+            }
+        }
+        $header = null;
+        foreach ($data as $row) {
+            $userData = [];
+            foreach ($usersWithData as $key => $value) {
+                $userData[$key] = $value;
+            }
+            $myRow = [];
+            $myRow['title'] = $row['show']['title'];
+            foreach($row['scores'] as $score) {
+                $userData[$score->getUser()->getDiscordUsername().' reco'] = $score->getScore()->getName();
+            }
+            foreach($row['scores'] as $activity) {
+                $userData[$activity->getUser()->getDiscordUsername().' activity'] = $activity->getActivity()->getNickname();
+            }
+            foreach($userData as $key => $value) {
+                $myRow[$key] = $value;
+            }
+            $myRow['PTW'] = (int)$row['consolidatedActivities']['ptw_count'];
+            $myRow['Watching'] = (int)$row['consolidatedActivities']['watching_count'];
+            $myRow['Unfavorable'] = (int)$row['consolidatedScores']['unfavorable_count'];
+            $myRow['Neutral'] = (int)$row['consolidatedScores']['neutral_count'];
+            $myRow['Favorable'] = (int)$row['consolidatedScores']['favorable_count'];
+            $myRow['Highly favorable'] = (int)$row['consolidatedScores']['highly_favorable_count'];
+            $myRow['Th8a should'] = (int)$row['consolidatedScores']['th8a_count'];
+            $myRow['Total count'] = (int)$row['consolidatedScores']['all_count'];
+            $myRow['Calculated reco'] = (float)$row['consolidatedScores']['score_total'];
+
+            if ($header === null) {
+                $header = array_keys($myRow);
+                $output[] = $header;
+            }
+
+            $output[] = $myRow;
+        }
+
+        return $this->buildCsvResponse($output);
+
+    }
+
+    private function buildCsvResponse(array $data): Response
+    {
+        $fp = fopen('php://temp', 'wb');
+        foreach ($data as $datum) {
+            fputcsv($fp, $datum);
+        }
+
+        rewind($fp);
+        $response = new Response(stream_get_contents($fp));
+        fclose($fp);
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="all_watches.csv"');
+
+        return $response;
+    }
+
+    /**
+     * @param Season|null $season
+     * @param ShowRepository $showRepository
+     * @param string|null $selectedSortName
+     * @param ScoreRepository $scoreRepository
+     * @param ActivityRepository $activityRepository
+     * @param ShowSeasonScoreRepository $showSeasonScoreRepository
+     * @param EntityManagerInterface $em
+     * @param array $userKeys
+     * @param array $data
+     * @return array
+     * @throws Exception
+     * @throws NonUniqueResultException
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @noinspection DuplicatedCode
+     */
+    private function getShowData(
+        ?Season $season,
+        ShowRepository $showRepository,
+        ?string $selectedSortName,
+        ScoreRepository $scoreRepository,
+        ActivityRepository $activityRepository,
+        ShowSeasonScoreRepository $showSeasonScoreRepository,
+        EntityManagerInterface $em,
+        array $userKeys,
+        array $data
+    ): array {
         if ($season !== null) {
-            $selectedSeasonId = $season->getId();
+            $maxScoreCount = 0;
+            $maxActivityCount = 0;
             $shows = $showRepository->getShowsForSeason($season, null, $selectedSortName);
             if ($selectedSortName !== 'show_asc' && $selectedSortName !== 'show_desc') {
                 // When sorting by a calculated value (avg or sum in this case), Doctrine returns
@@ -116,6 +273,12 @@ class AllWatchController extends AbstractController
                 }
             }
             // End of adding missing score rows
+
+            $activityValues = [];
+            $activities = $activityRepository->findAll();
+            foreach ($activities as $activity) {
+                $activityValues[$activity->getSlug()] = $activity->getValue();
+            }
 
             $consolidatedShowActivities = $showSeasonScoreRepository->getActivitiesForSeason($season);
             $keyedConsolidatedShowActivities = [];
@@ -182,10 +345,10 @@ EOF;
                 $maxScoreCount = max([
                     $maxScoreCount,
                     ($consolidatedShowScore['th8a_count'] +
-                    $consolidatedShowScore['highly_favorable_count'] +
-                    $consolidatedShowScore['favorable_count'] +
-                    $consolidatedShowScore['neutral_count'] +
-                    $consolidatedShowScore['unfavorable_count'])
+                        $consolidatedShowScore['highly_favorable_count'] +
+                        $consolidatedShowScore['favorable_count'] +
+                        $consolidatedShowScore['neutral_count'] +
+                        $consolidatedShowScore['unfavorable_count'])
                 ]);
                 $consolidatedShowScore['scores_array'] = '[' .
                     $consolidatedShowScore['th8a_count'] . ',' .
@@ -237,17 +400,21 @@ EOF;
                 ];
             }
         }
+        return [ 'userKeys' => $userKeys, 'data' => $data ];
+    }
 
-        return $this->render('all_watch/index.html.twig', [
-            'controller_name' => 'AllWatchController',
-            'seasons' => $seasons,
-            'selectedSeasonId' => $selectedSeasonId,
-            'users' => $userKeys,
-            'user' => $this->getUser(),
-            'data' => $data,
-            'total_columns' => 2 + count($users),
-            'selectedSortName' => $selectedSortName,
-            'sortOptions' => $sortOptions,
-        ]);
+    /**
+     * @param UserRepository $userRepository
+     * @return array
+     */
+    private function loadUserKeys(UserRepository $userRepository): array
+    {
+        $users = $userRepository->getAllSorted();
+        $userKeys = [];
+        foreach ($users as $user) {
+            $userKeys[$user->getUsername()] = false;
+        }
+        unset($users);
+        return $userKeys;
     }
 }
