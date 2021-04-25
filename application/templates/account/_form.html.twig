@@ -1,4 +1,17 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-primary mt-2">{{ button_label|default('Save') }}</button>
+    <div class="row">
+        <div class="col mt-1">
+            {{ form_row(form.colors_mode_picker) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-3">
+            {{ form_row(form.all_watches_view_mode_picker) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-4">
+            <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+        </div>
+    </div>
 {{ form_end(form) }}

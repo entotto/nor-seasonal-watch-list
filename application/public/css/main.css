@@ -138,9 +138,26 @@ a.nor-red:hover {
     margin-top: 3rem;
 }
 
+.third-nav-bar {
+    top:7.5rem;
+    z-index:1000;
+    height: 3rem;
+    background-color: #fff;
+}
+
+.third-nav-clearance-padding {
+    margin-top: 3rem;
+}
+
 a.show-anchor {
     position:relative;
     top:-8rem;
+    z-index:-100;
+}
+
+a.show-anchor-condensed {
+    position:relative;
+    top:-11rem;
     z-index:-100;
 }
 

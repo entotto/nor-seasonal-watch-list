@@ -473,6 +473,7 @@ class User implements UserInterface
         $preferences = new UserPreferences();
         $prefsValues = $this->prefsStore;
         $preferences->setColorsMode($prefsValues['colorsMode'] ?? 'os');
+        $preferences->setAllWatchesViewMode($prefsValues['allWatchesViewMode'] ?? 'expanded');
         return $preferences;
     }
 

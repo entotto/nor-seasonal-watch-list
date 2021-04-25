@@ -12,12 +12,12 @@
         //display: (context) => context.dataset.data[context.dataIndex] !== 0
     });
 
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
-        $.each( $.fn.dataTable.tables(true), function () {
-            // noinspection JSUnresolvedFunction
-            $(table).DataTable().columns.adjust();
-        });
-    })
+    // $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
+    //     $.each( $.fn.dataTable.tables(true), function () {
+    //         // noinspection JSUnresolvedFunction
+    //         $(table).DataTable().columns.adjust();
+    //     });
+    // })
 
     const calcMaxChartTick = function (maxScoreCount) {
         return maxScoreCount

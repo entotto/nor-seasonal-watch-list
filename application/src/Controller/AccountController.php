@@ -23,13 +23,16 @@ class AccountController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $form = $this->createForm(UserPreferencesType::class, $user->getPreferences());
+        $preferences = $user->getPreferences();
+        $form = $this->createForm(UserPreferencesType::class, $preferences);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $colorsMode = $form->get('colors_mode_picker')->getData();
+            $swlViewMode = $form->get('all_watches_view_mode_picker')->getData();
             $prefs = $user->getPreferences();
             $prefs->setColorsMode($colorsMode);
+            $prefs->setAllWatchesViewMode($swlViewMode);
             $user->setPreferences($prefs);
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);

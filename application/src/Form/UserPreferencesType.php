@@ -34,6 +34,18 @@ class UserPreferencesType extends AbstractType
                         'label' => 'Color mode',
                         'data' => $data->getColorsMode(),
                     ]);
+                    $form->add('all_watches_view_mode_picker', ChoiceType::class, [
+                        'mapped' => false,
+                        'choices' => [
+                            'Expanded' => 'expanded',
+                            'Condensed' => 'condensed',
+                        ],
+                        'multiple' => false,
+                        'expanded' => true,
+                        'required' => true,
+                        'label' => 'Community Watch List view mode',
+                        'data' => $data->getAllWatchesViewMode(),
+                    ]);
                 }
             )
         ;
