@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-12">
+        {% if row.scores and row.scoreCount > 0 %}
+                <a
+                        class="btn btn-sm btn-outline-success m-1 float-end"
+                        data-bs-toggle="collapse"
+                        href="#collapseRow{{ key }}"
+                        aria-expanded="false"
+                        aria-controls="collapseRow{{ key }}"
+                >Details</a>
+        {% endif %}
+
+        {% if row.show.anilistShowUrl %}
+            <a
+                    href="{{ row.show.anilistShowUrl }}"
+                    target="_blank"
+                    class="btn btn-sm btn-info m-1 ms-0"
+            >AL</a>
+        {% endif %}
+        {% if row.show.malShowUrl %}
+            <a
+                    href="{{ row.show.malShowUrl }}"
+                    target="_blank"
+                    class="btn btn-sm btn-info m-1 ms-0"
+            >MAL</a>
+        {% endif %}
+        <a class="btn btn-sm btn-primary m-1 ms-0" href="{{ path('my_watch_index') }}#show_target_{{ row.show.id }}">
+            Personal
+        </a>
+    </div>
+</div>

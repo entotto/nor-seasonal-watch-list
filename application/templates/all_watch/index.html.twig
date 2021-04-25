@@ -1,5 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% if user is defined and user is not null %}
+    {% set viewMode = user.getPreferences.getAllWatchesViewMode %}
+{% else %}
+    {% set viewMode = 'expanded' %}
+{% endif %}
+
 {% block title %}Community Watch List{% endblock %}
 
 {% block stylesheets %}
@@ -31,6 +37,26 @@
             </form>
         </div>
     </nav>
+    {% if viewMode == 'condensed' %}
+        <nav class="navbar fixed-top d-none d-lg-block third-nav-bar">
+            <div class="container">
+                <div class="row d-flex border-bottom" style="width:100%;">
+                    <div class="col-12 text-end">
+                        <p>
+                            <span class="activity-ptw watching-legend-pip d-inline-block ms-3 me-1"></span> PTW
+                            <span class="activity-watching watching-legend-pip d-inline-block ms-3 me-1"></span> Watching
+                            <span class="score-unfavorable watching-legend-pip d-inline-block ms-5 me-1"></span> Unfavorable
+                            <span class="score-neutral watching-legend-pip d-inline-block ms-3 me-1"></span> Neutral
+                            <span class="score-favorable watching-legend-pip d-inline-block ms-3 me-1"></span> Favorable
+                            <span class="score-highly-favorable watching-legend-pip d-inline-block ms-3 me-1"></span> H. Favorable
+                            <span class="score-th8a watching-legend-pip d-inline-block ms-3 me-1"></span> Th8a should
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    {% endif %}
+
 {% endblock %}
 
 {% block body %}
@@ -43,6 +69,11 @@
         <div class="row mb-2">
             <div class="col-md-10 second-nav-clearance-padding"></div>
         </div>
+        {% if viewMode == 'condensed' %}
+            <div class="row mb-2">
+                <div class="col-md-10 third-nav-clearance-padding"></div>
+            </div>
+        {% endif %}
     </div>
 
     <div class="row mb-2">
@@ -106,91 +137,154 @@
         <div  id="show_container_wide_{{ row.show.id }}" data-anchorid="{{ row.show.id }}" class="show_container_wide row mb-2 pb-2 border-bottom d-none d-lg-flex">
             <div class="row">
                 <div class="col">
-                    <a class="show-anchor" id="show_target_wide_{{ row.show.id }}"></a>
+                    <a class="{% if viewMode == 'expanded' %}show-anchor{% else %}show-anchor-condensed{% endif %}" id="show_target_wide_{{ row.show.id }}"></a>
                 </div>
             </div>
-            <div class="col-md-2">
-                <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
-            </div>
-            <div class="col-md-2">
-                {{ row.show.title|raw }}
-                <br>
-                {% include 'all_watch/fragment/jump_link_buttons.html.twig' %}
-            </div>
 
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-xs-12 col-md-6">
-                        {% if row.consolidatedActivities %}
-                            <div class="row">
-                                <div class="col-1 col-lg-2 col-xl-1 mt-1">
-                                    {% include 'all_watch/fragment/activity_icon.html.twig' %}
-                                </div>
-                                <div class="col-11 col-lg-10 col-xl-11 pt-1 pt-lg-2 pt-xl-1">
-                                    <div class="chart-container position-relative">
-                                        <canvas id="bar_activities_{{ row.show.id }}"
-                                                class="all_watch_bar_activity_chart mb-2"
-                                                data-scores="{{ row.consolidatedActivities.activities_array }}"
-                                                data-maxactivitycount="{{ row.maxActivityCount }}"
-                                                height=40
-                                        ></canvas>
+            <div class="row">
+                {% if viewMode == 'expanded' %}
+                    <div class="col-md-2">
+                        <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                    </div>
+                    <div class="col-md-2">
+                        {{ row.show.title|raw }}
+                        <br>
+                        {% include 'all_watch/fragment/jump_link_buttons.html.twig' %}
+                    </div>
+                {% else %}
+                    <div class="col-md-4">
+                        {{ row.show.shortTitle|raw }}
+                        <br>
+                        {% include 'all_watch/fragment/jump_link_buttons_horizontal.html.twig' %}
+                    </div>
+
+                {% endif %}
+
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            {% if row.consolidatedActivities %}
+                                <div class="row">
+                                    <div class="col-1 col-lg-2 col-xl-1 mt-1">
+                                        {% include 'all_watch/fragment/activity_icon.html.twig' %}
+                                    </div>
+                                    <div class="col-11 col-lg-10 col-xl-11 pt-1 pt-lg-2 pt-xl-1">
+                                        <div class="chart-container position-relative">
+                                            <canvas id="bar_activities_{{ row.show.id }}"
+                                                    class="all_watch_bar_activity_chart mb-2"
+                                                    data-scores="{{ row.consolidatedActivities.activities_array }}"
+                                                    data-maxactivitycount="{{ row.maxActivityCount }}"
+                                                    height=40
+                                            ></canvas>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                        {% else %}
-                            &nbsp;
-                        {% endif %}
-                        <div class="row">
-                            <div class="col-6">
-                                {% include 'all_watch/fragment/activity_summary_table.html.twig' %}
-                            </div>
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                            {% if viewMode == 'expanded' %}
+                                <div class="row">
+                                    <div class="col-6">
+                                        {% include 'all_watch/fragment/activity_summary_table.html.twig' %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if viewMode == 'expanded' and row.scores and row.scoreCount > 0 %}
+                                <div class="">
+                                    <a
+                                            class="btn btn-sm btn-info mt-3"
+                                            data-bs-toggle="collapse"
+                                            href="#collapseRow{{ key }}"
+                                            aria-expanded="false"
+                                            aria-controls="collapseRow{{ key }}"
+                                    >Details</a>
+                                </div>
+                            {% endif %}
+
                         </div>
-                        {% if row.scores and row.scoreCount > 0 %}
-                            <div class="">
-                                <a
-                                        class="btn btn-sm btn-info mt-3"
-                                        data-bs-toggle="collapse"
-                                        href="#collapseRow{{ key }}"
-                                        aria-expanded="false"
-                                        aria-controls="collapseRow{{ key }}"
-                                >Details</a>
-                            </div>
-                        {% endif %}
-
-                    </div>
-                    <div class="col-xs-12 col-md-6">
-                        {% if row.consolidatedScores.all_count > 0 %}
-                            <div class="row">
-                                <div class="col-1 col-lg-2 col-xl-1 mt-2">
-                                    {% include 'all_watch/fragment/mood_icon.html.twig' %}
-                                </div>
-                                <div class="col-11 col-lg-10 col-xl-11 pt-1 pt-lg-2 pt-xl-1">
-                                    <div class="chart-container">
-                                        <canvas id="bar_scores_{{ row.show.id }}"
-                                                class="all_watch_bar_score_chart mb-2"
-                                                data-scores="{{ row.consolidatedScores.scores_array }}"
-                                                data-maxscorecount="{{ row.maxScoreCount }}"
-                                                height=40
-                                        ></canvas>
+                        <div class="col-xs-12 col-md-6">
+                            {% if row.consolidatedScores.all_count > 0 %}
+                                <div class="row">
+                                    <div class="col-1 col-lg-2 col-xl-1 mt-2">
+                                        {% include 'all_watch/fragment/mood_icon.html.twig' %}
+                                    </div>
+                                    <div class="col-11 col-lg-10 col-xl-11 pt-1 pt-lg-2 pt-xl-1">
+                                        <div class="chart-container">
+                                            <canvas id="bar_scores_{{ row.show.id }}"
+                                                    class="all_watch_bar_score_chart mb-2"
+                                                    data-scores="{{ row.consolidatedScores.scores_array }}"
+                                                    data-maxscorecount="{{ row.maxScoreCount }}"
+                                                    height=40
+                                            ></canvas>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 col-xl-9">
-                                    {% include 'all_watch/fragment/recommendations_summary_table.html.twig' %}
+                                {% if viewMode == 'expanded' %}
+                                <div class="row">
+                                    <div class="col-12 col-xl-9">
+                                        {% include 'all_watch/fragment/recommendations_summary_table.html.twig' %}
+                                    </div>
                                 </div>
-                            </div>
-
-                        {% else %}
-                            &nbsp;
-                        {% endif %}
+                                {% endif %}
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                        </div>
                     </div>
+                    {% if viewMode == 'expanded' %}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            {% if row.scores and row.scoreCount > 0 %}
+                                <div class="collapse" id="collapseRow{{ key }}">
+                                    {% if viewMode == 'condensed' %}
+                                        <div class="row mt-3 mb-3">
+                                            <div class="col-6">
+                                                {% include 'all_watch/fragment/activity_summary_table.html.twig' %}
+                                            </div>
+                                            <div class="col-6">
+                                                {% include 'all_watch/fragment/recommendations_summary_table.html.twig' %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    {% include 'all_watch/fragment/individual_values_table.html.twig' %}
+                                    <a
+                                            class="btn btn-close mb-2"
+                                            data-bs-toggle="collapse"
+                                            href="#collapseRow{{ key }}"
+                                            aria-expanded="false"
+                                            aria-controls="collapseRow{{ key }}"
+                                            aria-label="Close"
+                                    ></a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        {% if row.scores and row.scoreCount > 0 %}
-                            <div class="collapse" id="collapseRow{{ key }}">
+            </div>
+
+            {% if viewMode == 'condensed' %}
+                <div id="collapseRow{{ key }}" class="collapse">
+                    <div class="row">
+                        <div class="col-md-2 mt-3">
+                            <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            {{ row.show.title|raw }}
+                        </div>
+                        <div class="col-md-8">
+                            {% if row.scores and row.scoreCount > 0 %}
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-6">
+                                        {% include 'all_watch/fragment/activity_summary_table.html.twig' %}
+                                    </div>
+                                    <div class="col-6">
+                                        {% include 'all_watch/fragment/recommendations_summary_table.html.twig' %}
+                                    </div>
+                                </div>
+
                                 {% include 'all_watch/fragment/individual_values_table.html.twig' %}
                                 <a
                                         class="btn btn-close mb-2"
@@ -200,11 +294,12 @@
                                         aria-controls="collapseRow{{ key }}"
                                         aria-label="Close"
                                 ></a>
-                            </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
+
         </div>
     {% endfor %}
 
@@ -331,6 +426,9 @@
     <script src="https://d3js.org/d3-color.v2.min.js"></script>
     <script src="https://d3js.org/d3-interpolate.v2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+    <script type="text/javascript">
+        window.allWatchesViewMode="{{ viewMode }}"
+    </script>
     <script src="/js/SelectSeason.js?v={{ asset_version }}"></script>
     <script src="/js/SelectSort.js?v={{ asset_version }}"></script>
     <script src="/js/SelectShow.js?v={{ asset_version }}"></script>

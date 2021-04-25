@@ -19,16 +19,18 @@
             document.querySelector('#select_show_wide [value="show_target_wide_' + anchorId + '"]').selected = true
         }
     }
-    const showContainersWide = document.querySelectorAll('.show_container_wide')
-    const observerWide = new IntersectionObserver(function (entries) {
-        for (const entry of entries) {
-            containerValuesWide[entry['target'].id] = entry['intersectionRatio']
-            setTimeout(() => {changeSelectorWide()}, 1000)
-        }
-    }, { threshold: [0.2, 0.4, 0.6, 0.8, 1.0]})
-    showContainersWide.forEach(showContainerWide => {
-        observerWide.observe(showContainerWide)
-    })
+    if (window.allWatchesViewMode === 'expanded') {
+        const showContainersWide = document.querySelectorAll('.show_container_wide')
+        const observerWide = new IntersectionObserver(function (entries) {
+            for (const entry of entries) {
+                containerValuesWide[entry['target'].id] = entry['intersectionRatio']
+                setTimeout(() => {changeSelectorWide()}, 1000)
+            }
+        }, {threshold: [0.0, 0.25, 0.5, 0.75, 1.0], rootMargin: "120px 0px 0px 0px"})
+        showContainersWide.forEach(showContainerWide => {
+            observerWide.observe(showContainerWide)
+        })
+    }
 
     // Mobile
     $('#select_show').change(function (e) {
@@ -60,7 +62,7 @@
             setTimeout(() => {changeSelector()}, 1000)
             // }
         }
-    }, { threshold: [0.2, 0.4, 0.6, 0.8, 1.0]})
+    }, { threshold: [0.2, 0.4, 0.6, 0.8, 1.0] })
     showContainers.forEach(showContainer => {
         observer.observe(showContainer)
     })
