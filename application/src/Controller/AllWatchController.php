@@ -13,6 +13,7 @@ use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
 use App\Repository\UserRepository;
+use App\Service\SelectedAllWatchModeHelper;
 use App\Service\SelectedSeasonHelper;
 use App\Service\SelectedSortHelper;
 use Doctrine\DBAL\Exception;
@@ -38,6 +39,7 @@ class AllWatchController extends AbstractController
      * @param ActivityRepository $activityRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param SelectedSortHelper $selectedSortHelper
+     * @param SelectedAllWatchModeHelper $selectedAllWatchModeHelper
      * @return Response
      * @throws Exception
      * @throws NonUniqueResultException
@@ -53,7 +55,8 @@ class AllWatchController extends AbstractController
         ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
-        SelectedSortHelper $selectedSortHelper
+        SelectedSortHelper $selectedSortHelper,
+        SelectedAllWatchModeHelper $selectedAllWatchModeHelper
     ): Response {
         $userKeys = $this->loadUserKeys($userRepository);
         $userCount = count($userKeys);
@@ -73,6 +76,10 @@ class AllWatchController extends AbstractController
             $data
         );
 
+        /** @var User $user */
+        $user = $this->getUser();
+        $selectedViewMode = $selectedAllWatchModeHelper->getSelectedMode($request, $user);
+
         $selectedSeasonId = ($season === null) ? null : $season->getId();
         $sortOptions = [
             'show_asc' => 'Show &#9660;',
@@ -89,11 +96,12 @@ class AllWatchController extends AbstractController
             'seasons' => $seasons,
             'selectedSeasonId' => $selectedSeasonId,
             'users' => $showData['userKeys'],
-            'user' => $this->getUser(),
+            'user' => $user,
             'data' => $showData['data'],
             'total_columns' => 2 + $userCount,
             'selectedSortName' => $selectedSortName,
             'sortOptions' => $sortOptions,
+            'selectedViewMode' => $selectedViewMode
         ]);
     }
 
