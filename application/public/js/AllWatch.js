@@ -349,5 +349,11 @@
         }, 900);
     }
 
+    $('#select_mode').change(function (e) {
+        e.preventDefault()
+        const control = $(e.target)
+        const val = control.val()
+        window.location.replace('?mode=' + val)
+    })
 
 })(window, jQuery);
