@@ -32,4 +32,13 @@ class UserRepository extends ServiceEntityRepository
         }
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param string $apiKey
+     * @return User|null
+     */
+    public function findByApiKey(string $apiKey): ?user
+    {
+        return $this->findOneBy(['apiKey' => $apiKey]);
+    }
 }
