@@ -116,6 +116,12 @@ class User implements UserInterface
     private ?array $prefsStore;
 
     /**
+     * @var string|null $apiKey
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $apiKey;
+
+    /**
      * User constructor.
      */
     public function __construct()
@@ -488,5 +494,21 @@ class User implements UserInterface
             'id' => $this->getId(),
             'displayName' => $this->getDisplayName(),
         ];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param string|null $apiKey
+     */
+    public function setApiKey(?string $apiKey): void
+    {
+        $this->apiKey = $apiKey;
     }
 }
