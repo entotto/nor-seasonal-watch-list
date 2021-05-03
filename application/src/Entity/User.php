@@ -516,18 +516,18 @@ class User implements UserInterface
         $this->apiKey = $apiKey;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    protected function updateApiKey(): void
-    {
-        if (null === $this->apiKey) {
-            try {
-                $this->apiKey = sha1(random_bytes(20));
-            } catch (Exception $e) {
-                $this->apiKey = null;
-            }
-        }
-    }
+//    /**
+//     * @ORM\PrePersist
+//     * @ORM\PreUpdate
+//     */
+//    public function updateApiKey(): void
+//    {
+//        if (null === $this->apiKey) {
+//            try {
+//                $this->apiKey = sha1(random_bytes(20));
+//            } catch (Exception $e) {
+//                $this->apiKey = null;
+//            }
+//        }
+//    }
 }

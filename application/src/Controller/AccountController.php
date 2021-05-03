@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserPreferencesType;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,5 +44,38 @@ class AccountController extends AbstractController
             'user' => $user,
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/preferences/reset_api_key", name="account_preferences_reset_api_key", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function resetApiKey(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        try {
+            $user->setApiKey(sha1(random_bytes(20)));
+        } catch (Exception $e) {
+            $user->setApiKey(null);
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('account_preferences');
+    }
+
+    public function clearApiKey(Request $request): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $user->setApiKey(null);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        return $this->redirectToRoute('account_preferences');
     }
 }
