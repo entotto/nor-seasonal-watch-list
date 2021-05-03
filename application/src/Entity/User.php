@@ -9,11 +9,13 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  * @UniqueEntity(fields={"apiKey"}, message="This api key is already in use.", ignoreNull=true)
  */
 class User implements UserInterface
@@ -512,5 +514,20 @@ class User implements UserInterface
     public function setApiKey(?string $apiKey): void
     {
         $this->apiKey = $apiKey;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    protected function updateApiKey(): void
+    {
+        if (null === $this->apiKey) {
+            try {
+                $this->apiKey = sha1(random_bytes(20));
+            } catch (Exception $e) {
+                $this->apiKey = null;
+            }
+        }
     }
 }
