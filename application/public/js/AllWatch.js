@@ -197,7 +197,8 @@
     $('.all_watch_bar_score_chart').each( function () {
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
-
+        const maxChartTick = $(this).data('maxscorecount')
+        const minChartTick = $(this).data('minscorecount') * -1
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
             type: 'horizontalBar',
@@ -214,14 +215,17 @@
             data: {
                 datasets: [
                     {
-                        data: [data[4]],
+                        data: [-data[4]],
                         borderColor: scoreDarkerColors[4],
                         borderSkipped: false,
                         borderWidth: 1,
                         backgroundColor: scoreBarColors[4],
                         datalabels: {
                             display: data[4] > 0,
-                            color: scoreTextColors[4]
+                            color: scoreTextColors[4],
+                            formatter: function(value) {
+                                return value * -1
+                            }
                         }
                     },
                     {
@@ -284,8 +288,8 @@
                             ticks: {
                                 display: false,
                                 maxRotation: 0,
-                                min: 0,
-                                max: data[0] + data[1] + data[2] + data[3] + data[4],
+                                min: minChartTick,
+                                max: maxChartTick, // data[0] + data[1] + data[2] + data[3] + data[4],
                                 fontSize: 20
                             },
                             gridLines: {

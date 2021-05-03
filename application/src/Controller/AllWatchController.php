@@ -249,6 +249,7 @@ class AllWatchController extends AbstractController
     ): array {
         if ($season !== null) {
             $maxScoreCount = 0;
+            $minScoreCount = 0;
             $maxActivityCount = 0;
             $shows = $showRepository->getShowsForSeason($season, null, $selectedSortName);
             if ($selectedSortName !== 'show_asc' && $selectedSortName !== 'show_desc') {
@@ -359,8 +360,11 @@ EOF;
                     ($consolidatedShowScore['th8a_count'] +
                         $consolidatedShowScore['highly_favorable_count'] +
                         $consolidatedShowScore['favorable_count'] +
-                        $consolidatedShowScore['neutral_count'] +
-                        $consolidatedShowScore['unfavorable_count'])
+                        $consolidatedShowScore['neutral_count'])
+                ]);
+                $minScoreCount = max([
+                    $minScoreCount,
+                    $consolidatedShowScore['unfavorable_count']
                 ]);
                 $consolidatedShowScore['scores_array'] = '[' .
                     $consolidatedShowScore['th8a_count'] . ',' .
@@ -408,6 +412,7 @@ EOF;
                     'scores' => $filteredScores,
                     'scoreCount' => count($filteredScores),
                     'maxScoreCount' => $maxScoreCount,
+                    'minScoreCount' => $minScoreCount,
                     'maxActivityCount' => $maxActivityCount,
                 ];
             }
