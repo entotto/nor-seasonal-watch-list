@@ -70,18 +70,24 @@ body {
 
 .score-th8a {
     background-color: #c90d0d;
+    border: 1px solid #c90d0d;
 }
 .score-highly, .score-highly-favorable {
     background-color: rgb(214, 74, 74);
+    border: 1px solid rgb(214, 74, 74);
 }
 .score-favorable {
     background-color: rgb(228, 134, 134);
+    border: 1px solid rgb(228, 134, 134);
 }
 .score-neutral {
-    background-color: rgb(217, 217, 217);
+    /*background-color: rgb(217, 217, 217);*/
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(150, 150, 150);
 }
 .score-unfavorable {
     background-color: rgb(64, 64, 64);
+    border: 1px solid rgb(64, 64, 64);
 }
 
 
@@ -139,7 +145,7 @@ a.nor-red:hover {
 }
 
 .third-nav-bar {
-    top:7.5rem;
+    top:7.4rem;
     z-index:1000;
     height: 3rem;
     background-color: #fff;
