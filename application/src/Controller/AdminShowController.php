@@ -28,7 +28,7 @@ class AdminShowController extends AbstractController
     {
         $session = $request->getSession();
         $currentPage = $session->get('page', 1);
-        $currentPerPage = $session->get('perPage', 5);
+        $currentPerPage = $session->get('perPage', 10);
         $currentSort = $session->get('sort', 'rumaji_asc');
         $pageNum = $request->get('page', $currentPage);
         $perPage = $request->get('perPage', $currentPerPage);
