@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Show;
 use App\Form\ShowType;
+use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Service\AnilistApi;
 use GuzzleHttp\Exception\GuzzleException;
@@ -22,17 +23,31 @@ class AdminShowController extends AbstractController
      * @Route("/", name="admin_show_index", methods={"GET"})
      * @param Request $request
      * @param ShowRepository $showRepository
+     * @param SeasonRepository $seasonRepository
      * @return Response
      */
-    public function index(Request $request, ShowRepository $showRepository): Response
-    {
+    public function index(
+        Request $request,
+        ShowRepository $showRepository,
+        SeasonRepository $seasonRepository
+    ): Response {
         $session = $request->getSession();
         $currentPage = $session->get('page', 1);
         $currentPerPage = $session->get('perPage', 10);
         $currentSort = $session->get('sort', 'rumaji_asc');
+        $currentSeason = $session->get('season', '');
         $pageNum = $request->get('page', $currentPage);
         $perPage = $request->get('perPage', $currentPerPage);
+        if ($perPage !== $currentPerPage) {
+            $pageNum = 1;
+        }
         $sort = $request->get('sort', $currentSort);
+        $season = $request->get('season', $currentSeason);
+        if ($season === '') {
+            $season = null;
+        } else {
+            $season = (int)$season;
+        }
         switch($sort) {
             case 'english_asc':
                 $sortColumn = 'english';
@@ -53,13 +68,18 @@ class AdminShowController extends AbstractController
         $session->set('page', $pageNum);
         $session->set('perPage', $perPage);
         $session->set('sort', $sort);
-        $pagerfanta = $showRepository->getShowsSortedPaged($sortColumn, $sortOrder, $pageNum, $perPage);
+        $session->set('season', $season);
+        $pagerfanta = $showRepository->getShowsSortedPaged($sortColumn, $sortOrder, $pageNum, $perPage, $season);
         $shows = $pagerfanta->getCurrentPageResults();
+        $seasons = $seasonRepository->getAllInRankOrder();
         return $this->render('show/index.html.twig', [
             'user' => $this->getUser(),
             'shows' => $shows,
             'pager' => $pagerfanta,
             'selectedSortName' => $sort,
+            'perPage' => $perPage,
+            'selectedSeason' => $season,
+            'seasons' => $seasons,
         ]);
     }
 

@@ -44,10 +44,19 @@ class ShowRepository extends ServiceEntityRepository
         ?string $sortColumn = 'romaji',
         ?string $sortOrder = 'ASC',
         ?int $pageNum = 1,
-        ?int $perPage = 10
+        ?int $perPage = 10,
+        ?int $season = null
     ): Pagerfanta {
         $qb = $this->createQueryBuilder('s');
         $this->setOrderBy($qb, $sortColumn, $sortOrder);
+        if ($season === -1) {
+            $qb->leftJoin('s.seasons', 'seasons')
+                ->andWhere('seasons.id IS NULL');
+        } else if ($season > 0) {
+            $qb->join('s.seasons', 'seasons')
+                ->andWhere('seasons.id = :seasonId')
+                ->setParameter('seasonId', $season);
+        }
         $pagerfanta = new Pagerfanta(new QueryAdapter($qb));
         $pagerfanta->setMaxPerPage($perPage);
         $pagerfanta->setCurrentPage($pageNum);
