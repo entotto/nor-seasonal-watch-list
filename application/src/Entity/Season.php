@@ -50,7 +50,7 @@ class Season
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=Election::class, mappedBy="Season", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Election::class, mappedBy="season", orphanRemoval=true)
      */
     private Collection $elections;
 

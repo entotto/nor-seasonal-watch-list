@@ -52,7 +52,7 @@ class ShowSeasonScore
 
     /**
      * @var Show
-     * @ORM\ManyToOne(targetEntity=Show::class)
+     * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="scores")
      * @ORM\JoinColumn(nullable=false)
      */
     private Show $show;
