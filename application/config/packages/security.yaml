@@ -6,10 +6,20 @@ security:
             entity:
                 class: App\Entity\User
                 property: username
+        api_user_provider:
+            entity:
+                class: App\Entity\User
+                property: apiKey
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern: ^/api/v1/
+            provider: api_user_provider
+            guard:
+                authenticators:
+                    - App\Security\ApiKeyAuthenticator
         main:
             anonymous: true
             lazy: true
