@@ -42,7 +42,7 @@
             <div class="container">
                 <div class="row d-flex border-bottom" style="width:100%;">
                     <div class="col-12 text-end">
-                        <p>
+                        <p class="mb-1">
                             <span class="activity-ptw watching-legend-pip d-inline-block ms-3 me-1"></span> PTW
                             <span class="activity-watching watching-legend-pip d-inline-block ms-3 me-1"></span> Watching
                             <span class="score-unfavorable watching-legend-pip d-inline-block ms-5 me-1"></span> Unfavorable
@@ -219,7 +219,7 @@
                                                     data-scores="{{ row.consolidatedScores.scores_array }}"
                                                     data-maxscorecount="{{ row.maxScoreCount }}"
                                                     data-minscorecount="{{ row.minScoreCount }}"
-                                                    height=40
+                                                    height=20
                                             ></canvas>
                                         </div>
                                     </div>
@@ -361,6 +361,7 @@
                                     class="all_watch_bar_score_chart mb-2"
                                     data-scores="{{ row.consolidatedScores.scores_array }}"
                                     data-maxscorecount="{{ row.maxScoreCount }}"
+                                    data-minscorecount="{{ row.minScoreCount }}"
                                     height=40
                             ></canvas>
                         </div>

@@ -1,4 +1,5 @@
-<?php /** @noinspection UnknownInspectionInspection */
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
+/** @noinspection UnknownInspectionInspection */
 
 /** @noinspection PhpUnused */
 
@@ -31,28 +32,28 @@ class ShowSeasonScore
 
     /**
      * @var Activity|null
-     * @ORM\ManyToOne(targetEntity=Activity::class)
+     * @ORM\ManyToOne(targetEntity=Activity::class, inversedBy="scores")
      * @ORM\JoinColumn(nullable=true)
      */
     private ?Activity $activity;
 
     /**
      * @var Score|null
-     * @ORM\ManyToOne(targetEntity=Score::class)
+     * @ORM\ManyToOne(targetEntity=Score::class, inversedBy="showSeasonScores")
      * @ORM\JoinColumn(nullable=true)
      */
     private ?Score $score;
 
     /**
      * @var Season
-     * @ORM\ManyToOne(targetEntity=Season::class)
+     * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="showSeasonScores")
      * @ORM\JoinColumn(nullable=false)
      */
     private Season $season;
 
     /**
      * @var Show
-     * @ORM\ManyToOne(targetEntity=Show::class)
+     * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="scores")
      * @ORM\JoinColumn(nullable=false)
      */
     private Show $show;

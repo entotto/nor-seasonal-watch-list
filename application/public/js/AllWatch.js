@@ -38,6 +38,7 @@
         return barColors.map((rgba, i) => {
             const hsl = d3.hsl(rgba);
             hsl.l -= isDarkMode ? 0.0 : 0.1;
+            hsl.l -= (!isDarkMode && i === 3) ? 0.1 : 0.0;
             return hsl + "";
         });
     }
@@ -70,6 +71,8 @@
         const data = $(this).data('scores')
         const maxActivityCount = $(this).data('maxactivitycount')
         const maxChartTick = calcMaxChartTick(maxActivityCount)
+        $(ctx).attr("height", "50")
+        const categoryPercentage = 0.6
 
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
@@ -95,7 +98,8 @@
                         datalabels: {
                             display: data[1] > 0,
                             color: activityTextColors[1]
-                        }
+                        },
+                        categoryPercentage,
                     },
                     {
                         data: [data[0]],
@@ -106,7 +110,8 @@
                         datalabels: {
                             display: data[0] > 0,
                             color: activityTextColors[0]
-                        }
+                        },
+                        categoryPercentage,
                     }
                 ]
             },
@@ -120,11 +125,17 @@
                     xAxes: [
                         {
                             stacked: true,
-                            display: false,
+                            display: true,
                             ticks: {
                                 display: false,
                                 max: maxChartTick
                             },
+                            gridLines: {
+                                drawTicks: false,
+                                lineWidth: 0,
+                                zeroLineWidth: 1,
+                                zeroLineColor: isDarkMode ? '#777' : '#aaa'
+                            }
                         }
                     ],
                     yAxes: [
@@ -164,7 +175,7 @@
             "#c90d0d",                         // th8a red / th8a should
             whiten("#c90d0d", 0.25), // weak red / highly favorable
             whiten("#c90d0d", 0.5),  // weaker red / favorable
-            whiten("#000", 0.85),    // grey / neutral
+            whiten("#000", 1.0),    // white / neutral
             whiten("#000", 0.25)     // black / unfavorable
         ];
         // Use dark text on light background and vice versa.
@@ -172,7 +183,7 @@
             "#fff",
             "#fff",
             "#000",
-            "#000",
+            "#444",
             "#fff"
         ];
     } else {
@@ -180,7 +191,7 @@
             "#c90d0d",                         // th8a red / th8a should
             whiten("#c90d0d", 0.25), // weak red / highly favorable
             whiten("#c90d0d", 0.5),  // weaker red / favorable
-            whiten("#000", 0.85),    // grey / neutral
+            whiten("#000", 1.0),    // white / neutral
             whiten("#000", 0.25)     // black / unfavorable
         ];
         // Use dark text on light background and vice versa.
@@ -188,17 +199,26 @@
             "#fff",
             "#fff",
             "#fff",
-            "#000",
+            "#444",
             "#fff"
         ];
     }
     const scoreDarkerColors = calcDarkerColors(scoreBarColors);
 
     $('.all_watch_bar_score_chart').each( function () {
+        // // patch for making this runnable as a snippet: completely replace the canvas element
+        // const canvas = document.getElementById($(this).attr('id'))
+        // const parent = $(canvas).parent()
+        // const ctx = $(canvas).clone().appendTo(parent).get()
+        // $(canvas).remove()
         const ctx = document.getElementById($(this).attr('id'))
         const data = $(this).data('scores')
         const maxChartTick = $(this).data('maxscorecount')
         const minChartTick = $(this).data('minscorecount') * -1
+        // make the zero-line of the x-axis longer: taller height + smaller category percentage
+        // numbers are somewhat arbitrary / not pixel perfect
+        $(ctx).attr("height", "50")
+        const categoryPercentage = 0.6
         // noinspection JSUnusedLocalSymbols
         const myChart = new Chart(ctx, {
             type: 'horizontalBar',
@@ -226,7 +246,8 @@
                             formatter: function(value) {
                                 return value * -1
                             }
-                        }
+                        },
+                        categoryPercentage,
                     },
                     {
                         data: [data[3]],
@@ -237,7 +258,9 @@
                         datalabels: {
                             display: data[3] > 0,
                             color: scoreTextColors[3]
-                        }
+                        },
+                        categoryPercentage,
+
                     },
                     {
                         data: [data[2]],
@@ -248,7 +271,8 @@
                         datalabels: {
                             display: data[2] > 0,
                             color: scoreTextColors[2]
-                        }
+                        },
+                        categoryPercentage,
                     },
                     {
                         data: [data[1]],
@@ -259,7 +283,8 @@
                         datalabels: {
                             display: data[1] > 0,
                             color: scoreTextColors[1]
-                        }
+                        },
+                        categoryPercentage,
                     },
                     {
                         data: [data[0]],
@@ -270,7 +295,8 @@
                         datalabels: {
                             display: data[0] > 0,
                             color: scoreTextColors[0]
-                        }
+                        },
+                        categoryPercentage,
                     }
                 ]
             },
@@ -284,7 +310,7 @@
                     xAxes: [
                         {
                             stacked: true,
-                            display: false,
+                            display: true,
                             ticks: {
                                 display: false,
                                 maxRotation: 0,
@@ -295,7 +321,8 @@
                             gridLines: {
                                 drawTicks: false,
                                 lineWidth: 0,
-                                zeroLineWidth: 1
+                                zeroLineWidth: 1,
+                                zeroLineColor: isDarkMode ? '#777' : '#aaa'
                             }
                         }
                     ],

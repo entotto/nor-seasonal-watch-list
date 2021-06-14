@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpPrivateFieldCanBeLocalVariableInspection */
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
+/** @noinspection PhpPrivateFieldCanBeLocalVariableInspection */
 /** @noinspection UnknownInspectionInspection */
 
 /** @noinspection PhpUnused */
@@ -103,13 +104,13 @@ class User implements UserInterface
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="user", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="user", orphanRemoval=true, cascade={"persist","remove"})
      */
     private Collection $showSeasonScores;
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="user", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="user", orphanRemoval=true, cascade={"persist","remove"})
      */
     private Collection $electionVotes;
 

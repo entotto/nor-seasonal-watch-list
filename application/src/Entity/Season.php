@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
+/** @noinspection PhpMultipleClassDeclarationsInspection */
 /** @noinspection UnknownInspectionInspection */
 /** @noinspection PhpUnusedAliasInspection */
 /** @noinspection PhpUnused */
@@ -50,13 +51,25 @@ class Season
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=Election::class, mappedBy="Season", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Election::class, mappedBy="season", orphanRemoval=true, cascade={"persist","remove"})
      */
     private Collection $elections;
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=DiscordChannel::class, mappedBy="season", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="season", cascade={"persist","remove"})
+     */
+    private Collection $votes;
+
+    /**
+     * @var Collection|ShowSeasonScore[]
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="season", cascade={"persist","remove"})
+     */
+    private Collection $showSeasonScores;
+
+    /**
+     * @var Collection
+     * @ORM\OneToMany(targetEntity=DiscordChannel::class, mappedBy="season", orphanRemoval=true, cascade={"persist","remove"})
      */
     private $discordChannels;
 
@@ -64,6 +77,7 @@ class Season
     {
         $this->shows = new ArrayCollection();
         $this->elections = new ArrayCollection();
+        $this->votes = new ArrayCollection();
         $this->discordChannels = new ArrayCollection();
     }
 
@@ -230,6 +244,39 @@ class Season
     }
 
     /**
+     * @return Collection|ElectionVote[]
+     */
+    public function getVotes(): Collection
+    {
+        return $this->votes;
+    }
+
+    /**
+     * @param ElectionVote $vote
+     * @return $this
+     */
+    public function addVote(ElectionVote $vote): self
+    {
+        if (!$this->votes->contains($vote)) {
+            $this->votes[] = $vote;
+            $vote->setSeason($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ElectionVote $vote
+     * @return $this
+     */
+    public function removeVote(ElectionVote $vote): self
+    {
+        $this->votes->removeElement($vote);
+        return $this;
+    }
+
+
+    /**
      * @return Collection|DiscordChannel[]
      */
     public function getDiscordChannels(): Collection
@@ -278,4 +325,19 @@ class Season
         ];
     }
 
+    /**
+     * @return ShowSeasonScore[]|Collection
+     */
+    public function getShowSeasonScores()
+    {
+        return $this->showSeasonScores;
+    }
+
+    /**
+     * @param ShowSeasonScore[]|Collection $showSeasonScores
+     */
+    public function setShowSeasonScores($showSeasonScores): void
+    {
+        $this->showSeasonScores = $showSeasonScores;
+    }
 }

@@ -1,11 +1,14 @@
-<?php /** @noinspection DuplicatedCode */
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
+/** @noinspection DuplicatedCode */
 /** @noinspection UnknownInspectionInspection */
 /** @noinspection PhpUnused */
 
 namespace App\Entity;
 
 use App\Repository\ScoreRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity(repositoryClass=ScoreRepository::class)
@@ -61,6 +64,17 @@ class Score
      * @ORM\Column(type="string")
      */
     private string $slug;
+
+    /**
+     * @var Collection|ShowSeasonScore[]
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="score", orphanRemoval=true, cascade={"persist","remove"})
+     */
+    private Collection $showSeasonScores;
+
+    public function __construct()
+    {
+        $this->showSeasonScores = new ArrayCollection();
+    }
 
     /**
      * @return int|null
@@ -211,5 +225,21 @@ class Score
             'icon' => $this->getIcon(),
             'slug' => $this->getSlug(),
         ];
+    }
+
+    /**
+     * @return ShowSeasonScore[]|Collection
+     */
+    public function getShowSeasonScores()
+    {
+        return $this->showSeasonScores;
+    }
+
+    /**
+     * @param ShowSeasonScore[]|Collection $showSeasonScores
+     */
+    public function setShowSeasonScores($showSeasonScores): void
+    {
+        $this->showSeasonScores = $showSeasonScores;
     }
 }

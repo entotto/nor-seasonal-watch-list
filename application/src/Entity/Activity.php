@@ -1,10 +1,13 @@
-<?php /** @noinspection DuplicatedCode */
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
+/** @noinspection DuplicatedCode */
 /** @noinspection UnknownInspectionInspection */
 /** @noinspection PhpUnused */
 
 namespace App\Entity;
 
 use App\Repository\ActivityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -61,6 +64,33 @@ class Activity
      * @ORM\Column(type="string")
      */
     private string $slug;
+
+    /**
+     * @var Collection|ShowSeasonScore[]
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="activity", orphanRemoval=true, cascade={"persist","remove"})
+     */
+    private Collection $scores;
+
+    /**
+     * @return ShowSeasonScore[]|Collection
+     */
+    public function getScores(): Collection
+    {
+        return $this->scores;
+    }
+
+    /**
+     * @param ShowSeasonScore[]|Collection $scores
+     */
+    public function setScores(Collection $scores): void
+    {
+        $this->scores = $scores;
+    }
+
+    public function __construct()
+    {
+        $this->scores = new ArrayCollection();
+    }
 
     /**
      * @return int|null

@@ -7,14 +7,33 @@
         <a class="btn btn-success" href="{{ path('admin_show_new') }}">Create new</a>
     </span>
 
+    <span class="float-end me-3">
+        {{ pagerfanta(pager) }}
+    </span>
+
+    {% include 'show/fragment/page_size_picker.html.twig' %}
+
+    {% include 'show/fragment/season_picker.html.twig' %}
+
     <h1>Shows</h1>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Cover</th>
-                <th>Japanese&nbsp;Title</th>
-                <th>English&nbsp;Title</th>
+                <th>
+{#                    <a href="{{ path('all_watch_index')  }}?sort={% if selectedSortName == 'show_asc'   %}show_desc{% else   %}show_asc{% endif   %}">#}
+                    <a href="{{ path('admin_show_index') }}?sort={% if selectedSortName == 'rumaji_asc' %}rumaji_desc{% else %}rumaji_asc{% endif %}">
+                        Japanese&nbsp;Title
+                        {% if selectedSortName == 'rumaji_asc' %}&#9660;{% elseif selectedSortName == 'rumaji_desc'%}&#9650;{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ path('admin_show_index') }}?sort={% if selectedSortName == 'english_asc' %}english_desc{% else %}english_asc{% endif %}">
+                        English&nbsp;Title
+                        {% if selectedSortName == 'english_asc' %}&#9660;{% elseif selectedSortName == 'english_desc'%}&#9650;{% endif %}
+                    </a>
+                </th>
                 <th>Anilist&nbsp;Id</th>
                 <th class="col-sm-1">Seasons</th>
                 <th class="col-sm-2"><span class="float-end">Actions</span></th>
@@ -59,6 +78,13 @@
             <span class="float-end">
                 <a class="btn btn-success" href="{{ path('admin_show_new') }}">Create new</a>
             </span>
+            <span class="float-end me-3">
+                {{ pagerfanta(pager) }}
+            </span>
         </div>
     </div>
+{% endblock %}
+
+{% block body_javascripts %}
+    <script src="/js/AdminShow.js?v={{ asset_version }}"></script>
 {% endblock %}

@@ -10,6 +10,8 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @method Show|null find($id, $lockMode = null, $lockVersion = null)
@@ -36,6 +38,29 @@ class ShowRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('s');
         $this->setOrderBy($qb, $sortColumn, $sortOrder);
         return $qb->getQuery()->getResult();
+    }
+
+    public function getShowsSortedPaged(
+        ?string $sortColumn = 'romaji',
+        ?string $sortOrder = 'ASC',
+        ?int $pageNum = 1,
+        ?int $perPage = 10,
+        ?int $season = null
+    ): Pagerfanta {
+        $qb = $this->createQueryBuilder('s');
+        $this->setOrderBy($qb, $sortColumn, $sortOrder);
+        if ($season === -1) {
+            $qb->leftJoin('s.seasons', 'seasons')
+                ->andWhere('seasons.id IS NULL');
+        } else if ($season > 0) {
+            $qb->join('s.seasons', 'seasons')
+                ->andWhere('seasons.id = :seasonId')
+                ->setParameter('seasonId', $season);
+        }
+        $pagerfanta = new Pagerfanta(new QueryAdapter($qb));
+        $pagerfanta->setMaxPerPage($perPage);
+        $pagerfanta->setCurrentPage($pageNum);
+        return $pagerfanta;
     }
 
     /**
@@ -120,9 +145,14 @@ class ShowRepository extends ServiceEntityRepository
             case 'none':
                 $orderBy = null;
                 break;
+            case 'rumaji':
+                $orderBy = 'japaneseTitle';
+                break;
             default:
                 $orderBy = 'japaneseTitle';
         }
+        // Prevent invalid sort orders
+        $sortOrder = (strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC');
         if ($orderBy !== null) {
             $qb->orderBy("s.{$orderBy}", $sortOrder);
         }

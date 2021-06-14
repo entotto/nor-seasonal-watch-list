@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
 /** @noinspection UnknownInspectionInspection */
 /** @noinspection PhpUnused */
 /** @noinspection PhpUnusedAliasInspection */
@@ -59,9 +59,16 @@ class Show
     /**
      * @var Collection|ShowSeasonScore[]
      *
-     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="show")
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="show", cascade={"persist","remove"})
      */
     private Collection $scores;
+
+    /**
+     * @var Collection|ElectionVote[]
+     *
+     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="animeShow", cascade={"persist","remove"})
+     */
+    private Collection $votes;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -127,6 +134,7 @@ class Show
     {
         $this->seasons = new ArrayCollection();
         $this->scores = new ArrayCollection();
+        $this->votes = new ArrayCollection();
     }
 
     /**
@@ -300,6 +308,38 @@ class Show
     public function removeScore(ShowSeasonScore $score): self
     {
         $this->scores->removeElement($score);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ElectionVote[]
+     */
+    public function getVotes()
+    {
+        return $this->votes;
+    }
+
+    /**
+     * @param ElectionVote $vote
+     * @return $this
+     */
+    public function addVote(ElectionVote $vote): self
+    {
+        if (!$this->votes->contains($vote)) {
+            $this->votes[] = $vote;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ElectionVote $vote
+     * @return $this
+     */
+    public function removeVote(ElectionVote $vote): self
+    {
+        $this->votes->removeElement($vote);
 
         return $this;
     }

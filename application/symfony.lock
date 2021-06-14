@@ -1,4 +1,7 @@
 {
+    "babdev/pagerfanta-bundle": {
+        "version": "v3.2.0"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
     },
@@ -149,6 +152,18 @@
     },
     "nikic/php-parser": {
         "version": "v4.10.4"
+    },
+    "pagerfanta/core": {
+        "version": "v3.1.0"
+    },
+    "pagerfanta/doctrine-dbal-adapter": {
+        "version": "v3.1.0"
+    },
+    "pagerfanta/doctrine-orm-adapter": {
+        "version": "v3.1.0"
+    },
+    "pagerfanta/twig": {
+        "version": "v3.1.0"
     },
     "paragonie/random_compat": {
         "version": "v9.99.100"
@@ -439,6 +454,9 @@
     },
     "symfony/polyfill-php80": {
         "version": "v1.22.0"
+    },
+    "symfony/polyfill-php81": {
+        "version": "v1.23.0"
     },
     "symfony/process": {
         "version": "v5.2.1"
