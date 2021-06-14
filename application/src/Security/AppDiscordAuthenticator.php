@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php /** @noinspection PhpMultipleClassDeclarationsInspection */
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Security;
 
@@ -77,7 +79,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         return $this->fetchAccessToken($this->getDiscordClient());
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function getUser($credentials, UserProviderInterface $userProvider): User
     {
         /** @var DiscordResourceOwner $discordUser */
         $discordUser = $this->getDiscordClient()->fetchUserFromToken($credentials);
@@ -237,8 +239,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
             $rolesToRemove[] = 'ROLE_SWL_USER';
         }
         $newRoles = array_unique(array_merge($existingRoles, $rolesToAdd));
-        $newRoles = array_diff($newRoles, $rolesToRemove);
-        return $newRoles;
+        return array_diff($newRoles, $rolesToRemove);
     }
 
     private function arraysHaveSameValues(array $a, array $b): bool

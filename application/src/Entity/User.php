@@ -10,10 +10,14 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\HasLifecycleCallbacks()
+ * @UniqueEntity(fields={"apiKey"}, message="This api key is already in use.", ignoreNull=true)
  */
 class User implements UserInterface
 {
@@ -115,6 +119,12 @@ class User implements UserInterface
      * @ORM\Column(type="json", nullable=true)
      */
     private ?array $prefsStore;
+
+    /**
+     * @var string|null $apiKey
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $apiKey;
 
     /**
      * User constructor.
@@ -489,5 +499,36 @@ class User implements UserInterface
             'id' => $this->getId(),
             'displayName' => $this->getDisplayName(),
         ];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * @param string|null $apiKey
+     */
+    public function setApiKey(?string $apiKey): void
+    {
+        $this->apiKey = $apiKey;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updateApiKey(): void
+    {
+        if (null === $this->apiKey) {
+            try {
+                $this->apiKey = sha1(random_bytes(20));
+            } catch (Exception $e) {
+                $this->apiKey = null;
+            }
+        }
     }
 }

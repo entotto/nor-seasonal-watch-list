@@ -7,4 +7,12 @@
 
     {{ include('account/_form.html.twig', {'button_label': 'Update'}) }}
 
+    <h3 class="mt-5">API Key</h3>
+    <p>The Seasonal Watch List API is documented <a href="{{ path('api') }}">here</a>.</p>
+    <p>Your API access key: {% if user.getApiKey %}<strong>{{ user.getApiKey }}</strong>{% else %} (log out and back in to receive a key){% endif %}</p>
+    <form method="POST" action="{{ path('account_preferences_reset_api_key') }}">
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Change your API access key</button>
+        </div>
+    </form>
 {% endblock %}

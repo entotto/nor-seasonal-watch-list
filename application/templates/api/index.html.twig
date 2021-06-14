@@ -11,7 +11,16 @@
 
     <div class="row">
         <div class="col">
-            <h2>Seasons</h2>
+            <h2>Authentication</h2>
+            <p>Send an X-AUTH-TOKEN header with each request to retrieve information from the API.</p>
+            <p>Each user account in the SWL has its own unique API access key. Find your key on the
+                <a href="{{ path('account_preferences') }}">Account -> Preferences</a> page.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2>API methods</h2>
+            <h3>Seasons</h3>
             <p>Retrieve a list of all available seasons.</p>
             <p><code>GET /api/v1/seasons</code></p>
             <p>The request returns data with this structure:</p>
@@ -29,7 +38,7 @@
 
     <div class="row">
         <div class="col">
-            <h2 class="mt-3">Community Watches</h2>
+            <h3 class="mt-3">Community Watches</h3>
             <p>Retrieve data for a single season.</p>
             <p>API endpoint 1:</p>
             <p><code>GET /api/v1/seasons/{year}/{yearPart}/community-watches</code></p>
