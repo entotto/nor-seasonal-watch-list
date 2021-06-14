@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
 
 /** @noinspection UnknownInspectionInspection */
 /** @noinspection PhpUnused */
@@ -32,14 +32,14 @@ class ElectionVote
 
     /**
      * @var Show
-     * @ORM\ManyToOne(targetEntity=Show::class)
+     * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="votes")
      * @ORM\JoinColumn(nullable=false)
      */
     private Show $animeShow;
 
     /**
      * @var Season
-     * @ORM\ManyToOne(targetEntity=Season::class)
+     * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="votes")
      * @ORM\JoinColumn(nullable=false)
      */
     private Season $season;

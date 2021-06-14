@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpPropertyOnlyWrittenInspection */
 /** @noinspection UnknownInspectionInspection */
 /** @noinspection PhpUnused */
 
@@ -45,7 +45,7 @@ class Election
     private DateTimeInterface $endDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", orphanRemoval=true, cascade={"persist","remove"})
      */
     private Collection $electionVotes;
 
