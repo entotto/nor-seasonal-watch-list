@@ -28,6 +28,10 @@
                 <td class="col-md-9">{{ season.rankOrder }}</td>
             </tr>
             <tr>
+                <th scope="row" class="col-md-3">Watch/Rewatch</th>
+                <td class="col-md-9">{% if season.hiddenFromSeasonsList %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
                 <th scope="row" class="col-md-3">Environment</th>
                 <td class="col-md-9">{{ app.environment }}</td>
             </tr>
