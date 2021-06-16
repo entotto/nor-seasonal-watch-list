@@ -27,15 +27,21 @@ class ElectionRepository extends ServiceEntityRepository
      */
     public function getFirstActiveElection(): ?Election
     {
-        $now = (new DateTime());
-        return $this->createQueryBuilder('e')
-            ->where('e.startDate <= :now')
-            ->andWhere('e.endDate >= :now')
-            ->orderBy('e.startDate', 'ASC')
-            ->setParameter('now', $now)
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        static $firstActivityElection = null;
+
+        if ($firstActivityElection === null) {
+            $now = (new DateTime());
+            $firstActivityElection = $this->createQueryBuilder('e')
+                ->where('e.startDate <= :now')
+                ->andWhere('e.endDate >= :now')
+                ->orderBy('e.startDate', 'ASC')
+                ->setParameter('now', $now)
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult();
+        }
+
+        return $firstActivityElection;
     }
 
     /**
@@ -52,5 +58,14 @@ class ElectionRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function electionIsActive(): bool
+    {
+        try {
+            return ($this->getFirstActiveElection() !== null);
+        } catch (NonUniqueResultException $e) {
+            return true;
+        }
     }
 }

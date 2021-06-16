@@ -8,6 +8,7 @@ use App\Entity\Season;
 use App\Entity\ShowSeasonScore;
 use App\Entity\User;
 use App\Repository\ActivityRepository;
+use App\Repository\ElectionRepository;
 use App\Repository\ScoreRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
@@ -37,6 +38,7 @@ class AllWatchController extends AbstractController
      * @param UserRepository $userRepository
      * @param ScoreRepository $scoreRepository
      * @param ActivityRepository $activityRepository
+     * @param ElectionRepository $electionRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param SelectedSortHelper $selectedSortHelper
      * @param SelectedAllWatchModeHelper $selectedAllWatchModeHelper
@@ -54,10 +56,13 @@ class AllWatchController extends AbstractController
         UserRepository $userRepository,
         ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
+        ElectionRepository $electionRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
         SelectedSortHelper $selectedSortHelper,
         SelectedAllWatchModeHelper $selectedAllWatchModeHelper
     ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
+
         $userKeys = $this->loadUserKeys($userRepository);
         $userCount = count($userKeys);
         $selectedSortName = $selectedSortHelper->getSelectedSort($request,'community_watch');
@@ -101,7 +106,8 @@ class AllWatchController extends AbstractController
             'total_columns' => 2 + $userCount,
             'selectedSortName' => $selectedSortName,
             'sortOptions' => $sortOptions,
-            'selectedViewMode' => $selectedViewMode
+            'selectedViewMode' => $selectedViewMode,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -268,7 +274,7 @@ class AllWatchController extends AbstractController
             $user = $this->getUser();
             $defaultScore = $scoreRepository->getDefaultScore();
             $defaultActivity = $activityRepository->getDefaultActivity();
-            foreach ($shows as $key => $show) {
+            foreach ($shows as $show) {
                 $score = $showSeasonScoreRepository->getForUserAndShowAndSeason(
                     $user,
                     $show,
@@ -380,7 +386,7 @@ EOF;
                 $keyedConsolidatedShowScores[$consolidatedShowScore['show_id']] = $consolidatedShowScore;
             }
             unset($consolidatedShowScores);
-            foreach ($shows as $key => $show) {
+            foreach ($shows as $show) {
                 $showInfo = [
                     'id' => $show->getId(),
                     'title' => u($show->getAllTitles())->truncate(240, '...', false),

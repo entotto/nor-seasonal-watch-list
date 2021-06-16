@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Activity;
 use App\Form\ActivityType;
 use App\Repository\ActivityRepository;
+use App\Repository\ElectionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,23 +19,32 @@ class AdminActivityController extends AbstractController
     /**
      * @Route("/", name="admin_activity_index", methods={"GET"})
      * @param ActivityRepository $activityRepository
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function index(ActivityRepository $activityRepository): Response
-    {
+    public function index(
+        ActivityRepository $activityRepository,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('activity/index.html.twig', [
             'user' => $this->getUser(),
             'activities' => $activityRepository->findAll(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/new", name="admin_activity_new", methods={"GET","POST"})
      * @param Request $request
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function new(Request $request): Response
-    {
+    public function new(
+        Request $request,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $activity = new Activity();
         $form = $this->createForm(ActivityType::class, $activity);
         $form->handleRequest($request);
@@ -52,19 +62,25 @@ class AdminActivityController extends AbstractController
             'user' => $this->getUser(),
             'activity' => $activity,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/{id}", name="admin_activity_show", methods={"GET"})
      * @param Activity $activity
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function show(Activity $activity): Response
-    {
+    public function show(
+        Activity $activity,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('activity/show.html.twig', [
             'user' => $this->getUser(),
             'activity' => $activity,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -72,10 +88,15 @@ class AdminActivityController extends AbstractController
      * @Route("/{id}/edit", name="admin_activity_edit", methods={"GET","POST"})
      * @param Request $request
      * @param Activity $activity
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function edit(Request $request, Activity $activity): Response
-    {
+    public function edit(
+        Request $request,
+        Activity $activity,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ActivityType::class, $activity);
         $form->handleRequest($request);
 
@@ -90,6 +111,7 @@ class AdminActivityController extends AbstractController
             'user' => $this->getUser(),
             'activity' => $activity,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 

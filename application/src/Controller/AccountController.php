@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserPreferencesType;
+use App\Repository\ElectionRepository;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,10 +19,14 @@ class AccountController extends AbstractController
     /**
      * @Route("/preferences", name="account_preferences", methods={"GET","POST"})
      * @param Request $request
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function index(Request $request): Response
-    {
+    public function index(
+        Request $request,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         /** @var User $user */
         $user = $this->getUser();
         $preferences = $user->getPreferences();
@@ -43,15 +48,15 @@ class AccountController extends AbstractController
         return $this->render('account/preferences.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/preferences/reset_api_key", name="account_preferences_reset_api_key", methods={"POST"})
-     * @param Request $request
      * @return Response
      */
-    public function resetApiKey(Request $request): Response
+    public function resetApiKey(): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -67,7 +72,7 @@ class AccountController extends AbstractController
         return $this->redirectToRoute('account_preferences');
     }
 
-    public function clearApiKey(Request $request): Response
+    public function clearApiKey(): Response
     {
         /** @var User $user */
         $user = $this->getUser();

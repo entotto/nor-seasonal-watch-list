@@ -1,9 +1,12 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php /** @noinspection PhpMultipleClassDeclarationsInspection */
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Controller;
 
 use App\Entity\Show;
 use App\Form\ShowType;
+use App\Repository\ElectionRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Service\AnilistApi;
@@ -24,13 +27,16 @@ class AdminShowController extends AbstractController
      * @param Request $request
      * @param ShowRepository $showRepository
      * @param SeasonRepository $seasonRepository
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
     public function index(
         Request $request,
         ShowRepository $showRepository,
-        SeasonRepository $seasonRepository
+        SeasonRepository $seasonRepository,
+        ElectionRepository $electionRepository
     ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $session = $request->getSession();
         $currentPage = $session->get('page', 1);
         $currentPerPage = $session->get('perPage', 10);
@@ -80,6 +86,7 @@ class AdminShowController extends AbstractController
             'perPage' => $perPage,
             'selectedSeason' => $season,
             'seasons' => $seasons,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -87,11 +94,17 @@ class AdminShowController extends AbstractController
      * @Route("/new", name="admin_show_new", methods={"GET","POST"})
      * @param Request $request
      * @param AnilistApi $anilistApi
+     * @param ElectionRepository $electionRepository
      * @return Response
-     * @throws GuzzleException|JsonException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    public function new(Request $request, AnilistApi $anilistApi): Response
-    {
+    public function new(
+        Request $request,
+        AnilistApi $anilistApi,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $show = new Show();
         $form = $this->createForm(ShowType::class, $show);
         $form->handleRequest($request);
@@ -113,19 +126,25 @@ class AdminShowController extends AbstractController
             'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/{id}", name="admin_show_show", methods={"GET"})
      * @param Show $show
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function show(Show $show): Response
-    {
+    public function show(
+        Show $show,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('show/show.html.twig', [
             'user' => $this->getUser(),
             'show' => $show,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -134,11 +153,18 @@ class AdminShowController extends AbstractController
      * @param Request $request
      * @param Show $show
      * @param AnilistApi $anilistApi
+     * @param ElectionRepository $electionRepository
      * @return Response
-     * @throws GuzzleException|JsonException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    public function edit(Request $request, Show $show, AnilistApi $anilistApi): Response
-    {
+    public function edit(
+        Request $request,
+        Show $show,
+        AnilistApi $anilistApi,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ShowType::class, $show);
         $form->handleRequest($request);
 
@@ -157,6 +183,7 @@ class AdminShowController extends AbstractController
             'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 

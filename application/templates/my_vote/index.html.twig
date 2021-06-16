@@ -7,7 +7,11 @@
         <div class="col-lg-12">
             <h1 class="text-nor-red">
                 Vote:
-                Election for the {{ election.season.name }} Season
+                {% if election.title %}
+                    Election for the {{ election.title }}
+                {% else %}
+                    Election for the {{ election.season.name }} Season
+                {% endif %}
             </h1>
             <p>
                 Voting ends <span id="localEndTime"></span>
@@ -16,16 +20,22 @@
                 </span><br>
                 Remaining: <strong><span id="countdownOutput"></span></strong>
             </p>
-            <p>
-                Please select the shows that you think will generate the most discussion
-                in the NOR Discord server. Vote for as many or as few shows as you wish.
-                The shows that receive the most votes will get individual discussion channels.
-            </p>
-            <p>
-                You are free to revise your choices here as often as you want while voting
-                is open. Changing your selections will not cause your votes to be counted
-                twice. Votes are only counted after the election is closed.
-            </p>
+            {% if election.description %}
+                <p>
+                {{ election.description|raw }}
+                </p>
+            {% else %}
+                <p>
+                    Please select the shows that you think will generate the most discussion
+                    in the NOR Discord server. Vote for as many or as few shows as you wish.
+                    The shows that receive the most votes will get individual discussion channels.
+                </p>
+                <p>
+                    You are free to revise your choices here as often as you want while voting
+                    is open. Changing your selections will not cause your votes to be counted
+                    twice. Votes are only counted after the election is closed.
+                </p>
+            {% endif %}
             <p>
                 You can also
                 <a href="{{ path('my_watch_index') }}">enter</a> your own opinions and
@@ -36,7 +46,14 @@
                 <tr>
                     <th class="col-md-2 col-xs-2 col-sm-2">Show</th>
                     <th class="col-md-7 col-xs-6 col-sm-6">&nbsp;</th>
-                    <th class="col-md-3 col-xs-4 col-sm-4">Votes (no limit)</th>
+                    <th class="col-md-3 col-xs-4 col-sm-4">
+                        Votes
+                        {% if election.maxVotes == NULL %}
+                            (no limit)
+                        {% else %}
+                            (maximum {{ election.maxVotes }})
+                        {% endif %}
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
