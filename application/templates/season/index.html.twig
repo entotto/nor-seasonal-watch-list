@@ -16,7 +16,8 @@
                 <th>Year</th>
                 <th>Year Part</th>
                 <th>Rank</th>
-                <th class="col-sm-2"><span class="float-end">Actions</span></th>
+                <th>Non-season</th>
+                <th class="col-sm-2"><span class="float-end">Watch/Rewatch</span></th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +27,7 @@
                 <td>{{ season.year }}</td>
                 <td>{{ season.yearPart }}</td>
                 <td>{{ season.rankOrder }}</td>
+                <td>{% if season.hiddenFromSeasonsList %}Yes{% endif %}</td>
                 <td class="col-sm-2">
                     <span class="float-end">
                         <a class="btn btn-primary" href="{{ path('admin_season_show', {'id': season.id}) }}">View</a>

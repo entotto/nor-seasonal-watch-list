@@ -30,12 +30,12 @@ class Season
     private ?string $name;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private ?int $year;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private ?string $yearPart;
 
@@ -72,6 +72,12 @@ class Season
      * @ORM\OneToMany(targetEntity=DiscordChannel::class, mappedBy="season", orphanRemoval=true, cascade={"persist","remove"})
      */
     private $discordChannels;
+
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean")
+     */
+    private bool $hiddenFromSeasonsList;
 
     public function __construct()
     {
@@ -116,7 +122,11 @@ class Season
         return $this->year;
     }
 
-    public function setYear(int $year): self
+    /**
+     * @param int|null $year
+     * @return $this
+     */
+    public function setYear(?int $year): self
     {
         $this->year = $year;
 
@@ -132,10 +142,10 @@ class Season
     }
 
     /**
-     * @param string $yearPart
+     * @param string|null $yearPart
      * @return $this
      */
-    public function setYearPart(string $yearPart): self
+    public function setYearPart(?string $yearPart): self
     {
         $this->yearPart = $yearPart;
 
@@ -339,5 +349,23 @@ class Season
     public function setShowSeasonScores($showSeasonScores): void
     {
         $this->showSeasonScores = $showSeasonScores;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHiddenFromSeasonsList(): bool
+    {
+        return $this->hiddenFromSeasonsList;
+    }
+
+    /**
+     * @param bool $hiddenFromSeasonsList
+     * @return $this
+     */
+    public function setHiddenFromSeasonsList(bool $hiddenFromSeasonsList): self
+    {
+        $this->hiddenFromSeasonsList = $hiddenFromSeasonsList;
+        return $this;
     }
 }
