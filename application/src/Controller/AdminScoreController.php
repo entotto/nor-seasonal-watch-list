@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Score;
 use App\Form\ScoreType;
+use App\Repository\ElectionRepository;
 use App\Repository\ScoreRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,23 +19,32 @@ class AdminScoreController extends AbstractController
     /**
      * @Route("/", name="admin_score_index", methods={"GET"})
      * @param ScoreRepository $scoreRepository
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function index(ScoreRepository $scoreRepository): Response
-    {
+    public function index(
+        ScoreRepository $scoreRepository,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('score/index.html.twig', [
             'user' => $this->getUser(),
             'scores' => $scoreRepository->findAllInRankOrder(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/new", name="admin_score_new", methods={"GET","POST"})
      * @param Request $request
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function new(Request $request): Response
-    {
+    public function new(
+        Request $request,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $score = new Score();
         $form = $this->createForm(ScoreType::class, $score);
         $form->handleRequest($request);
@@ -52,19 +62,25 @@ class AdminScoreController extends AbstractController
             'user' => $this->getUser(),
             'score' => $score,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/{id}", name="admin_score_show", methods={"GET"})
      * @param Score $score
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function show(Score $score): Response
-    {
+    public function show(
+        Score $score,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('score/show.html.twig', [
             'user' => $this->getUser(),
             'score' => $score,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -72,10 +88,15 @@ class AdminScoreController extends AbstractController
      * @Route("/{id}/edit", name="admin_score_edit", methods={"GET","POST"})
      * @param Request $request
      * @param Score $score
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function edit(Request $request, Score $score): Response
-    {
+    public function edit(
+        Request $request,
+        Score $score,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ScoreType::class, $score);
         $form->handleRequest($request);
 
@@ -90,6 +111,7 @@ class AdminScoreController extends AbstractController
             'user' => $this->getUser(),
             'score' => $score,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 

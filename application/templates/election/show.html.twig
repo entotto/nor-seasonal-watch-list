@@ -16,12 +16,34 @@
                 <td>{{ election.season.name }}</td>
             </tr>
             <tr>
+                <th>Title</th>
+                <td>{{ election.title }}</td>
+            </tr>
+            <tr>
+                <th>Display name</th>
+                <td>{{ election.getName }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ election.description }}</td>
+            </tr>
+            <tr>
                 <th>Start</th>
                 <td>{{ election.startDate ? election.startDate|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
                 <th>End</th>
                 <td>{{ election.endDate ? election.endDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Max votes allowed</th>
+                <td>
+                    {% if election.maxVotes == NULL %}
+                        no limit
+                    {% else %}
+                        {{ election.maxVotes }}
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Open now</th>

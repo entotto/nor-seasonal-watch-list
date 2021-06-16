@@ -24,21 +24,28 @@ class AdminElectionController extends AbstractController
      * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function index(ElectionRepository $electionRepository): Response
-    {
+    public function index(
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('election/index.html.twig', [
             'user' => $this->getUser(),
             'elections' => $electionRepository->findBy([], ['startDate' => 'desc']),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/new", name="admin_election_new", methods={"GET","POST"})
      * @param Request $request
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function new(Request $request): Response
-    {
+    public function new(
+        Request $request,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $election = new Election();
         $form = $this->createForm(ElectionType::class, $election);
         $form->handleRequest($request);
@@ -55,6 +62,7 @@ class AdminElectionController extends AbstractController
             'user' => $this->getUser(),
             'election' => $election,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -63,15 +71,18 @@ class AdminElectionController extends AbstractController
      * @param Election $election
      * @param ElectionVoteRepository $electionVoteRepository
      * @param ShowRepository $showRepository
+     * @param ElectionRepository $electionRepository
      * @return Response
-     * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function show(
         Election $election,
         ElectionVoteRepository $electionVoteRepository,
-        ShowRepository $showRepository
+        ShowRepository $showRepository,
+        ElectionRepository $electionRepository
     ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         $votesInfo = $electionVoteRepository->getCountsForElection($election);
         $totalVoterCount = $electionVoteRepository->getVoterCountForElection($election);
@@ -84,7 +95,8 @@ class AdminElectionController extends AbstractController
             'election' => $election,
             'votesInfo' => $votesInfo,
             'totalVoterCount' => $totalVoterCount,
-            'voteTallies' => $voteTallies
+            'voteTallies' => $voteTallies,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -143,10 +155,15 @@ class AdminElectionController extends AbstractController
      * @Route("/{id}/edit", name="admin_election_edit", methods={"GET","POST"}, requirements={"id":"\d+"})
      * @param Request $request
      * @param Election $election
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function edit(Request $request, Election $election): Response
-    {
+    public function edit(
+        Request $request,
+        Election $election,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ElectionType::class, $election);
         $form->handleRequest($request);
 
@@ -160,6 +177,7 @@ class AdminElectionController extends AbstractController
             'user' => $this->getUser(),
             'election' => $election,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -214,7 +232,7 @@ class AdminElectionController extends AbstractController
 
         // Remaining $shows got zero votes
         $nextVoteTallyId = count($voteTallies);
-        foreach ($shows as $key => $show) {
+        foreach ($shows as $show) {
             $nextVoteTallyId++;
             $voteTally = new VoteTally();
             $voteTally->setId($nextVoteTallyId);
