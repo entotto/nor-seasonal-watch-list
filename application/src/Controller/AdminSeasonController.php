@@ -29,7 +29,7 @@ class AdminSeasonController extends AbstractController
         $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('season/index.html.twig', [
             'user' => $this->getUser(),
-            'seasons' => $seasonRepository->getAllInRankOrder(),
+            'seasons' => $seasonRepository->getAllInRankOrder(true),
             'electionIsActive' => $electionIsActive,
         ]);
     }
