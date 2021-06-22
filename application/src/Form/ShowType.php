@@ -31,6 +31,18 @@ class ShowType extends AbstractType
                 'multiple'=> true,
                 'required' => false,
             ])
+            ->add('relatedShows', EntityType::class, [
+                'class' => Show::class,
+                'query_builder' => function (EntityRepository $er) use ($options) {
+                    return $er->createQueryBuilder('sh')
+                        ->andWhere('sh.id != :thisId')
+                        ->setParameter('thisId', $options['data']->getId())
+                        ->orderBy('sh.japaneseTitle', 'ASC');
+                },
+                'expanded' => false,
+                'multiple' => true,
+                'required' => false,
+            ])
             ->add('excludeFromElections', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Exclude from elections'

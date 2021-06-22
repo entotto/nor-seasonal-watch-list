@@ -10,6 +10,7 @@ use App\Repository\ElectionRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Service\AnilistApi;
+use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -110,14 +111,15 @@ class AdminShowController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $this->saveNewRelatedShows($show, $em);
             $anilistData = $anilistApi->fetch($show->getAnilistId());
             if ($anilistData !== null) {
                 $anilistApi->updateShow($show, $anilistData);
             }
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($show);
-            $entityManager->flush();
+            $em->persist($show);
+            $em->flush();
 
             return $this->redirectToRoute('admin_show_index');
         }
@@ -154,6 +156,7 @@ class AdminShowController extends AbstractController
      * @param Show $show
      * @param AnilistApi $anilistApi
      * @param ElectionRepository $electionRepository
+     * @param ShowRepository $showRepository
      * @return Response
      * @throws GuzzleException
      * @throws JsonException
@@ -162,19 +165,27 @@ class AdminShowController extends AbstractController
         Request $request,
         Show $show,
         AnilistApi $anilistApi,
-        ElectionRepository $electionRepository
+        ElectionRepository $electionRepository,
+        ShowRepository $showRepository
     ): Response {
+        $originalRelatedShows = $showRepository->getRelatedShows($show);
         $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ShowType::class, $show);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            foreach($originalRelatedShows as $originalRelatedShow) {
+                $originalRelatedShow->setFirstShow(null);
+                $em->persist($originalRelatedShow);
+            }
+            $this->saveNewRelatedShows($show, $em);
             $anilistData = $anilistApi->fetch($show->getAnilistId());
             if ($anilistData !== null) {
                 $anilistApi->updateShow($show, $anilistData);
             }
-            $this->getDoctrine()->getManager()->persist($show);
-            $this->getDoctrine()->getManager()->flush();
+            $em->persist($show);
+            $em->flush();
 
             return $this->redirectToRoute('admin_show_index');
         }
@@ -202,5 +213,18 @@ class AdminShowController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_show_index');
+    }
+
+    /**
+     * @param Show $show
+     * @param ObjectManager $em
+     */
+    private function saveNewRelatedShows(Show $show, ObjectManager $em): void
+    {
+        $newRelatedShows = $show->getRelatedShows();
+        foreach ($newRelatedShows as $newRelatedShow) {
+            $newRelatedShow->setFirstShow($show);
+            $em->persist($newRelatedShow);
+        }
     }
 }

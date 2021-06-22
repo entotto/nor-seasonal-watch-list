@@ -125,6 +125,20 @@ class Show
     private ?DiscordChannel $discordChannel;
 
     /**
+     * @var Collection|Show[]
+     *
+     * @ORM\OneToMany(targetEntity=Show::class, mappedBy="firstShow", cascade={"persist","detach"})
+     */
+    private Collection $relatedShows;
+
+    /**
+     * @var Show|null
+     *
+     * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="relatedShows", cascade={"persist"})
+     */
+    private ?Show $firstShow;
+
+    /**
      * @var int|null
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -135,6 +149,7 @@ class Show
         $this->seasons = new ArrayCollection();
         $this->scores = new ArrayCollection();
         $this->votes = new ArrayCollection();
+        $this->relatedShows = new ArrayCollection();
     }
 
     /**
@@ -541,5 +556,59 @@ class Show
             'synonyms' => $this->getSynonyms(),
             'excludeFromElections' => $this->getExcludeFromElections(),
         ];
+    }
+
+    /**
+     * @return Show[]|Collection
+     */
+    public function getRelatedShows(): Collection
+    {
+        return $this->relatedShows;
+    }
+
+    /**
+     * @param Show[]|Collection $relatedShows
+     * @return self
+     */
+    public function setRelatedShows($relatedShows): self
+    {
+        $this->relatedShows = $relatedShows;
+        return $this;
+    }
+
+    public function addRelatedShow(Show $show): self
+    {
+        if (!$this->relatedShows->contains($show)) {
+            $show->setFirstShow($this);
+            $this->relatedShows[] = $show;
+        }
+
+        return $this;
+    }
+
+    public function removeRelatedShow(Show $show): self
+    {
+        $this->relatedShows->removeElement($show);
+        $show->setFirstShow(null);
+
+        return $this;
+    }
+
+    /**
+     * @return Show|null
+     */
+    public function getFirstShow(): ?Show
+    {
+        return $this->firstShow;
+    }
+
+    /**
+     * @param Show|null $firstShow
+     * @return self
+     */
+    public function setFirstShow(?Show $firstShow): self
+    {
+        $this->firstShow = $firstShow;
+        return $this;
     }
 }

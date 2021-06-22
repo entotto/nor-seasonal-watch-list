@@ -154,7 +154,7 @@ class ShowRepository extends ServiceEntityRepository
         // Prevent invalid sort orders
         $sortOrder = (strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC');
         if ($orderBy !== null) {
-            $qb->orderBy("s.{$orderBy}", $sortOrder);
+            $qb->orderBy("s.$orderBy", $sortOrder);
         }
     }
 
@@ -324,5 +324,17 @@ class ShowRepository extends ServiceEntityRepository
         $qb->groupBy('s.id');
         // Null rows are not included in the avg calculation.
         $qb->select('s, sum(activity.value) AS total_activity');
+    }
+
+    /**
+     * @param Show $show
+     * @return Show[]
+     */
+    public function getRelatedShows(Show $show): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.firstShow = :firstShow')
+            ->setParameter('firstShow', $show)
+            ->getQuery()->getResult();
     }
 }
