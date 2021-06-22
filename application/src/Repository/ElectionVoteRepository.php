@@ -78,6 +78,31 @@ EOF;
     }
 
     /**
+     * @param User $user
+     * @param Election $election
+     * @return int
+     * @throws DoctrineException
+     * @throws Exception
+     */
+    public function getCountForUserAndElection(User $user, Election $election): int
+    {
+        $sql = <<<EOF
+SELECT COUNT(ev.id) AS user_vote_count
+FROM election_vote ev
+WHERE ev.chosen = 1
+AND ev.election_id = :election_id
+AND ev.user_id = :user_id
+EOF;
+        $conn = $this->getEntityManager()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery(['user_id' => $user->getId(), 'election_id' => $election->getId()]);
+        if ($result !== null) {
+            return (int)$result->fetchOne();
+        }
+        return 0;
+    }
+
+    /**
      * @param Election $election
      * @return int
      * @throws DoctrineException

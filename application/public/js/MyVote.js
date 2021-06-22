@@ -9,11 +9,19 @@
             type: "POST",
             url: url,
             data: form.serialize(),
-            success: function () {
+            dataType: 'json',
+            success: function (data) {
+                $('#toast-success-body').text(data.data.message);
+                const toastEl = new bootstrap.Toast(document.getElementById('toast-success'));
+                toastEl.show();
             },
             error: function (x) {
-                alert('Got error posting the form: ' + x.data);
-
+                control.prop('checked', false);
+                control.removeAttr('checked');
+                const responseData = JSON.parse(x.responseText);
+                $('#toast-error-body').text(responseData.data.message);
+                const toastEl = new bootstrap.Toast(document.getElementById('toast-error'));
+                toastEl.show();
             }
         })
     })
