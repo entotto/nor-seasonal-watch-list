@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Season;
 use App\Form\SeasonType;
+use App\Repository\ElectionRepository;
 use App\Repository\SeasonRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,23 +19,32 @@ class AdminSeasonController extends AbstractController
     /**
      * @Route("/", name="admin_season_index", methods={"GET"})
      * @param SeasonRepository $seasonRepository
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function index(SeasonRepository $seasonRepository): Response
-    {
+    public function index(
+        SeasonRepository $seasonRepository,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('season/index.html.twig', [
             'user' => $this->getUser(),
-            'seasons' => $seasonRepository->getAllInRankOrder(),
+            'seasons' => $seasonRepository->getAllInRankOrder(true),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/new", name="admin_season_new", methods={"GET","POST"})
      * @param Request $request
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function new(Request $request): Response
-    {
+    public function new(
+        Request $request,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $season = new Season();
         $form = $this->createForm(SeasonType::class, $season);
         $form->handleRequest($request);
@@ -51,19 +61,25 @@ class AdminSeasonController extends AbstractController
             'user' => $this->getUser(),
             'season' => $season,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/{id}", name="admin_season_show", methods={"GET"})
      * @param Season $season
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function show(Season $season): Response
-    {
+    public function show(
+        Season $season,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('season/show.html.twig', [
             'user' => $this->getUser(),
             'season' => $season,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -71,10 +87,15 @@ class AdminSeasonController extends AbstractController
      * @Route("/{id}/edit", name="admin_season_edit", methods={"GET","POST"})
      * @param Request $request
      * @param Season $season
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function edit(Request $request, Season $season): Response
-    {
+    public function edit(
+        Request $request,
+        Season $season,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(SeasonType::class, $season);
         $form->handleRequest($request);
 
@@ -88,6 +109,7 @@ class AdminSeasonController extends AbstractController
             'user' => $this->getUser(),
             'season' => $season,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 

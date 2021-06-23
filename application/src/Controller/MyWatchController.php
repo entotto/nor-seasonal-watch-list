@@ -8,6 +8,7 @@ use App\Entity\ShowSeasonScore;
 use App\Entity\User;
 use App\Form\ShowSeasonScoreType;
 use App\Repository\ActivityRepository;
+use App\Repository\ElectionRepository;
 use App\Repository\ScoreRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
@@ -33,6 +34,7 @@ class MyWatchController extends AbstractController
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
      * @param ScoreRepository $scoreRepository
      * @param ActivityRepository $activityRepository
+     * @param ElectionRepository $electionRepository
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param FormFactoryInterface $formFactory
      * @param SelectedSortHelper $selectedSortHelper
@@ -47,10 +49,12 @@ class MyWatchController extends AbstractController
         ShowSeasonScoreRepository $showSeasonScoreRepository,
         ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
+        ElectionRepository $electionRepository,
         SelectedSeasonHelper $selectedSeasonHelper,
         FormFactoryInterface $formFactory,
         SelectedSortHelper $selectedSortHelper
     ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $seasons = $seasonRepository->getAllInRankOrder();
 
         /** @var User $user */
@@ -149,6 +153,7 @@ class MyWatchController extends AbstractController
             'data' => $data,
             'selectedSortName' => $selectedSortName,
             'sortOptions' => $sortOptions,
+            'electionIsActive' => $electionIsActive
         ]);
     }
 

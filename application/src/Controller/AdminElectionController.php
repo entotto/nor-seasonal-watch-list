@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Election;
+use App\Entity\Show;
 use App\Entity\View\VoteTally;
 use App\Form\ElectionType;
 use App\Repository\ElectionRepository;
@@ -24,21 +25,28 @@ class AdminElectionController extends AbstractController
      * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function index(ElectionRepository $electionRepository): Response
-    {
+    public function index(
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('election/index.html.twig', [
             'user' => $this->getUser(),
             'elections' => $electionRepository->findBy([], ['startDate' => 'desc']),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/new", name="admin_election_new", methods={"GET","POST"})
      * @param Request $request
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function new(Request $request): Response
-    {
+    public function new(
+        Request $request,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $election = new Election();
         $form = $this->createForm(ElectionType::class, $election);
         $form->handleRequest($request);
@@ -55,6 +63,7 @@ class AdminElectionController extends AbstractController
             'user' => $this->getUser(),
             'election' => $election,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -63,15 +72,18 @@ class AdminElectionController extends AbstractController
      * @param Election $election
      * @param ElectionVoteRepository $electionVoteRepository
      * @param ShowRepository $showRepository
+     * @param ElectionRepository $electionRepository
      * @return Response
-     * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function show(
         Election $election,
         ElectionVoteRepository $electionVoteRepository,
-        ShowRepository $showRepository
+        ShowRepository $showRepository,
+        ElectionRepository $electionRepository
     ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         $votesInfo = $electionVoteRepository->getCountsForElection($election);
         $totalVoterCount = $electionVoteRepository->getVoterCountForElection($election);
@@ -84,7 +96,8 @@ class AdminElectionController extends AbstractController
             'election' => $election,
             'votesInfo' => $votesInfo,
             'totalVoterCount' => $totalVoterCount,
-            'voteTallies' => $voteTallies
+            'voteTallies' => $voteTallies,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -120,10 +133,12 @@ class AdminElectionController extends AbstractController
         $fp = fopen('php://temp', 'wb');
         fputcsv($fp, ['Show', 'Votes', '% of Voters', '% of Total']);
         foreach ($voteTallies as $voteTally) {
+            $title = $voteTally->getShowCombinedTitle();
+            if (!empty($voteTally->getRelatedShowNames())) {
+                $title .= ' (and ' . count($voteTally->getRelatedShowNames()) . ' other seasons)';
+            }
             fputcsv($fp, [
-                $voteTally->getShowJapaneseTitle() . ' (' .
-                $voteTally->getShowFullJapaneseTitle() . ') ' .
-                $voteTally->getShowEnglishTitle(),
+                $title,
                 $voteTally->getVoteCount(),
                 $voteTally->getVotePercentOfVoterTotal(),
                 $voteTally->getVotePercentOfTotal()
@@ -143,10 +158,15 @@ class AdminElectionController extends AbstractController
      * @Route("/{id}/edit", name="admin_election_edit", methods={"GET","POST"}, requirements={"id":"\d+"})
      * @param Request $request
      * @param Election $election
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function edit(Request $request, Election $election): Response
-    {
+    public function edit(
+        Request $request,
+        Election $election,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ElectionType::class, $election);
         $form->handleRequest($request);
 
@@ -160,6 +180,7 @@ class AdminElectionController extends AbstractController
             'user' => $this->getUser(),
             'election' => $election,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -183,7 +204,7 @@ class AdminElectionController extends AbstractController
     /**
      * @param array $votesInfo
      * @param int $totalVoterCount
-     * @param array $shows
+     * @param Show[] $shows
      * @return VoteTally[]
      */
     private function getVoteTallies(array $votesInfo, int $totalVoterCount, array $shows): array
@@ -206,6 +227,14 @@ class AdminElectionController extends AbstractController
             $voteTallies[] = $voteTally;
             foreach ($shows as $showsKey => $show) {
                 if ($show->getId() === $voteTally->getShowId()) {
+                    $voteTally->setShowCombinedTitle($show->getVoteStyleTitles());
+                    if ($show->getRelatedShows()) {
+                        $relatedShowNames = [];
+                        foreach ($show->getRelatedShows() as $relatedShow) {
+                            $relatedShowNames[] = $relatedShow->getVoteStyleTitles();
+                        }
+                        $voteTally->setRelatedShowNames($relatedShowNames);
+                    }
                     unset($shows[$showsKey]);
                     break;
                 }
@@ -214,16 +243,23 @@ class AdminElectionController extends AbstractController
 
         // Remaining $shows got zero votes
         $nextVoteTallyId = count($voteTallies);
-        foreach ($shows as $key => $show) {
+        foreach ($shows as $show) {
             $nextVoteTallyId++;
             $voteTally = new VoteTally();
             $voteTally->setId($nextVoteTallyId);
             $voteTally->setShowId($show->getId());
+            $voteTally->setShowCombinedTitle((string)$show->getVoteStyleTitles());
             $voteTally->setShowJapaneseTitle((string)$show->getJapaneseTitle());
             $voteTally->setShowFullJapaneseTitle((string)$show->getFullJapaneseTitle());
             $voteTally->setShowEnglishTitle((string)$show->getEnglishTitle());
             $voteTally->setVoteCount(0);
             $voteTally->setVotePercentOfTotal(0.0);
+            $voteTally->setRelatedShowNames([]);
+            if ($show->getRelatedShows()) {
+                foreach ($show->getRelatedShows() as $relatedShow) {
+                    $voteTally->addRelatedShowName($relatedShow->getVoteStyleTitles());
+                }
+            }
             $voteTallies[] = $voteTally;
         }
         return $voteTallies;

@@ -59,6 +59,33 @@
         </div>
     </div>
 </div>
+{% if show.firstShow %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mt-3 mb-3">
+                <div class="card-body">
+                    <dl>
+                        <dt>Related show</dt>
+                        <dd>{{ show.firstShow.getAllTitles|raw }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-none">
+        {{ form_row(form.relatedShows) }}
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mt-3 mb-3">
+                <div class="card-body">
+                    {{ form_row(form.relatedShows) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
 <div class="row">
     <div class="col-md-6">
         {{ form_row(form.excludeFromElections) }}

@@ -1,12 +1,16 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php /** @noinspection PhpMultipleClassDeclarationsInspection */
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Controller;
 
 use App\Entity\Show;
 use App\Form\ShowType;
+use App\Repository\ElectionRepository;
 use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Service\AnilistApi;
+use Doctrine\Persistence\ObjectManager;
 use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,13 +28,16 @@ class AdminShowController extends AbstractController
      * @param Request $request
      * @param ShowRepository $showRepository
      * @param SeasonRepository $seasonRepository
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
     public function index(
         Request $request,
         ShowRepository $showRepository,
-        SeasonRepository $seasonRepository
+        SeasonRepository $seasonRepository,
+        ElectionRepository $electionRepository
     ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $session = $request->getSession();
         $currentPage = $session->get('page', 1);
         $currentPerPage = $session->get('perPage', 10);
@@ -71,7 +78,7 @@ class AdminShowController extends AbstractController
         $session->set('season', $season);
         $pagerfanta = $showRepository->getShowsSortedPaged($sortColumn, $sortOrder, $pageNum, $perPage, $season);
         $shows = $pagerfanta->getCurrentPageResults();
-        $seasons = $seasonRepository->getAllInRankOrder();
+        $seasons = $seasonRepository->getAllInRankOrder(true);
         return $this->render('show/index.html.twig', [
             'user' => $this->getUser(),
             'shows' => $shows,
@@ -80,6 +87,7 @@ class AdminShowController extends AbstractController
             'perPage' => $perPage,
             'selectedSeason' => $season,
             'seasons' => $seasons,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -87,24 +95,31 @@ class AdminShowController extends AbstractController
      * @Route("/new", name="admin_show_new", methods={"GET","POST"})
      * @param Request $request
      * @param AnilistApi $anilistApi
+     * @param ElectionRepository $electionRepository
      * @return Response
-     * @throws GuzzleException|JsonException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    public function new(Request $request, AnilistApi $anilistApi): Response
-    {
+    public function new(
+        Request $request,
+        AnilistApi $anilistApi,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         $show = new Show();
         $form = $this->createForm(ShowType::class, $show);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $this->saveNewRelatedShows($show, $em);
             $anilistData = $anilistApi->fetch($show->getAnilistId());
             if ($anilistData !== null) {
                 $anilistApi->updateShow($show, $anilistData);
             }
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($show);
-            $entityManager->flush();
+            $em->persist($show);
+            $em->flush();
 
             return $this->redirectToRoute('admin_show_index');
         }
@@ -113,19 +128,25 @@ class AdminShowController extends AbstractController
             'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
     /**
      * @Route("/{id}", name="admin_show_show", methods={"GET"})
      * @param Show $show
+     * @param ElectionRepository $electionRepository
      * @return Response
      */
-    public function show(Show $show): Response
-    {
+    public function show(
+        Show $show,
+        ElectionRepository $electionRepository
+    ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
         return $this->render('show/show.html.twig', [
             'user' => $this->getUser(),
             'show' => $show,
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -134,21 +155,37 @@ class AdminShowController extends AbstractController
      * @param Request $request
      * @param Show $show
      * @param AnilistApi $anilistApi
+     * @param ElectionRepository $electionRepository
+     * @param ShowRepository $showRepository
      * @return Response
-     * @throws GuzzleException|JsonException
+     * @throws GuzzleException
+     * @throws JsonException
      */
-    public function edit(Request $request, Show $show, AnilistApi $anilistApi): Response
-    {
+    public function edit(
+        Request $request,
+        Show $show,
+        AnilistApi $anilistApi,
+        ElectionRepository $electionRepository,
+        ShowRepository $showRepository
+    ): Response {
+        $originalRelatedShows = $showRepository->getRelatedShows($show);
+        $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ShowType::class, $show);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            foreach($originalRelatedShows as $originalRelatedShow) {
+                $originalRelatedShow->setFirstShow(null);
+                $em->persist($originalRelatedShow);
+            }
+            $this->saveNewRelatedShows($show, $em);
             $anilistData = $anilistApi->fetch($show->getAnilistId());
             if ($anilistData !== null) {
                 $anilistApi->updateShow($show, $anilistData);
             }
-            $this->getDoctrine()->getManager()->persist($show);
-            $this->getDoctrine()->getManager()->flush();
+            $em->persist($show);
+            $em->flush();
 
             return $this->redirectToRoute('admin_show_index');
         }
@@ -157,6 +194,7 @@ class AdminShowController extends AbstractController
             'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
+            'electionIsActive' => $electionIsActive,
         ]);
     }
 
@@ -175,5 +213,18 @@ class AdminShowController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_show_index');
+    }
+
+    /**
+     * @param Show $show
+     * @param ObjectManager $em
+     */
+    private function saveNewRelatedShows(Show $show, ObjectManager $em): void
+    {
+        $newRelatedShows = $show->getRelatedShows();
+        foreach ($newRelatedShows as $newRelatedShow) {
+            $newRelatedShow->setFirstShow($show);
+            $em->persist($newRelatedShow);
+        }
     }
 }

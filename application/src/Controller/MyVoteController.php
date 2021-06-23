@@ -36,6 +36,8 @@ class MyVoteController extends AbstractController
         ElectionRepository $electionRepository,
         ElectionVoteRepository $electionVoteRepository
     ): Response {
+        $electionIsActive = $electionRepository->electionIsActive();
+
         $electionId = $request->get('election');
         $election = null;
         if ($electionId !== null) {
@@ -48,7 +50,8 @@ class MyVoteController extends AbstractController
             $election = $electionRepository->getNextAvailableElection();
             return $this->render('my_vote/no_election.html.twig', [
                 'user' => $this->getUser(),
-                'election' => $election
+                'election' => $election,
+                'electionIsActive' => $electionIsActive,
             ]);
         }
 
@@ -92,6 +95,7 @@ class MyVoteController extends AbstractController
             'user' => $this->getUser(),
             'controller_name' => 'MyVoteController',
             'election' => $election,
+            'electionIsActive' => $electionIsActive,
             'data' => $data
         ]);
     }

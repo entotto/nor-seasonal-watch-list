@@ -7,7 +7,11 @@
         <div class="col-lg-12">
             <h1 class="text-nor-red">
                 Vote:
-                Election for the {{ election.season.name }} Season
+                {% if election.title %}
+                    Election for the {{ election.title }}
+                {% else %}
+                    Election for the {{ election.season.name }} Season
+                {% endif %}
             </h1>
             <p>
                 Voting ends <span id="localEndTime"></span>
@@ -16,16 +20,22 @@
                 </span><br>
                 Remaining: <strong><span id="countdownOutput"></span></strong>
             </p>
-            <p>
-                Please select the shows that you think will generate the most discussion
-                in the NOR Discord server. Vote for as many or as few shows as you wish.
-                The shows that receive the most votes will get individual discussion channels.
-            </p>
-            <p>
-                You are free to revise your choices here as often as you want while voting
-                is open. Changing your selections will not cause your votes to be counted
-                twice. Votes are only counted after the election is closed.
-            </p>
+            {% if election.description %}
+                <p>
+                {{ election.description|raw }}
+                </p>
+            {% else %}
+                <p>
+                    Please select the shows that you think will generate the most discussion
+                    in the NOR Discord server. Vote for as many or as few shows as you wish.
+                    The shows that receive the most votes will get individual discussion channels.
+                </p>
+                <p>
+                    You are free to revise your choices here as often as you want while voting
+                    is open. Changing your selections will not cause your votes to be counted
+                    twice. Votes are only counted after the election is closed.
+                </p>
+            {% endif %}
             <p>
                 You can also
                 <a href="{{ path('my_watch_index') }}">enter</a> your own opinions and
@@ -36,7 +46,14 @@
                 <tr>
                     <th class="col-md-2 col-xs-2 col-sm-2">Show</th>
                     <th class="col-md-7 col-xs-6 col-sm-6">&nbsp;</th>
-                    <th class="col-md-3 col-xs-4 col-sm-4">Votes (no limit)</th>
+                    <th class="col-md-3 col-xs-4 col-sm-4">
+                        Votes
+                        {% if election.maxVotes == NULL %}
+                            (no limit)
+                        {% else %}
+                            (maximum {{ election.maxVotes }})
+                        {% endif %}
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -46,7 +63,17 @@
                             <img class="img-fluid rounded-3" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />
                         </td>
                         <td class="col-md-7 col-xs-6 col-sm-6">
-                            {{ row.vote.show.getAllTitles|raw }}
+                            {% if row.vote.show.getRelatedShows is empty %}
+                                {{ row.vote.show.getVoteStyleTitles }}
+                            {% else %}
+                                Multiple seasons:
+                                <ul>
+                                    <li>{{ row.vote.show.getVoteStyleTitles }}</li>
+                                    {% for relatedShow in row.vote.show.getRelatedShows %}
+                                        <li>{{ relatedShow.getVoteStyleTitles }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </td>
                         <td class="col-md-3 col-xs-4 col-sm-4">
                             {% if row.form %}
@@ -56,8 +83,8 @@
                                     {
                                         'id': "show_election_vote_vote_" ~ key,
                                         'attr': {
-                                        'class': 'show_election_vote_vote'
-                                    }
+                                            'class': 'show_election_vote_vote'
+                                        }
                                     }
                                 )}}
                                 {{ form_end(row.form) }}
@@ -72,6 +99,35 @@
                 </tbody>
             </table>
 
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-5" style="z-index: 5000">
+        <div
+                class="toast hide align-items-center text-white bg-primary border-0"
+                id="toast-success"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+                data-bs-delay="2000"
+        >
+            <div class="d-flex">
+                <div class="toast-body" id="toast-success-body">Toast message</div>
+                <button type="button" class="btn-close text-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        <div
+                class="toast hide align-items-center text-white bg-danger border-0"
+                id="toast-error"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+                data-bs-delay="5000"
+        >
+            <div class="d-flex">
+                <div class="toast-body" id="toast-error-body">Toast message</div>
+                <button type="button" class="btn-close text-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
         </div>
     </div>
 

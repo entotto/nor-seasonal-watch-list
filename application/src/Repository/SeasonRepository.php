@@ -23,14 +23,18 @@ class SeasonRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param bool $includeHidden
      * @return Season[]
      */
-    public function getAllInRankOrder(): array
+    public function getAllInRankOrder(bool $includeHidden = false): array
     {
-        return $this->createQueryBuilder('s')
-            ->orderBy('s.rankOrder', 'asc')
-            ->getQuery()
-            ->getResult();
+        $qb = $this->createQueryBuilder('s')
+            ->orderBy('s.rankOrder', 'asc');
+        if (!$includeHidden) {
+            $qb->andWhere('s.hiddenFromSeasonsList = :hidden')
+                ->setParameter('hidden', false);
+        }
+        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -83,15 +87,19 @@ class SeasonRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param bool $includeHidden
      * @return Season|null
      * @throws NonUniqueResultException
      */
-    public function getFirstSeason(): ?season
+    public function getFirstSeason(bool $includeHidden = false): ?season
     {
-        return $this->createQueryBuilder('s')
-            ->orderBy('rankOrder', 'ASC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        $qb = $this->createQueryBuilder('s')
+            ->orderBy('s.rankOrder', 'ASC')
+            ->setMaxResults(1);
+        if (!$includeHidden) {
+            $qb->andWhere('s.hiddenFromSeasonsList = :hidden')
+                ->setParameter('hidden', false);
+        }
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

@@ -165,7 +165,7 @@ class ApiWatchesController extends AbstractController
             $keyedConsolidatedShowScores[$showId] = $consolidatedShowScore;
         }
         unset($consolidatedShowScores);
-        foreach ($shows as $key => $show) {
+        foreach ($shows as $show) {
             $showInfo = [
                 'id' => $show->getId(),
                 'title' => u($show->getAllTitles())->truncate(240, '...', false),

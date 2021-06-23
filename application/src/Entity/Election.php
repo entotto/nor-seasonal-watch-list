@@ -26,6 +26,18 @@ class Election
     private ?int $id;
 
     /**
+     * @var string|null
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $title;
+
+    /**
+     * @var string|null
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $description;
+
+    /**
      * @var Season
      * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="elections")
      * @ORM\JoinColumn(nullable=false)
@@ -43,6 +55,12 @@ class Election
      * @ORM\Column(type="datetime")
      */
     private DateTimeInterface $endDate;
+
+    /**
+     * @var int|null
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private ?int $maxVotes;
 
     /**
      * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", orphanRemoval=true, cascade={"persist","remove"})
@@ -176,6 +194,71 @@ class Election
 
     public function __toString(): string
     {
-        return $this->getSeason()->getName() . $this->getStartDate()->format(' \(Y-m-d H:i:s\)');
+        return $this->getName() . $this->getStartDate()->format(' \(Y-m-d H:i:s\)');
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string|null $title
+     * @return $this
+     */
+    public function setTitle(?string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string|null $description
+     * @return $this
+     */
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        if ($this->getTitle() !== null) {
+            return $this->getTitle();
+        }
+        if ($this->getSeason() !== null) {
+            return $this->getSeason()->getName();
+        }
+        return '(not set)';
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMaxVotes(): ?int
+    {
+        return $this->maxVotes;
+    }
+
+    /**
+     * @param int|null $maxVotes
+     * @return $this
+     */
+    public function setMaxVotes(?int $maxVotes): self
+    {
+        $this->maxVotes = $maxVotes;
+        return $this;
     }
 }
