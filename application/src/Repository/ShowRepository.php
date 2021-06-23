@@ -110,6 +110,9 @@ class ShowRepository extends ServiceEntityRepository
     ): array {
         $qb = $this->getShowsForSeasonQb($season);
         $qb->andWhere('s.excludeFromElections IS NULL OR s.excludeFromElections = 0');
+        $qb->andWhere('s.firstShow IS NULL');
+        $qb->leftJoin('s.relatedShows', 'relatedShows')
+            ->addSelect('relatedShows');
         $this->setOrderBy($qb, $sortColumn, $sortOrder);
         return $qb->getQuery()->getResult();
     }
@@ -122,6 +125,7 @@ class ShowRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('s')
             ->join('s.seasons', 'seasons')
+            ->addSelect('seasons')
             ->where('seasons = :season')
             ->setParameter('season', $season);
     }

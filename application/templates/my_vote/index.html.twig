@@ -63,7 +63,17 @@
                             <img class="img-fluid rounded-3" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />
                         </td>
                         <td class="col-md-7 col-xs-6 col-sm-6">
-                            {{ row.vote.show.getAllTitles|raw }}
+                            {% if row.vote.show.getRelatedShows is empty %}
+                                {{ row.vote.show.getVoteStyleTitles }}
+                            {% else %}
+                                Multiple seasons:
+                                <ul>
+                                    <li>{{ row.vote.show.getVoteStyleTitles }}</li>
+                                    {% for relatedShow in row.vote.show.getRelatedShows %}
+                                        <li>{{ relatedShow.getVoteStyleTitles }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </td>
                         <td class="col-md-3 col-xs-4 col-sm-4">
                             {% if row.form %}

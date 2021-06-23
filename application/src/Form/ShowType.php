@@ -34,9 +34,10 @@ class ShowType extends AbstractType
             ->add('relatedShows', EntityType::class, [
                 'class' => Show::class,
                 'query_builder' => function (EntityRepository $er) use ($options) {
+                    $showId = $options['data'] ? $options['data']->getId() : null;
                     return $er->createQueryBuilder('sh')
                         ->andWhere('sh.id != :thisId')
-                        ->setParameter('thisId', $options['data']->getId())
+                        ->setParameter('thisId', $showId)
                         ->orderBy('sh.japaneseTitle', 'ASC');
                 },
                 'expanded' => false,

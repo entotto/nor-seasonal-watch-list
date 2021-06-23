@@ -78,7 +78,7 @@ class AdminShowController extends AbstractController
         $session->set('season', $season);
         $pagerfanta = $showRepository->getShowsSortedPaged($sortColumn, $sortOrder, $pageNum, $perPage, $season);
         $shows = $pagerfanta->getCurrentPageResults();
-        $seasons = $seasonRepository->getAllInRankOrder();
+        $seasons = $seasonRepository->getAllInRankOrder(true);
         return $this->render('show/index.html.twig', [
             'user' => $this->getUser(),
             'shows' => $shows,

@@ -69,9 +69,17 @@
                         {% for voteTally in voteTallies %}
                             <tr>
                                 <td class="col-md-7">
-                                    {{ voteTally.getShowJapaneseTitle }}
-                                    ({{ voteTally.getShowFullJapaneseTitle }})
-                                    {{ voteTally.getShowEnglishTitle }}
+                                    {% if voteTally.getRelatedShowNames is empty %}
+                                        {{ voteTally.getShowCombinedTitle }}
+                                    {% else %}
+                                        Multiple seasons:
+                                        <ul>
+                                            <li>{{ voteTally.getShowCombinedTitle }}</li>
+                                            {% for name in voteTally.getRelatedShowNames %}
+                                                <li>{{ name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
                                 </td>
                                 <td class="col-md-1 text-end">
                                     {{ voteTally.getVoteCount }}

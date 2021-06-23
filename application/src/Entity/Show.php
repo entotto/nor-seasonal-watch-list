@@ -26,27 +26,27 @@ class Show
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $japaneseTitle;
+    private ?string $japaneseTitle = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $englishTitle;
+    private ?string $englishTitle = null;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $fullJapaneseTitle;
+    private ?string $fullJapaneseTitle = null;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $fullEnglishTitle;
+    private ?string $fullEnglishTitle = null;
 
     /**
      * @var Collection|Season[]
@@ -79,50 +79,50 @@ class Show
      * @var string|null
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $description;
+    private ?string $description = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $hashtag;
+    private ?string $hashtag = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $coverImageMedium;
+    private ?string $coverImageMedium = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $coverImageLarge;
+    private ?string $coverImageLarge = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $siteUrl;
+    private ?string $siteUrl = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $synonyms;
+    private ?string $synonyms = null;
 
     /**
      * @var bool|null
      * @ORM\Column(name="exclude_from_elections", type="boolean", nullable=true)
      */
-    private ?bool $excludeFromElections;
+    private ?bool $excludeFromElections = null;
 
     /**
      * @var DiscordChannel|null
      * @ORM\OneToOne(targetEntity=DiscordChannel::class, mappedBy="animeShow", cascade={"persist", "remove"})
      * @JoinColumn(nullable=true)
      */
-    private ?DiscordChannel $discordChannel;
+    private ?DiscordChannel $discordChannel = null;
 
     /**
      * @var Collection|Show[]
@@ -136,13 +136,13 @@ class Show
      *
      * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="relatedShows", cascade={"persist"})
      */
-    private ?Show $firstShow;
+    private ?Show $firstShow = null;
 
     /**
      * @var int|null
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $malId;
+    private ?int $malId = null;
 
     public function __construct()
     {
@@ -249,6 +249,24 @@ class Show
             $result[] = $this->englishTitle;
         }
         return empty($result) ? null : implode('<br>', $result);
+    }
+
+    public function getVoteStyleTitles(): ?string
+    {
+        $result = '';
+        if (!empty($this->japaneseTitle)) {
+            $result .= $this->japaneseTitle . ' ';
+        }
+        if (!empty($this->fullJapaneseTitle)) {
+            $result .= '(' . $this->fullJapaneseTitle . ') ';
+        }
+        if (!empty($this->englishTitle)) {
+            $result .= $this->englishTitle;
+        }
+        if (empty($result)) {
+            return null;
+        }
+        return trim($result);
     }
 
     public function getAllShortTitles(): ?string

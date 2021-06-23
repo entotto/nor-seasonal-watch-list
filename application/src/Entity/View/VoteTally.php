@@ -27,6 +27,16 @@ class VoteTally
     private string $showFullJapaneseTitle = '';
 
     /**
+     * @var string
+     */
+    private string $showCombinedTitle = '';
+
+    /**
+     * @var array
+     */
+    private array $relatedShowNames = [];
+
+    /**
      * @var int $showId
      */
     private int $showId = 0;
@@ -111,6 +121,30 @@ class VoteTally
     }
 
     /**
+     * @return array
+     */
+    public function getRelatedShowNames(): array
+    {
+        return $this->relatedShowNames;
+    }
+
+    /**
+     * @param array $relatedShowNames
+     */
+    public function setRelatedShowNames(array $relatedShowNames): void
+    {
+        $this->relatedShowNames = $relatedShowNames;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function addRelatedShowName(string $name): void
+    {
+        $this->relatedShowNames[] = $name;
+    }
+
+    /**
      * @return int
      */
     public function getShowId(): int
@@ -172,5 +206,21 @@ class VoteTally
     public function setVotePercentOfVoterTotal(float $votePercentOfVoterTotal): void
     {
         $this->votePercentOfVoterTotal = $votePercentOfVoterTotal;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShowCombinedTitle(): string
+    {
+        return $this->showCombinedTitle;
+    }
+
+    /**
+     * @param string $showCombinedTitle
+     */
+    public function setShowCombinedTitle(string $showCombinedTitle): void
+    {
+        $this->showCombinedTitle = $showCombinedTitle;
     }
 }
