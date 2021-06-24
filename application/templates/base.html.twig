@@ -21,9 +21,10 @@
             <link href="/css/bootstrap-dark-only.min.css?v={{ asset_version }}" rel="stylesheet">
         {% endif %}
         <link href="/bootstrap-icons/font/bootstrap-icons.css?v={{ asset_version }}" rel="stylesheet">
-        <link href="/css/main.css?v={{ asset_version }}" rel="stylesheet">
         {% if colorsMode == 'dark' %}
             <link href="/css/dark-main.css?v={{ asset_version }}" rel="stylesheet">
+        {% else %}
+            <link href="/css/main.css?v={{ asset_version }}" rel="stylesheet">
         {% endif %}
 
         <title>{% block title %}Seasonal Watch List{% endblock %}</title>
@@ -73,7 +74,7 @@
                         <li class="nav-item">
                             <a class="nav-link {% if app.request.pathinfo == '/vote' %}active{% endif %}" href="{{ path('my_vote') }}">
                                 {% if electionIsActive is defined and electionIsActive %}
-                                    Voting <span class="text-nor-red-highlight">Open</span>
+                                    Voting <span class="text-nor-red">Open</span>
                                 {% else %}
                                     Vote
                                 {% endif %}
