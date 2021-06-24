@@ -126,6 +126,9 @@ body {
 .text-nor-red-highlight {
     color: rgb(214, 74, 74);
 }
+a:hover span.text-nor-red, a.active span.text-nor-red {
+    color: rgb(214, 74, 74);
+}
 
 a {
     color: #4591df;
@@ -138,7 +141,6 @@ a.nor-red:hover {
 }
 
 .second-nav-bar {
-    top:4.1rem;
     z-index:1000;
     background-color: #4a4a4a !important;
 }
@@ -176,6 +178,50 @@ a.back-to-top-button {
     right: 1rem;
     z-index:100;
 }
+
+span.mood-emoji-container {
+    position: relative;
+}
+
+.mood-emoji-favorable-color {
+    color: #eecb62;
+}
+.mood-emoji-heart-eyes-color {
+    color: crimson;
+}
+.mood-emoji-dark-mouth-color {
+    color: #664301;
+}
+.mood-emoji-light-mouth-color {
+    color: #aaaaaa;
+}
+.mood-emoji-neutral-color {
+    color: #bbbbbb;
+}
+.mood-emoji-unfavorable-color {
+    color: #555555;
+}
+
+.bi-x-upper-half::before {
+    clip-path: polygon(20% 10%, 80% 10%, 98% 50%, 2% 50%);
+}
+.bi-x-lower-half::before {
+    clip-path: polygon(2% 50%, 98% 50%, 80% 90%, 20% 90%);
+}
+.bi-x-shrunk-circle::before {
+    clip-path: circle(48%);
+}
+
+.d-light-inline { display: inline !important; }
+.d-dark-inline { display: none !important; }
+html.dark .d-light-inline { display: none !important; }
+html.dark .d-dark-inline { display: inline !important; }
+html.dark .second-nav-bar { background-color: #444 !important; }
+html.dark .third-nav-bar { background-color: #222 !important; }
+body.color-scheme-dark .d-light-inline { display: none !important; }
+body.color-scheme-dark .d-dark-inline { display: inline !important; }
+body.color-scheme-dark .second-nav-bar { background-color: #444 !important; }
+body.color-scheme-dark .third-nav-bar { background-color: #222 !important; }
 
 .border-top {
     border-top: 1px solid #444 !important;

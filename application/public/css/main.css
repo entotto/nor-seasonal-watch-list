@@ -119,6 +119,9 @@ body {
 .text-nor-red-highlight {
     color: rgb(214, 74, 74);
 }
+a:hover span.text-nor-red, a.active span.text-nor-red {
+    color: rgb(214, 74, 74);
+}
 
 a.nor-red {
     color: #c90d0d;
@@ -128,7 +131,6 @@ a.nor-red:hover {
 }
 
 .second-nav-bar {
-    top:4.1rem;
     z-index:1000;
     background-color: #eeeeee !important;
 }

@@ -30,16 +30,11 @@
                     in the NOR Discord server. Vote for as many or as few shows as you wish.
                     The shows that receive the most votes will get individual discussion channels.
                 </p>
-                <p>
-                    You are free to revise your choices here as often as you want while voting
-                    is open. Changing your selections will not cause your votes to be counted
-                    twice. Votes are only counted after the election is closed.
-                </p>
             {% endif %}
             <p>
-                You can also
-                <a href="{{ path('my_watch_index') }}">enter</a> your own opinions and
-                <a href="{{ path('all_watch_index') }}">view</a> what others are watching.
+                You are free to revise your choices here as often as you want while voting
+                is open. Changing your selections will not cause your votes to be counted
+                twice. Votes are only counted after the election is closed.
             </p>
             <table class="table">
                 <thead>
@@ -102,7 +97,7 @@
         </div>
     </div>
 
-    <div class="toast-container position-fixed top-0 end-0 p-5" style="z-index: 5000">
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x pt-4" style="z-index: 5000">
         <div
                 class="toast hide align-items-center text-white bg-primary border-0"
                 id="toast-success"
