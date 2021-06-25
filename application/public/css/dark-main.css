@@ -243,3 +243,7 @@ body.color-scheme-dark .third-nav-bar { background-color: #222 !important; }
 .form-control {
     background-color: #3b3b3b;
 }
+
+.has-markdown th {
+    padding-right: 1em;
+}

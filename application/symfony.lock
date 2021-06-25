@@ -5,6 +5,9 @@
     "composer/package-versions-deprecated": {
         "version": "1.11.99.1"
     },
+    "demontpx/parsedown-bundle": {
+        "version": "1.4.x-dev"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -86,6 +89,12 @@
     },
     "egulias/email-validator": {
         "version": "2.1.25"
+    },
+    "erusev/parsedown": {
+        "version": "1.7.4"
+    },
+    "erusev/parsedown-extra": {
+        "version": "0.8.1"
     },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.3"

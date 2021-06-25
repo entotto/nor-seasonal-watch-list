@@ -23,6 +23,7 @@ class ElectionType extends AbstractType
                 'required' => false,
             ])
             ->add('description', TextareaType::class, [
+                'label' => 'Description (supports Markdown)',
                 'required' => false,
             ])
             ->add('startDate', DateTimeType::class, [
