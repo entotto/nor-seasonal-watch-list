@@ -247,3 +247,6 @@ body.color-scheme-dark .third-nav-bar { background-color: #222 !important; }
 .has-markdown th {
     padding-right: 1em;
 }
+.has-markdown td {
+    padding-right: 1em;
+}

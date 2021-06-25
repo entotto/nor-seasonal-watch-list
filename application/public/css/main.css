@@ -231,3 +231,10 @@ body.color-scheme-dark .d-light-inline { display: none !important; }
 body.color-scheme-dark .d-dark-inline { display: inline !important; }
 body.color-scheme-dark .second-nav-bar { background-color: #444 !important; }
 body.color-scheme-dark .third-nav-bar { background-color: #222 !important; }
+
+.has-markdown th {
+    padding-right: 1em;
+}
+.has-markdown td {
+    padding-right: 1em;
+}
