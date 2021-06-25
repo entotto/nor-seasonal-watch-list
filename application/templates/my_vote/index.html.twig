@@ -21,9 +21,9 @@
                 Remaining: <strong><span id="countdownOutput"></span></strong>
             </p>
             {% if election.description %}
-                <p>
-                {{ election.description|raw }}
-                </p>
+                <div class="has-markdown pb-3">
+                {{ election.description|markdown }}
+                </div>
             {% else %}
                 <p>
                     Please select the shows that you think will generate the most discussion
