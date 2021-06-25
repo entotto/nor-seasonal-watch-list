@@ -122,12 +122,14 @@ body {
 .text-nor-red {
     color: #c90d0d;
     text-decoration: none;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 .text-nor-red-highlight {
     color: rgb(214, 74, 74);
 }
 a:hover span.text-nor-red, a.active span.text-nor-red {
     color: rgb(214, 74, 74);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
 a {
@@ -135,9 +137,11 @@ a {
 }
 a.nor-red {
     color: #c90d0d;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 a.nor-red:hover {
     color: rgb(217, 74, 74);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
 .second-nav-bar {
