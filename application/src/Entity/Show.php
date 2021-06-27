@@ -144,12 +144,18 @@ class Show
      */
     private ?int $malId = null;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ElectionShowBuff::class, mappedBy="animeShow", orphanRemoval=true)
+     */
+    private Collection $electionShowBuffs;
+
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
         $this->scores = new ArrayCollection();
         $this->votes = new ArrayCollection();
         $this->relatedShows = new ArrayCollection();
+        $this->electionShowBuffs = new ArrayCollection();
     }
 
     /**
@@ -627,6 +633,45 @@ class Show
     public function setFirstShow(?Show $firstShow): self
     {
         $this->firstShow = $firstShow;
+        return $this;
+    }
+
+    /**
+     * @return Collection|ElectionShowBuff[]
+     */
+    public function getElectionShowBuffs(): Collection
+    {
+        return $this->electionShowBuffs;
+    }
+
+    /**
+     * @param ElectionShowBuff $electionShowBuff
+     * @return $this
+     */
+    public function addElectionShowBuff(ElectionShowBuff $electionShowBuff): self
+    {
+        if (!$this->electionShowBuffs->contains($electionShowBuff)) {
+            $this->electionShowBuffs[] = $electionShowBuff;
+            $electionShowBuff->setAnimeShow($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ElectionShowBuff $electionShowBuff
+     * @return $this
+     */
+    public function removeElectionShowBuff(ElectionShowBuff $electionShowBuff): self
+    {
+        if ($this->electionShowBuffs->removeElement($electionShowBuff)) {
+            // set the owning side to null (unless already changed)
+            /** @noinspection NestedPositiveIfStatementsInspection */
+            if ($electionShowBuff->getAnimeShow() === $this) {
+                $electionShowBuff->setAnimeShow(null);
+            }
+        }
+
         return $this;
     }
 }
