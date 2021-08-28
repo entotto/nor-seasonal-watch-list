@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
 
 namespace App\Repository;
 
@@ -59,22 +59,43 @@ class ElectionVoteRepository extends ServiceEntityRepository
     ): array {
         $sql = <<<EOF
 SELECT COUNT(ev.id) AS vote_count,
-ev.election_id AS election_id,
-ev.anime_show_id AS show_id,
-s.japanese_title AS japanese_title,
-s.english_title AS english_title,
-s.full_japanese_title AS full_japanese_title
+       esb.buff_rule as buff_rule,
+       COUNT(ev.id) AS buffed_vote_count,
+       ev.election_id AS election_id,
+       ev.anime_show_id AS show_id,
+       s.japanese_title AS japanese_title,
+       s.english_title AS english_title,
+       s.full_japanese_title AS full_japanese_title
 FROM election_vote ev
 JOIN anime_show s ON s.id = ev.anime_show_id
+LEFT JOIN election_show_buff esb ON esb.election_id = ev.election_id AND esb.anime_show_id = ev.anime_show_id
 WHERE ev.chosen = 1
 AND ev.election_id = :election_id
-GROUP BY election_id, show_id, japanese_title, english_title, full_japanese_title
-ORDER BY vote_count DESC
+GROUP BY election_id, show_id, japanese_title, english_title, full_japanese_title, buff_rule
+ORDER BY buffed_vote_count DESC
 EOF;
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['election_id' => $election->getId()]);
-        return $stmt->fetchAllAssociative();
+        $result = $stmt->executeQuery(['election_id' => $election->getId()]);
+        if ($result !== null) {
+            $rows = $result->fetchAllAssociative();
+            foreach ($rows as $key => $row) {
+                if ($row['buff_rule'] !== null) {
+                    if (strpos($row['buff_rule'], '*') === 0) {
+                        $originalCount = (int)$row['vote_count'];
+                        $buff = substr($row['buff_rule'], 1);
+                        $rows[$key]['buffed_vote_count'] = (int)round($originalCount * (float)$buff);
+                    } elseif (strpos($row['buff_rule'], '+') === 0) {
+                        $originalCount = (int)$row['vote_count'];
+                        $buff = substr($row['buff_rule'], 1);
+                        $rows[$key]['buffed_vote_count'] = (int)round($originalCount + $buff);
+                    }
+                }
+            }
+            usort($rows, static function($a, $b) { return -($a['buffed_vote_count'] <=> $b['buffed_vote_count']); });
+            return $rows;
+        }
+        return [];
     }
 
     /**
@@ -107,6 +128,7 @@ EOF;
      * @return int
      * @throws DoctrineException
      * @throws Exception
+     * @noinspection PhpUnused
      */
     public function getVoterCountForElection(
         Election $election
@@ -122,19 +144,20 @@ FROM
 EOF;
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['election_id' => $election->getId()]);
-        return $stmt->fetchOne();
+        $result = $stmt->executeQuery(['election_id' => $election->getId()]);
+        return (int)$result->fetchOne();
+    }
+
+    /**
+     * @param Election $election
+     * @return int
+     * @throws DoctrineException
+     * @throws Exception
+     */
+    public function getBuffedVoterCountForElection(
+        Election $election
+    ): int {
+        $counts = $this->getCountsForElection($election);
+        return (int)array_reduce($counts, static function ($carry, $count) { return $carry + (int)$count['buffed_vote_count']; });
     }
 }
-
-/*
-
-SELECT ev.user_id
-FROM election_vote ev
-WHERE ev.chosen = 1
-AND ev.election_id = 2
-GROUP BY ev.user_id
-
-
-
- */

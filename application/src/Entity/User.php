@@ -104,13 +104,13 @@ class User implements UserInterface
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="user", orphanRemoval=true, cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="user", cascade={"persist","remove"})
      */
     private Collection $showSeasonScores;
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="user", orphanRemoval=true, cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="user", cascade={"persist","remove"})
      */
     private Collection $electionVotes;
 

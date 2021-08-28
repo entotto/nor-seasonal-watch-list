@@ -47,14 +47,34 @@ class VoteTally
     private int $voteCount = 0;
 
     /**
+     * @var string|null $buffRule
+     */
+    private ?string $buffRule = null;
+
+    /**
+     * @var int $buffedVoteCount
+     */
+    private int $buffedVoteCount = 0;
+
+    /**
      * @var float $votePercentOfTotal
      */
     private float $votePercentOfTotal = 0.0;
 
     /**
+     * @var float $buffedVotePercentOfTotal
+     */
+    private float $buffedVotePercentOfTotal = 0.0;
+
+    /**
      * @var float $votePercentOfVoterTotal
      */
     private float $votePercentOfVoterTotal = 0.0;
+
+    /**
+     * @var float $buffedVotePercentOfVoterTotal
+     */
+    private float $buffedVotePercentOfVoterTotal = 0.0;
 
     /**
      * @return int
@@ -223,4 +243,69 @@ class VoteTally
     {
         $this->showCombinedTitle = $showCombinedTitle;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getBuffRule(): ?string
+    {
+        return $this->buffRule;
+    }
+
+    /**
+     * @param string|null $buffRule
+     */
+    public function setBuffRule(?string $buffRule): void
+    {
+        $this->buffRule = $buffRule;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBuffedVoteCount(): int
+    {
+        return $this->buffedVoteCount;
+    }
+
+    /**
+     * @param int $buffedVoteCount
+     */
+    public function setBuffedVoteCount(int $buffedVoteCount): void
+    {
+        $this->buffedVoteCount = $buffedVoteCount;
+    }
+
+    /**
+     * @return float
+     */
+    public function getBuffedVotePercentOfTotal(): float
+    {
+        return $this->buffedVotePercentOfTotal;
+    }
+
+    /**
+     * @param float $buffedVotePercentOfTotal
+     */
+    public function setBuffedVotePercentOfTotal(float $buffedVotePercentOfTotal): void
+    {
+        $this->buffedVotePercentOfTotal = $buffedVotePercentOfTotal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getBuffedVotePercentOfVoterTotal(): float
+    {
+        return $this->buffedVotePercentOfVoterTotal;
+    }
+
+    /**
+     * @param float $buffedVotePercentOfVoterTotal
+     */
+    public function setBuffedVotePercentOfVoterTotal(float $buffedVotePercentOfVoterTotal): void
+    {
+        $this->buffedVotePercentOfVoterTotal = $buffedVotePercentOfVoterTotal;
+    }
+
 }

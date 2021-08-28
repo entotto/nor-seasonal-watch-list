@@ -63,9 +63,14 @@ class Election
     private ?int $maxVotes;
 
     /**
-     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", orphanRemoval=true, cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", cascade={"persist","remove"})
      */
     private Collection $electionVotes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ElectionShowBuff::class, mappedBy="election", cascade={"persist","remove"})
+     */
+    private Collection $electionShowBuffs;
 
     /**
      * Election constructor.
@@ -73,6 +78,7 @@ class Election
     public function __construct()
     {
         $this->electionVotes = new ArrayCollection();
+        $this->electionShowBuffs = new ArrayCollection();
     }
 
     /**
@@ -259,6 +265,45 @@ class Election
     public function setMaxVotes(?int $maxVotes): self
     {
         $this->maxVotes = $maxVotes;
+        return $this;
+    }
+
+    /**
+     * @return Collection|ElectionShowBuff[]
+     */
+    public function getElectionShowBuffs(): Collection
+    {
+        return $this->electionShowBuffs;
+    }
+
+    /**
+     * @param ElectionShowBuff $electionShowBuff
+     * @return $this
+     */
+    public function addElectionShowBuff(ElectionShowBuff $electionShowBuff): self
+    {
+        if (!$this->electionShowBuffs->contains($electionShowBuff)) {
+            $this->electionShowBuffs[] = $electionShowBuff;
+            $electionShowBuff->setElection($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ElectionShowBuff $electionShowBuff
+     * @return $this
+     */
+    public function removeElectionShowBuff(ElectionShowBuff $electionShowBuff): self
+    {
+        if ($this->electionShowBuffs->removeElement($electionShowBuff)) {
+            // set the owning side to null (unless already changed)
+            /** @noinspection NestedPositiveIfStatementsInspection */
+            if ($electionShowBuff->getElection() === $this) {
+                $electionShowBuff->setElection(null);
+            }
+        }
+
         return $this;
     }
 }

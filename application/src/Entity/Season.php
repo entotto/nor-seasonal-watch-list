@@ -51,7 +51,7 @@ class Season
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=Election::class, mappedBy="season", orphanRemoval=true, cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity=Election::class, mappedBy="season", cascade={"persist","remove"})
      */
     private Collection $elections;
 
@@ -69,7 +69,7 @@ class Season
 
     /**
      * @var Collection
-     * @ORM\OneToMany(targetEntity=DiscordChannel::class, mappedBy="season", orphanRemoval=true, cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity=DiscordChannel::class, mappedBy="season", cascade={"persist","remove"})
      */
     private $discordChannels;
 

@@ -16,7 +16,7 @@
                 <th>End Date</th>
                 <th>Max votes</th>
                 <th>Open now</th>
-                <th class="col-sm-2"><span class="float-end">Actions</span></th>
+                <th class="col-sm-3"><span class="float-end">Actions</span></th>
             </tr>
         </thead>
         <tbody>
@@ -33,10 +33,11 @@
                     {% endif %}
                 </td>
                 <td>{{ election.isActive ? 'Yes' : 'No' }}</td>
-                <td class="col-sm-2">
+                <td class="col-sm-3">
                     <span class="float-end">
                         <a class="btn btn-primary" href="{{ path('admin_election_show', {'id': election.id}) }}">View</a>
                         <a class="btn btn-secondary" href="{{ path('admin_election_edit', {'id': election.id}) }}">Edit</a>
+                        <a class="btn btn-secondary" href="{{ path('admin_election_buff', {'id': election.id}) }}">Buff</a>
                     </span>
                 </td>
             </tr>

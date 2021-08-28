@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Election Buffs{% endblock %}
+
+{% block body %}
+    <h1>Edit Election Buffs</h1>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-9">
+            {{ include('election/_buffed_election_form.html.twig', {'button_label': 'Update'}) }}
+        </div>
+    </div>
+
+    <a class="btn btn-light" href="{{ path('admin_election_index') }}">Back to list</a>
+
+{% endblock %}
