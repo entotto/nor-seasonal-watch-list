@@ -19,7 +19,7 @@ class ElectionShowBuff
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id = 0;
+    private ?int $id = 0;
 
     /**
      * @var Election|null

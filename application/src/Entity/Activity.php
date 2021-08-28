@@ -67,7 +67,7 @@ class Activity
 
     /**
      * @var Collection|ShowSeasonScore[]
-     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="activity", orphanRemoval=true, cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity=ShowSeasonScore::class, mappedBy="activity", cascade={"persist","remove"})
      */
     private Collection $scores;
 
@@ -84,7 +84,8 @@ class Activity
      */
     public function setScores(Collection $scores): void
     {
-        $this->scores = $scores;
+        $this->scores->clear();
+        $scores->map(function ($score) { $this->scores->add($score); });
     }
 
     public function __construct()

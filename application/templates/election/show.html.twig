@@ -59,10 +59,12 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th class="col-md-7 border-top-0">Show</th>
-                            <th class="col-md-1 text-end border-top-0">Votes</th>
-                            <th class="col-md-2 text-end border-top-0">% of Voters</th>
-                            <th class="col-md-2 text-end border-top-0">% of Total</th>
+                            <th class="col-md-7 border-top-0 align-text-top">Show</th>
+                            <th class="col-md-1 text-end border-top-0 align-text-top">Raw<br/>Votes</th>
+                            <th class="col-md-1 text-end border-top-0 align-text-top">Buff</th>
+                            <th class="col-md-1 text-end border-top-0 align-text-top">Calc<br/>Votes</th>
+                            <th class="col-md-1 text-end border-top-0 align-text-top">% of<br/>Voters</th>
+                            <th class="col-md-1 text-end border-top-0 align-text-top">% of<br/>Total</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -84,11 +86,17 @@
                                 <td class="col-md-1 text-end">
                                     {{ voteTally.getVoteCount }}
                                 </td>
-                                <td class="col-md-2 text-end">
+                                <td class="col-md-1 text-end">
+                                    {{ voteTally.getBuffRule }}
+                                </td>
+                                <td class="col-md-1 text-end">
+                                    {{ voteTally.getBuffedVoteCount }}
+                                </td>
+                                <td class="col-md-1 text-end">
                                     {{ voteTally.getVotePercentOfVoterTotal|round(1) }}%
                                 </td>
-                                <td class="col-md-2 text-end">
-                                    {{ voteTally.getVotePercentOfTotal|round(1) }}%
+                                <td class="col-md-1 text-end">
+                                    {{ voteTally.getBuffedVotePercentOfTotal|round(1) }}%
                                 </td>
                             </tr>
                         {% endfor %}

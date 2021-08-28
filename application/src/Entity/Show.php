@@ -145,7 +145,7 @@ class Show
     private ?int $malId = null;
 
     /**
-     * @ORM\OneToMany(targetEntity=ElectionShowBuff::class, mappedBy="animeShow", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ElectionShowBuff::class, mappedBy="animeShow", cascade={"persist","remove"})
      */
     private Collection $electionShowBuffs;
 
@@ -591,12 +591,13 @@ class Show
     }
 
     /**
-     * @param Show[]|Collection $relatedShows
+     * @param Collection $relatedShows
      * @return self
      */
-    public function setRelatedShows($relatedShows): self
+    public function setRelatedShows(Collection $relatedShows): self
     {
-        $this->relatedShows = $relatedShows;
+        $this->relatedShows->clear();
+        $relatedShows->map(function ($show) { $this->relatedShows->add($show); });
         return $this;
     }
 

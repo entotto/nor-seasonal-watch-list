@@ -63,12 +63,12 @@ class Election
     private ?int $maxVotes;
 
     /**
-     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", orphanRemoval=true, cascade={"persist","remove"})
+     * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", cascade={"persist","remove"})
      */
     private Collection $electionVotes;
 
     /**
-     * @ORM\OneToMany(targetEntity=ElectionShowBuff::class, mappedBy="election", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ElectionShowBuff::class, mappedBy="election", cascade={"persist","remove"})
      */
     private Collection $electionShowBuffs;
 
