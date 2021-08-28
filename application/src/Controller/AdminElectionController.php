@@ -302,7 +302,7 @@ class AdminElectionController extends AbstractController
             $voteTally->setShowEnglishTitle((string)$voteInfo['english_title']);
             $voteTally->setVoteCount((int)$voteInfo['vote_count']);
             $voteTally->setBuffedVoteCount((int)$voteInfo['buffed_vote_count']);
-            $voteTally->setBuffRule($voteInfo['buff_rule'] ?? '~');
+            $voteTally->setBuffRule($voteInfo['buff_rule'] ?? '');
             $voteTally->setVotePercentOfTotal($this->calculatePercent($voteInfo['vote_count'], $totalVotes));
             $voteTally->setBuffedVotePercentOfTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVotes));
             $voteTally->setVotePercentOfVoterTotal($this->calculatePercent($voteInfo['vote_count'], $totalVoterCount));
