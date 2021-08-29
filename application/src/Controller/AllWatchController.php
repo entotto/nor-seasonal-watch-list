@@ -189,6 +189,7 @@ class AllWatchController extends AbstractController
             }
             $myRow['PTW'] = (int)$row['consolidatedActivities']['ptw_count'];
             $myRow['Watching'] = (int)$row['consolidatedActivities']['watching_count'];
+            $myRow['Stopped'] = (int)$row['consolidatedActivities']['stopped_count'];
             $myRow['Unfavorable'] = (int)$row['consolidatedScores']['unfavorable_count'];
             $myRow['Neutral'] = (int)$row['consolidatedScores']['neutral_count'];
             $myRow['Favorable'] = (int)$row['consolidatedScores']['favorable_count'];

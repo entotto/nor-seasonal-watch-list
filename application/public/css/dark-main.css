@@ -51,6 +51,10 @@ body {
 .activity-ptw {
     background-color: rgb(128, 191, 220);
 }
+.activity-stopped {
+    background-color: rgb(245, 245, 245);
+}
+
 
 .table-field-activity-finished {
     --bs-table-bg: #007eb9;
@@ -59,6 +63,10 @@ body {
 .table-field-activity-watching {
     --bs-table-bg: rgb(64, 158, 203);
     color: #ffffff;
+}
+.table-field-activity-stopped {
+    --bs-table-bg: rgb(240, 240, 240);
+    color: #000;
 }
 .table-field-activity-paused {
     --bs-table-bg: rgb(128, 191, 220);
