@@ -160,7 +160,8 @@ class ShowSeasonScoreRepository extends ServiceEntityRepository
 SELECT
     ss.show_id,
     coalesce(ptw_j.my_count, 0) as ptw_count,
-    coalesce(watching_j.my_count, 0) as watching_count
+    coalesce(watching_j.my_count, 0) as watching_count,
+    coalesce(stopped_j.my_count, 0) as stopped_count
 FROM show_season ss
 LEFT JOIN (
     SELECT
@@ -180,14 +181,23 @@ LEFT JOIN (
     WHERE sss4.season_id = :season_id
     GROUP BY sss4.show_id
 ) AS watching_j ON watching_j.show_id = ss.show_id
+LEFT JOIN (
+    SELECT
+        sss5.show_id AS show_id,
+        count(*) AS my_count
+    FROM show_season_score sss5
+    JOIN activity a5 on sss5.activity_id = a5.id AND a5.slug = 'stopped'
+    WHERE sss5.season_id = :season_id
+    GROUP BY sss5.show_id
+) AS stopped_j ON stopped_j.show_id = ss.show_id
 WHERE ss.season_id = :season_id
 ;
 
 EOF;
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['season_id' => $season->getId()]);
-        return $stmt->fetchAllAssociative();
+        $result = $stmt->executeQuery(['season_id' => $season->getId()]);
+        return $result->fetchAllAssociative();
     }
 
     /**
@@ -294,7 +304,7 @@ WHERE ss.season_id = :season_id
 EOF;
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['season_id' => $season->getId()]);
-        return $stmt->fetchAllAssociative();
+        $result = $stmt->executeQuery(['season_id' => $season->getId()]);
+        return $result->fetchAllAssociative();
     }
 }
