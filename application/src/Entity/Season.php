@@ -22,27 +22,27 @@ class Season
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private ?string $name;
+    private ?string $name = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $year;
+    private ?int $year = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $yearPart;
+    private ?string $yearPart = null;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private ?int $rankOrder;
+    private ?int $rankOrder = null;
 
     /**
      * @ORM\ManyToMany(targetEntity=Show::class, mappedBy="seasons")
@@ -77,7 +77,7 @@ class Season
      * @var bool
      * @ORM\Column(type="boolean")
      */
-    private bool $hiddenFromSeasonsList;
+    private bool $hiddenFromSeasonsList = false;
 
     public function __construct()
     {

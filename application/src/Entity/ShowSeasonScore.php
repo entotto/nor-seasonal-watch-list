@@ -28,21 +28,21 @@ class ShowSeasonScore
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var Activity|null
      * @ORM\ManyToOne(targetEntity=Activity::class, inversedBy="scores")
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?Activity $activity;
+    private ?Activity $activity = null;
 
     /**
      * @var Score|null
      * @ORM\ManyToOne(targetEntity=Score::class, inversedBy="showSeasonScores")
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?Score $score;
+    private ?Score $score = null;
 
     /**
      * @var Season

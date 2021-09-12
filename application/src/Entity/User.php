@@ -27,20 +27,20 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private string $username;
+    private string $username = '';
 
     /**
      * @var string|null
      *
      * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $displayName;
+    private ?string $displayName = null;
 
     /**
      * @var array
@@ -52,43 +52,43 @@ class User implements UserInterface
      * @var string|null
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $oauth2state;
+    private ?string $oauth2state = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $discordUsername;
+    private ?string $discordUsername = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $discordDiscriminator;
+    private ?string $discordDiscriminator = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $discordId;
+    private ?string $discordId = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $discordAvatar;
+    private ?string $discordAvatar = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $discordLocal;
+    private ?string $discordLocal = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $discordToken;
+    private ?string $discordToken = null;
 
     /**
      * @var string|null
@@ -100,7 +100,7 @@ class User implements UserInterface
      * @var int|null
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $discordTokenExpires;
+    private ?int $discordTokenExpires = null;
 
     /**
      * @var Collection
@@ -118,13 +118,13 @@ class User implements UserInterface
      * @var array|null
      * @ORM\Column(type="json", nullable=true)
      */
-    private ?array $prefsStore;
+    private ?array $prefsStore = null;
 
     /**
      * @var string|null $apiKey
      * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $apiKey;
+    private ?string $apiKey = null;
 
     /**
      * User constructor.
@@ -151,6 +151,14 @@ class User implements UserInterface
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserIdentifier(): string
+    {
+        return $this->getDiscordId() ?: '';
     }
 
     /**
@@ -530,5 +538,10 @@ class User implements UserInterface
                 $this->apiKey = null;
             }
         }
+    }
+
+    public function __call($name, $arguments)
+    {
+        // TODO: Implement @method string getUserIdentifier()
     }
 }

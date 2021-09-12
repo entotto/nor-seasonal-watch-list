@@ -21,49 +21,49 @@ class Activity
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
      */
-    private string $name;
+    private string $name = '';
 
     /**
      * @var string
      * @ORM\Column(type="string", length=50)
      */
-    private string $nickname;
+    private string $nickname = '';
 
     /**
      * @var int
      * @ORM\Column(type="integer")
      */
-    private int $rankOrder;
+    private int $rankOrder = 0;
 
     /**
      * @var float|null
      * @ORM\Column(type="decimal", precision=10, scale=3, nullable=true)
      */
-    private ?float $value;
+    private ?float $value = null;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=50)
      */
-    private string $colorValue;
+    private string $colorValue = '';
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
-    private string $icon;
+    private string $icon = '';
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
-    private string $slug;
+    private string $slug = '';
 
     /**
      * @var Collection|ShowSeasonScore[]

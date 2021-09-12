@@ -8,9 +8,9 @@ namespace App\Entity;
  */
 final class UserPreferences
 {
-    private ?string $colorsMode;
+    private ?string $colorsMode = null;
 
-    private ?string $allWatchesViewMode;
+    private ?string $allWatchesViewMode = null;
 
     public function __construct() {
         $this->colorsMode = 'os';
