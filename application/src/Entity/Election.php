@@ -23,19 +23,19 @@ class Election
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $title;
+    private ?string $title = null;
 
     /**
      * @var string|null
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $description;
+    private ?string $description = null;
 
     /**
      * @var Season
@@ -60,7 +60,7 @@ class Election
      * @var int|null
      * @ORM\Column(type="integer", nullable=true)
      */
-    private ?int $maxVotes;
+    private ?int $maxVotes = null;
 
     /**
      * @ORM\OneToMany(targetEntity=ElectionVote::class, mappedBy="election", cascade={"persist","remove"})

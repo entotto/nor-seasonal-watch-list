@@ -28,7 +28,7 @@ class ElectionVote
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var Show
@@ -55,7 +55,7 @@ class ElectionVote
      * @var bool
      * @ORM\Column(type="boolean")
      */
-    private bool $chosen;
+    private bool $chosen = false;
 
     /**
      * @var Election

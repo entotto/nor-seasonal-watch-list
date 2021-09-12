@@ -73,7 +73,7 @@ class Show
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $anilistId;
+    private ?string $anilistId = null;
 
     /**
      * @var string|null

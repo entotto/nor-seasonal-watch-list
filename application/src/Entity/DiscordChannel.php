@@ -18,13 +18,13 @@ class DiscordChannel
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var string
      * @ORM\Column(type="string", length=255)
      */
-    private string $name;
+    private string $name = '';
 
     /**
      * @var Season
@@ -44,7 +44,7 @@ class DiscordChannel
      * @var bool
      * @ORM\Column(type="boolean")
      */
-    private bool $hidden;
+    private bool $hidden = false;
 
     /**
      * @return int|null

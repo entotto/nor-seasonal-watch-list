@@ -27,21 +27,21 @@ class ElectionShowBuff
      * @ORM\ManyToOne(targetEntity=Election::class, inversedBy="electionShowBuffs")
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?Election $election;
+    private ?Election $election = null;
 
     /**
      * @var Show|null
      * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="electionShowBuffs")
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?Show $animeShow;
+    private ?Show $animeShow = null;
 
     /**
      * @var string|null
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private ?string $buffRule;
+    private ?string $buffRule = null;
 
     /**
      * @return int|null

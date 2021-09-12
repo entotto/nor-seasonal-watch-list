@@ -13,32 +13,32 @@ class ViewShowSeasonScore
     /**
      * @var int|null
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @var int|null
      */
-    private ?int $score;
+    private ?int $score = null;
 
     /**
      * @var string|null
      */
-    private ?string $scoreName;
+    private ?string $scoreName = null;
 
     /**
      * @var Season|null
      */
-    private ?Season $season;
+    private ?Season $season = null;
 
     /**
      * @var Show|null
      */
-    private ?Show $show;
+    private ?Show $show = null;
 
     /**
      * @var User|null
      */
-    private ?User $user;
+    private ?User $user = null;
 
     public function getId(): ?int
     {
