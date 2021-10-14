@@ -154,7 +154,7 @@ EOF;
      * @throws DoctrineException
      * @throws Exception
      */
-    public function getBuffedVoterCountForElection(
+    public function getBuffedVoteCountForElection(
         Election $election
     ): int {
         $counts = $this->getCountsForElection($election);

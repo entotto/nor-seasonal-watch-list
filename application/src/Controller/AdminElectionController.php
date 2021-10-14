@@ -94,7 +94,7 @@ class AdminElectionController extends AbstractController
             'user' => $this->getUser(),
             'election' => $election,
             'votesInfo' => $info['votesInfo'],
-            'totalVoterCount' => $info['buffedTotalVoterCount'],
+            'totalVoterCount' => $info['totalVoterCount'],
             'voteTallies' => $info['voteTallies'],
             'electionIsActive' => $info['electionIsActive'],
         ]);
@@ -119,7 +119,7 @@ class AdminElectionController extends AbstractController
         $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         $votesInfo = $electionVoteRepository->getCountsForElection($election);
         $totalVoterCount = $electionVoteRepository->getVoterCountForElection($election);
-        $buffedTotalVoterCount = $electionVoteRepository->getBuffedVoterCountForElection($election);
+        $buffedTotalVoteCount = $electionVoteRepository->getBuffedVoteCountForElection($election);
 
         $filenameParts = [
             str_replace(' ', '-', $election->getSeason()->getName()),
@@ -128,7 +128,7 @@ class AdminElectionController extends AbstractController
         ];
         $filename = implode('-', $filenameParts) . '.csv';
 
-        $voteTallies = $this->getVoteTallies($votesInfo, $totalVoterCount, $buffedTotalVoterCount, $shows);
+        $voteTallies = $this->getVoteTallies($votesInfo, $totalVoterCount, $buffedTotalVoteCount, $shows);
 
         $fp = fopen('php://temp', 'wb');
         fwrite($fp, $this->arrayToCsv(['Show', 'Raw Votes', 'Buff', 'Calc Votes', '% of Voters', '% of Total']) . "\n");
@@ -280,11 +280,11 @@ class AdminElectionController extends AbstractController
     /**
      * @param array $votesInfo
      * @param int $totalVoterCount
-     * @param int $buffedTotalVoterCount
+     * @param int $buffedTotalVoteCount
      * @param Show[] $shows
      * @return VoteTally[]
      */
-    private function getVoteTallies(array $votesInfo, int $totalVoterCount, int $buffedTotalVoterCount, array $shows): array
+    private function getVoteTallies(array $votesInfo, int $totalVoterCount, int $buffedTotalVoteCount, array $shows): array
     {
         $voteTallies = [];
         $totalVotes = 0;
@@ -306,7 +306,7 @@ class AdminElectionController extends AbstractController
             $voteTally->setVotePercentOfTotal($this->calculatePercent($voteInfo['vote_count'], $totalVotes));
             $voteTally->setBuffedVotePercentOfTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVotes));
             $voteTally->setVotePercentOfVoterTotal($this->calculatePercent($voteInfo['vote_count'], $totalVoterCount));
-            $voteTally->setBuffedVotePercentOfVoterTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVoterCount));
+            $voteTally->setBuffedVotePercentOfVoterTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVoteCount));
             $voteTallies[] = $voteTally;
             foreach ($shows as $showsKey => $show) {
                 if ($show->getId() === $voteTally->getShowId()) {
@@ -378,9 +378,9 @@ class AdminElectionController extends AbstractController
         $info['shows'] = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
         $info['votesInfo'] = $electionVoteRepository->getCountsForElection($election);
         $info['totalVoterCount'] = $electionVoteRepository->getVoterCountForElection($election);
-        $info['buffedTotalVoterCount'] = $electionVoteRepository->getBuffedVoterCountForElection($election);
+        $info['buffedTotalVoteCount'] = $electionVoteRepository->getBuffedVoteCountForElection($election);
         $info['voteTallies'] = $this->getVoteTallies($info['votesInfo'], $info['totalVoterCount'],
-            $info['buffedTotalVoterCount'], $info['shows']);
+            $info['buffedTotalVoteCount'], $info['shows']);
         return $info;
     }
 
