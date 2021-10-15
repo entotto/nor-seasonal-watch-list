@@ -25,6 +25,34 @@
             }
         })
     })
+
+    // noinspection DuplicatedCode
+    $("form.list_my_vote_form select").change(function (e) {
+        e.preventDefault();
+        const control = $(e.target)
+        const form = control.closest('form')
+        const url = form.attr('action')
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            dataType: 'json',
+            success: function (data) {
+                $('#toast-success-body').text(data.data.message);
+                const toastEl = new bootstrap.Toast(document.getElementById('toast-success'));
+                toastEl.show();
+            },
+            error: function (x) {
+                control.prop('checked', false);
+                control.removeAttr('checked');
+                const responseData = JSON.parse(x.responseText);
+                $('#toast-error-body').text(responseData.data.message);
+                const toastEl = new bootstrap.Toast(document.getElementById('toast-error'));
+                toastEl.show();
+            }
+        })
+    })
+
     $('#utcTimeStartShow').click(function (e) {
         e.preventDefault()
         $('#utcTimeStartShow').addClass('d-none');

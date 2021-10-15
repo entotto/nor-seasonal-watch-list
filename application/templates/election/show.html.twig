@@ -28,6 +28,10 @@
                 <td class="has-markdown pb-3">{{ election.description|markdown }}</td>
             </tr>
             <tr>
+                <th>Election Type</th>
+                <td>{{ election.electionType|capitalize }}</td>
+            </tr>
+            <tr>
                 <th>Start</th>
                 <td>{{ election.startDate ? election.startDate|date('Y-m-d H:i:s') : '' }}</td>
             </tr>

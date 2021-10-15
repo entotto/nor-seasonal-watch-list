@@ -42,11 +42,15 @@
                     <th class="col-md-2 col-xs-2 col-sm-2">Show</th>
                     <th class="col-md-7 col-xs-6 col-sm-6">&nbsp;</th>
                     <th class="col-md-3 col-xs-4 col-sm-4">
-                        Votes
-                        {% if election.maxVotes == NULL %}
-                            (no limit)
+                        {% if election.electionType == 'simple' %}
+                            Votes
+                            {% if election.maxVotes == NULL %}
+                                (no limit)
+                            {% else %}
+                                (maximum {{ election.maxVotes }})
+                            {% endif %}
                         {% else %}
-                            (maximum {{ election.maxVotes }})
+                            Rank
                         {% endif %}
                     </th>
                 </tr>
@@ -73,15 +77,54 @@
                         <td class="col-md-3 col-xs-4 col-sm-4">
                             {% if row.form %}
                                 {{ form_start(row.form) }}
-                                {{ form_widget(
-                                    row.form.chosen,
-                                    {
-                                        'id': "show_election_vote_vote_" ~ key,
-                                        'attr': {
-                                            'class': 'show_election_vote_vote'
+                                {% if election.electionType == 'simple' %}
+                                    {{ form_widget(
+                                        row.form.chosen,
+                                        {
+                                            'id': "show_election_vote_vote_" ~ key,
+                                            'attr': {
+                                                'class': 'show_election_vote_vote'
+                                            }
                                         }
-                                    }
-                                )}}
+                                    )}}
+                                {% else %}
+                                    {{ form_widget(
+                                        row.form.rank,
+                                        {
+                                            'id': "election_vote_rank_" ~ key,
+                                            'attr': {
+                                                'class': 'show_election_vote_rank'
+                                            }
+                                        }
+                                    )}}
+                                    {{ form_widget(
+                                        row.form.election,
+                                        {
+                                            'id': "election_vote_election_" ~ key,
+                                            'attr': {
+                                                'class': 'show_election_vote_election'
+                                            }
+                                        }
+                                    ) }}
+                                    {{ form_widget(
+                                        row.form.season,
+                                        {
+                                            'id': "election_vote_season_" ~ key,
+                                            'attr': {
+                                            'class': 'show_election_vote_season'
+                                        }
+                                        }
+                                    ) }}
+                                    {{ form_widget(
+                                        row.form.animeShow,
+                                        {
+                                            'id': "election_vote_animeShow_" ~ key,
+                                            'attr': {
+                                            'class': 'show_election_vote_animeShow'
+                                        }
+                                        }
+                                    ) }}
+                                {% endif %}
                                 {{ form_end(row.form) }}
                             {% endif %}
                         </td>

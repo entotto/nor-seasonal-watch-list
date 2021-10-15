@@ -28,7 +28,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 ALTER TABLE election ADD election_type VARCHAR(255) NULL;
-ALTER TABLE election_vote ADD `rank` INT DEFAULT NULL;
+ALTER TABLE election_vote ADD `rank_choice` INT DEFAULT NULL;
 
 UPDATE election SET election_type = "simple" WHERE 1 = 1;
 
@@ -52,7 +52,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 ALTER TABLE election DROP election_type;
-ALTER TABLE election_vote DROP `rank`;
+ALTER TABLE election_vote DROP `rank_choice`;
 
 SET FOREIGN_KEY_CHECKS=1;
 COMMIT;

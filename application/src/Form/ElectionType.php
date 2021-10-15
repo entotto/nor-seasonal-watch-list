@@ -7,6 +7,7 @@ use App\Entity\Season;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -25,6 +26,13 @@ class ElectionType extends AbstractType
             ->add('description', TextareaType::class, [
                 'label' => 'Description (supports Markdown)',
                 'required' => false,
+            ])
+            ->add('electionType', ChoiceType::class, [
+                'label' => 'Type',
+                'choices' => [
+                    'Simple' => Election::SIMPLE_ELECTION,
+                    'Ranked Choice' => Election::RANKED_CHOICE_ELECTION,
+                ]
             ])
             ->add('startDate', DateTimeType::class, [
                 'label' => 'Start date and time',
