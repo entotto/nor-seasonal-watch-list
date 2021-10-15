@@ -39,8 +39,8 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th class="col-md-2 col-xs-2 col-sm-2">Show</th>
-                    <th class="col-md-7 col-xs-6 col-sm-6">&nbsp;</th>
+                    <th class="col-md-1 col-xs-2 col-sm-1">Show</th>
+                    <th class="col-md-8 col-xs-6 col-sm-7">&nbsp;</th>
                     <th class="col-md-3 col-xs-4 col-sm-4">
                         {% if election.electionType == 'simple' %}
                             Votes
@@ -58,10 +58,10 @@
                 <tbody>
                 {% for key, row in data %}
                     <tr>
-                        <td class="col-md-2 col-xs-2 col-sm-2">
+                        <td class="col-md-1 col-xs-2 col-sm-1">
                             <img class="img-fluid rounded-3" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />
                         </td>
-                        <td class="col-md-7 col-xs-6 col-sm-6">
+                        <td class="col-md-8 col-xs-6 col-sm-7">
                             {% if row.vote.show.getRelatedShows is empty %}
                                 {{ row.vote.show.getVoteStyleTitles }}
                             {% else %}
