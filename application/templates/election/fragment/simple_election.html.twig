@@ -1,0 +1,60 @@
+<tr>
+    <th>Results</th>
+    <td class="pt-0">
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="col-md-7 border-top-0 align-text-top">Show</th>
+                <th class="col-md-1 text-end border-top-0 align-text-top">Raw<br/>Votes</th>
+                <th class="col-md-1 text-end border-top-0 align-text-top">Buff</th>
+                <th class="col-md-1 text-end border-top-0 align-text-top">Calc<br/>Votes</th>
+                <th class="col-md-1 text-end border-top-0 align-text-top">% of<br/>Voters</th>
+                <th class="col-md-1 text-end border-top-0 align-text-top">% of<br/>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for voteTally in voteTallies %}
+                <tr>
+                    <td class="col-md-7">
+                        {% if voteTally.getRelatedShowNames is empty %}
+                            {{ voteTally.getShowCombinedTitle }}
+                        {% else %}
+                            Multiple seasons:
+                            <ul>
+                                <li>{{ voteTally.getShowCombinedTitle }}</li>
+                                {% for name in voteTally.getRelatedShowNames %}
+                                    <li>{{ name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </td>
+                    <td class="col-md-1 text-end">
+                        {{ voteTally.getVoteCount }}
+                    </td>
+                    <td class="col-md-1 text-end">
+                        {{ voteTally.getBuffRule }}
+                    </td>
+                    <td class="col-md-1 text-end">
+                        {{ voteTally.getBuffedVoteCount }}
+                    </td>
+                    <td class="col-md-1 text-end">
+                        {{ voteTally.getVotePercentOfVoterTotal|round(1) }}%
+                    </td>
+                    <td class="col-md-1 text-end">
+                        {{ voteTally.getBuffedVotePercentOfTotal|round(1) }}%
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-3 mb-3">
+            <a
+                    class="btn btn-primary"
+                    target="_blank"
+                    href="{{ path('admin_election_export', { 'id': election.id }) }}"
+            >
+                Export vote tally
+            </a>
+        </div>
+    </td>
+</tr>
