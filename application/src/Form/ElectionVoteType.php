@@ -12,6 +12,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSubmitEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
@@ -21,11 +22,25 @@ class ElectionVoteType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('chosen', CheckboxType::class, [
-                'label' => 'Choose this show',
-                'required' => false,
-            ]);
+        $choices = [];
+        for ($i = 1; $i <= $options['show_count']; $i++) {
+            $choices[(string)$i] = $i;
+        }
+        if ($options['election_type'] === 'simple') {
+            $builder
+                ->add('chosen', CheckboxType::class, [
+                    'label' => 'Choose this show',
+                    'required' => false,
+                ]);
+        } else {
+            $builder->
+                add('rank', ChoiceType::class, [
+                    'label' => 'Rank',
+                    'required' => false,
+                    'placeholder' => 'No opinion',
+                    'choices' => $choices,
+                ]);
+        }
 
         if (isset($options['show_vote_only'])) {
             $builder
@@ -100,6 +115,8 @@ class ElectionVoteType extends AbstractType
         $resolver->setDefaults([
             'data_class' => ElectionVote::class,
             'show_vote_only' => false,
+            'election_type' => 'simple',
+            'show_count' => 0,
             'form_key' => 0,
         ]);
     }

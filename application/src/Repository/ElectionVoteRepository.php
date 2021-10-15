@@ -99,6 +99,37 @@ EOF;
     }
 
     /**
+     * @param Election $election
+     * @return array
+     * @throws DoctrineException
+     * @throws Exception
+     */
+    public function getRanksForElection(
+        Election $election
+    ): array {
+        $sql = <<<EOF
+SELECT ev.rank_choice AS rank_choice,
+       ev.election_id AS election_id,
+       ev.anime_show_id AS show_id,
+       ev.user_id AS user_id,
+       s.japanese_title AS japanese_title,
+       s.english_title AS english_title,
+       s.full_japanese_title AS full_japanese_title
+FROM election_vote ev
+JOIN anime_show s ON s.id = ev.anime_show_id
+WHERE ev.election_id = :election_id
+ORDER BY user_id, show_id
+EOF;
+        $conn = $this->getEntityManager()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery(['election_id' => $election->getId()]);
+        if ($result !== null) {
+            return $result->fetchAllAssociative();
+        }
+        return [];
+    }
+
+    /**
      * @param User $user
      * @param Election $election
      * @return int

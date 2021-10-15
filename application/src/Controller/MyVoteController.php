@@ -60,6 +60,7 @@ class MyVoteController extends AbstractController
         $data = [];
 
         $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
+        $showCount = count($shows);
         foreach ($shows as $key => $show) {
             $vote = $electionVoteRepository->getForUserAndShowAndElection(
                 $user,
@@ -73,6 +74,7 @@ class MyVoteController extends AbstractController
                 $vote->setElection($election);
                 $vote->setSeason($election->getSeason());
                 $vote->setChosen(false);
+                $vote->setRank($showCount);
                 $em->persist($vote);
                 $em->flush();
             }
@@ -85,6 +87,8 @@ class MyVoteController extends AbstractController
                         'class' => 'list_my_vote_form',
                     ],
                     'show_vote_only' => true,
+                    'election_type' => $election->getElectionType(),
+                    'show_count' => $showCount,
                     'form_key' => $key,
                     'action' => $this->generateUrl('election_vote_edit', ['id' => $vote->getId()])
                 ]
