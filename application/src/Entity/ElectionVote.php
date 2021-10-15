@@ -58,6 +58,12 @@ class ElectionVote
     private bool $chosen = false;
 
     /**
+     * @var int|null
+     * @ORM\Column(name="rank", type="integer", nullable=true)
+     */
+    private ?int $rank = null;
+
+    /**
      * @var Election
      * @ORM\ManyToOne(targetEntity=Election::class, inversedBy="electionVotes")
      * @ORM\JoinColumn(nullable=false)
@@ -182,5 +188,21 @@ class ElectionVote
         $this->election = $election;
 
         return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRank(): ?int
+    {
+        return $this->rank;
+    }
+
+    /**
+     * @param int|null $rank
+     */
+    public function setRank(?int $rank): void
+    {
+        $this->rank = $rank;
     }
 }

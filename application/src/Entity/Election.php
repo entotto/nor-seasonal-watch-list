@@ -11,12 +11,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use RuntimeException;
 
 /**
  * @ORM\Entity(repositoryClass=ElectionRepository::class)
  */
 class Election
 {
+    public const SIMPLE_ELECTION = 'simple';
+    public const RANKED_CHOICE_ELECTION = 'ranked-choice';
+
     /**
      * @var int|null
      * @ORM\Id
@@ -71,6 +75,12 @@ class Election
      * @ORM\OneToMany(targetEntity=ElectionShowBuff::class, mappedBy="election", cascade={"persist","remove"})
      */
     private Collection $electionShowBuffs;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    private string $electionType = '';
 
     /**
      * Election constructor.
@@ -305,5 +315,28 @@ class Election
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getElectionType(): string
+    {
+        return $this->electionType;
+    }
+
+    /**
+     * @param string $electionType
+     */
+    public function setElectionType(string $electionType): void
+    {
+        $validTypes = [
+            self::SIMPLE_ELECTION,
+            self::RANKED_CHOICE_ELECTION,
+        ];
+        if (!in_array($electionType, $validTypes)) {
+            throw new RuntimeException($electionType . " is not a valid election type.");
+        }
+        $this->electionType = $electionType;
     }
 }
