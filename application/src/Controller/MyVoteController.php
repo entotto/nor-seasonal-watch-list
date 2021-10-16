@@ -95,6 +95,10 @@ class MyVoteController extends AbstractController
             );
             $data[] = ['vote' => $vote, 'form' => $form->createView()];
         }
+
+        // Make the order of shows random
+        shuffle($data);
+
         return $this->render('my_vote/index.html.twig', [
             'user' => $this->getUser(),
             'controller_name' => 'MyVoteController',
