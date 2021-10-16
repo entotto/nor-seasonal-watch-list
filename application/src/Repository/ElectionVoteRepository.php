@@ -204,4 +204,22 @@ EOF;
         $counts = $this->getCountsForElection($election);
         return (int)array_reduce($counts, static function ($carry, $count) { return $carry + (int)$count['buffed_vote_count']; });
     }
+
+    /**
+     * @param Election $election
+     * @return ElectionVote[]
+     */
+    public function getRawRankingVoteEntriesForElection(
+        Election $election
+    ): array {
+        return $this->createQueryBuilder('ev')
+            ->join('ev.user', 'user')
+            ->join('ev.animeShow', 'animeShow')
+            ->where('ev.election = :election')
+            ->setParameter('election', $election)
+            ->addOrderBy('user.id')
+            ->addOrderBy('animeShow.englishTitle')
+            ->getQuery()
+            ->getResult();
+    }
 }
