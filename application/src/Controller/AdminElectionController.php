@@ -144,7 +144,6 @@ class AdminElectionController extends AbstractController
      * @return Response
      */
     public function exportRaw(
-//        VoterInfoHelper $voterInfoHelper,
         ExportHelper $exportHelper,
         ElectionVoteRepository $electionVoteRepository,
         Election $election
@@ -155,8 +154,6 @@ class AdminElectionController extends AbstractController
             $election->getEndDate()->format('Ymd-Hi')
         ];
         $filename = implode('-', $filenameParts) . '-raw.csv';
-
-//        $voterInfoHelper->initializeForExport($election);
 
         $rawVotes = $electionVoteRepository->getRawRankingVoteEntriesForElection($election);
 
