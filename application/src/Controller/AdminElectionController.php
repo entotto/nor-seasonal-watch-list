@@ -155,32 +155,21 @@ class AdminElectionController extends AbstractController
         ];
         $filename = implode('-', $filenameParts) . '-raw.csv';
 
-        // $rawVotes is sorted Show, then User
+        // $rawVotes is sorted User, then Show
         $rawVotes = $electionVoteRepository->getRawRankingVoteEntriesForElection($election);
 
-        $showId = null;
-        $showColumns = [];
-        $userRows = [];
-        $userRow = null;
-        $userId = null;
+        $showRows = [];
         foreach ($rawVotes as $rawVote) {
-            if ($rawVote->getShow()->getId() !== $showId) {
-                $showId = $rawVote->getShow()->getId();
-                $showColumns[] = $rawVote->getShow()->getEnglishTitle();
+            $showTitle = $rawVote->getShow()->getEnglishTitle();
+            if (!isset($showRows[$showTitle])) {
+                $showRows[$showTitle] = [$showTitle];
             }
-            if ($rawVote->getUser()->getId() !== $userId) {
-                if ($userRow !== null) {
-                    $userRows[] = $userRow;
-                }
-                $userId = $rawVote->getUser()->getId();
-                $userRow = [];
-            }
-            $userRow[] = $rawVote->getRank();
+            $showRows[$showTitle][] = $rawVote->getRank();
         }
-        $userRows[] = $userRow;
+
+        $userRows = $this->flipArray($showRows);
 
         $fp = fopen('php://temp', 'wb');
-        fwrite($fp, $exportHelper->arrayToCsv([...$showColumns]) . "\n");
         foreach ($userRows as $userRow) {
             fwrite($fp, $exportHelper->arrayToCsv([...$userRow]) . "\n");
         }
@@ -192,6 +181,21 @@ class AdminElectionController extends AbstractController
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
         return $response;
+    }
+
+    private function flipArray(array $showRows): array
+    {
+        $userRows = [];
+        $i = -1;
+        foreach ($showRows as $showRow) {
+            $i++;
+            $j = -1;
+            foreach ($showRow as $value) {
+                $j++;
+                $userRows[$j][$i] = $value;
+            }
+        }
+        return $userRows;
     }
 
     /**
