@@ -217,8 +217,8 @@ EOF;
             ->join('ev.animeShow', 'animeShow')
             ->where('ev.election = :election')
             ->setParameter('election', $election)
-            ->addOrderBy('user.id')
             ->addOrderBy('animeShow.englishTitle')
+            ->addOrderBy('user.id')
             ->getQuery()
             ->getResult();
     }

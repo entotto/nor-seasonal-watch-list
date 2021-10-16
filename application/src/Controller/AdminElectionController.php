@@ -155,33 +155,34 @@ class AdminElectionController extends AbstractController
         ];
         $filename = implode('-', $filenameParts) . '-raw.csv';
 
+        // $rawVotes is sorted Show, then User
         $rawVotes = $electionVoteRepository->getRawRankingVoteEntriesForElection($election);
 
-        $showRows = [];
-        $userColumns = [];
-        $userAlias = '';
+        $showId = null;
+        $showColumns = [];
+        $userRows = [];
+        $userRow = null;
         $userId = null;
         foreach ($rawVotes as $rawVote) {
+            if ($rawVote->getShow()->getId() !== $showId) {
+                $showId = $rawVote->getShow()->getId();
+                $showColumns[] = $rawVote->getShow()->getEnglishTitle();
+            }
             if ($rawVote->getUser()->getId() !== $userId) {
-                $userId = $rawVote->getUser()->getId();
-                if ($userAlias === '') {
-                    $userAlias = 'A';
-                } else {
-                    $userAlias++;
+                if ($userRow !== null) {
+                    $userRows[] = $userRow;
                 }
-                $userColumns[] = $userAlias;
+                $userId = $rawVote->getUser()->getId();
+                $userRow = [];
             }
-            $showTitle = $rawVote->getShow()->getEnglishTitle();
-            if (!isset($showRows[$showTitle])) {
-                $showRows[$showTitle] = [];
-            }
-            $showRows[$showTitle][] = $rawVote->getRank();
+            $userRow[] = $rawVote->getRank();
         }
+        $userRows[] = $userRow;
 
         $fp = fopen('php://temp', 'wb');
-        fwrite($fp, $exportHelper->arrayToCsv(['', ...$userColumns]) . "\n");
-        foreach ($showRows as $key => $showRow) {
-            fwrite($fp, $exportHelper->arrayToCsv([$key, ...$showRow]) . "\n");
+        fwrite($fp, $exportHelper->arrayToCsv([...$showColumns]) . "\n");
+        foreach ($userRows as $userRow) {
+            fwrite($fp, $exportHelper->arrayToCsv([...$userRow]) . "\n");
         }
 
         rewind($fp);

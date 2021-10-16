@@ -12,8 +12,8 @@ use CondorcetPHP\Condorcet\Throwable\CondorcetException;
 
 final class RankedChoiceVoteTallyHelper
 {
-    // public const VOTING_METHOD = 'Schulze';
-    public const VOTING_METHOD = 'Ranked Pairs Winning';
+    public const VOTING_METHOD = 'Minimax Margin';
+    // public const VOTING_METHOD = 'Ranked Pairs Winning';
 
 
     /**
@@ -59,8 +59,8 @@ final class RankedChoiceVoteTallyHelper
 
         $electionResults = $election->getResult(self::VOTING_METHOD);
         $electionResultsAsArray = $electionResults->getResultAsArray();
-        $electionStats = $electionResults->getStats();
-        $electionTally = $electionStats['tally'][0];
+        // $electionStats = $electionResults->getStats();
+        $electionTally = []; //$electionStats['tally'][0];
 
         $voteTallies = [];
         $currentRank = 1;
