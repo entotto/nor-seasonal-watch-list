@@ -39,8 +39,8 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th class="col-md-1 col-xs-2 col-sm-1">Show</th>
-                    <th class="col-md-8 col-xs-6 col-sm-7">&nbsp;</th>
+{#                    <th class="col-md-1 col-xs-2 col-sm-1">Show</th>#}
+                    <th class="col-md-9 col-xs-8 col-sm-8">Show</th>
                     <th class="col-md-3 col-xs-4 col-sm-4">
                         {% if election.electionType == 'simple' %}
                             Votes
@@ -58,18 +58,28 @@
                 <tbody>
                 {% for key, row in data %}
                     <tr>
-                        <td class="col-md-1 col-xs-2 col-sm-1">
-                            <img class="img-fluid rounded-3" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />
-                        </td>
-                        <td class="col-md-8 col-xs-6 col-sm-7">
+{#                        <td class="col-md-1 col-xs-2 col-sm-1">#}
+{#                            <img class="img-fluid rounded-3" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />#}
+{#                        </td>#}
+                        <td class="col-md-9 col-xs-8 col-sm-8">
                             {% if row.vote.show.getRelatedShows is empty %}
-                                {{ row.vote.show.getVoteStyleTitles }}
+                                <a target="_blank" href="https://anilist.co/anime/{{ row.vote.show.getAnilistId }}">
+                                    {{ row.vote.show.getVoteStyleTitles }}
+                                </a>
                             {% else %}
                                 Multiple seasons:
                                 <ul>
-                                    <li>{{ row.vote.show.getVoteStyleTitles }}</li>
+                                    <li>
+                                        <a target="_blank" href="https://anilist.co/anime/{{ row.vote.show.getAnilistId }}">
+                                            {{ row.vote.show.getVoteStyleTitles }}
+                                        </a>
+                                    </li>
                                     {% for relatedShow in row.vote.show.getRelatedShows %}
-                                        <li>{{ relatedShow.getVoteStyleTitles }}</li>
+                                        <li>
+                                            <a target="_blank" href="https://anilist.com/anime/{{ relatedShow.getAnilistId }}">
+                                                {{ relatedShow.getVoteStyleTitles }}
+                                            </a>
+                                        </li>
                                     {% endfor %}
                                 </ul>
                             {% endif %}
