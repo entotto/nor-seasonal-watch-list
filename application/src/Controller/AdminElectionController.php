@@ -186,21 +186,6 @@ class AdminElectionController extends AbstractController
         foreach ($showRows as $key => $showRow) {
             fwrite($fp, $exportHelper->arrayToCsv([$key, ...$showRow]) . "\n");
         }
-//        $userAlias = '';
-//        $userId = null;
-//        foreach ($rawVotes as $rawVote) {
-//            if ($rawVote->getUser()->getId() !== $userId) {
-//                $userId = $rawVote->getUser()->getId();
-//                if ($userAlias === '') {
-//                    $userAlias = 'A';
-//                } else {
-//                    $userAlias++;
-//                }
-//            }
-//            $showTitle = $rawVote->getShow()->getEnglishTitle();
-//            $rank = $rawVote->getRank();
-//            fwrite($fp, $exportHelper->arrayToCsv([$userAlias, $showTitle, $rank]) . "\n");
-//        }
 
         rewind($fp);
         $response = new Response(stream_get_contents($fp));
