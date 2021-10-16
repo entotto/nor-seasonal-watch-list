@@ -24,6 +24,7 @@ final class VoterInfoHelper
 
     private ?array $voteTalliesForExport = null;
     private ?Election $election = null;
+    private ExportHelper $exportHelper;
 
     /**
      * VoterInfoHelper constructor.
@@ -32,19 +33,22 @@ final class VoterInfoHelper
      * @param ElectionVoteRepository $electionVoteRepository
      * @param SimpleVoteTallyHelper $simpleVoteTallyHelper
      * @param RankedChoiceVoteTallyHelper $rankedChoiceVoteTallyHelper
+     * @param ExportHelper $exportHelper
      */
     public function __construct(
         ElectionRepository $electionRepository,
         ShowRepository $showRepository,
         ElectionVoteRepository $electionVoteRepository,
         SimpleVoteTallyHelper $simpleVoteTallyHelper,
-        RankedChoiceVoteTallyHelper $rankedChoiceVoteTallyHelper
+        RankedChoiceVoteTallyHelper $rankedChoiceVoteTallyHelper,
+        ExportHelper $exportHelper
     ) {
         $this->electionRepository = $electionRepository;
         $this->showRepository = $showRepository;
         $this->electionVoteRepository = $electionVoteRepository;
         $this->simpleVoteTallyHelper = $simpleVoteTallyHelper;
         $this->rankedChoiceVoteTallyHelper = $rankedChoiceVoteTallyHelper;
+        $this->exportHelper = $exportHelper;
     }
 
     /**
@@ -110,10 +114,10 @@ final class VoterInfoHelper
     private function writeExportHeader($fp): void
     {
         if ($this->election->getElectionType() === Election::SIMPLE_ELECTION) {
-            fwrite($fp, $this->arrayToCsv(['Show', 'Raw Votes', 'Buff', 'Calc Votes', '% of Voters', '% of Total']) . "\n");
+            fwrite($fp, $this->exportHelper->arrayToCsv(['Show', 'Raw Votes', 'Buff', 'Calc Votes', '% of Voters', '% of Total']) . "\n");
         }
         if ($this->election->getElectionType() === Election::RANKED_CHOICE_ELECTION) {
-            fwrite($fp, $this->arrayToCsv(['Show', 'Rank', 'Stats']) . "\n");
+            fwrite($fp, $this->exportHelper->arrayToCsv(['Show', 'Rank', 'Stats']) . "\n");
         }
     }
 
@@ -126,7 +130,7 @@ final class VoterInfoHelper
             }
             if ($this->election->getElectionType() === Election::SIMPLE_ELECTION) {
                 /** @var VoteTally $voteTally */
-                fwrite($fp, $this->arrayToCsv([
+                fwrite($fp, $this->exportHelper->arrayToCsv([
                         $title,
                         $voteTally->getVoteCount(),
                         "'" . $voteTally->getBuffRule(),
@@ -137,7 +141,7 @@ final class VoterInfoHelper
             }
             if ($this->election->getElectionType() === Election::RANKED_CHOICE_ELECTION) {
                 /** @var RankedChoiceVoteTally $voteTally */
-                fwrite($fp, $this->arrayToCsv([
+                fwrite($fp, $this->exportHelper->arrayToCsv([
                         $title,
                         $voteTally->getRank(),
                         $voteTally->getRankStats(),
@@ -147,46 +151,5 @@ final class VoterInfoHelper
 
     }
 
-    /**
-     * Formats a line (passed as a fields  array) as CSV and returns the CSV as a string.
-     * Adapted from http://us3.php.net/manual/en/function.fputcsv.php#87120
-     *
-     * @param array $fields
-     * @param string $delimiter
-     * @param string $enclosure
-     * @param bool $encloseAll
-     * @param bool $nullToMysqlNull
-     * @return string
-     * @noinspection PhpSameParameterValueInspection
-     */
-    private function arrayToCsv(
-        array $fields,
-        string $delimiter = ',',
-        string $enclosure = '"',
-        bool $encloseAll = true,
-        bool $nullToMysqlNull = false
-    ): string {
-        $delimiter_esc = preg_quote($delimiter, '/');
-        $enclosure_esc = preg_quote($enclosure, '/');
 
-        $output = array();
-        foreach ( $fields as $field ) {
-            if ($field === null && $nullToMysqlNull) {
-                $output[] = 'NULL';
-                continue;
-            }
-
-            // Enclose fields containing $delimiter, $enclosure or whitespace
-            /** @noinspection RegExpUnnecessaryNonCapturingGroup */
-            /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
-            if ( $encloseAll || preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
-                $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
-            }
-            else {
-                $output[] = $field;
-            }
-        }
-
-        return implode( $delimiter, $output );
-    }
 }

@@ -12,7 +12,9 @@ use App\Form\BuffedElectionType;
 use App\Form\ElectionType;
 use App\Repository\ElectionRepository;
 use App\Repository\ElectionShowBuffRepository;
+use App\Repository\ElectionVoteRepository;
 use App\Repository\ShowRepository;
+use App\Service\ExportHelper;
 use App\Service\VoterInfoHelper;
 use CondorcetPHP\Condorcet\Throwable\CondorcetException;
 use Doctrine\DBAL\Exception;
@@ -105,7 +107,7 @@ class AdminElectionController extends AbstractController
      * @param Election $election
      * @return Response
      * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Driver\Exception|CondorcetException
      */
     public function export(
         VoterInfoHelper $voterInfoHelper,
@@ -122,6 +124,83 @@ class AdminElectionController extends AbstractController
 
         $fp = fopen('php://temp', 'wb');
         $voterInfoHelper->writeExport($fp);
+
+        rewind($fp);
+        $response = new Response(stream_get_contents($fp));
+        fclose($fp);
+
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        return $response;
+    }
+
+    /**
+     * Export election data as a CSV file
+     *
+     * @Route("/export_raw/{id}", name="admin_election_export_raw", methods={"GET"}, requirements={"id":"\d+"})
+     * @param ExportHelper $exportHelper
+     * @param ElectionVoteRepository $electionVoteRepository
+     * @param Election $election
+     * @return Response
+     */
+    public function exportRaw(
+//        VoterInfoHelper $voterInfoHelper,
+        ExportHelper $exportHelper,
+        ElectionVoteRepository $electionVoteRepository,
+        Election $election
+    ): Response {
+        $filenameParts = [
+            str_replace(' ', '-', $election->getSeason()->getName()),
+            $election->getStartDate()->format('Ymd-Hi'),
+            $election->getEndDate()->format('Ymd-Hi')
+        ];
+        $filename = implode('-', $filenameParts) . '-raw.csv';
+
+//        $voterInfoHelper->initializeForExport($election);
+
+        $rawVotes = $electionVoteRepository->getRawRankingVoteEntriesForElection($election);
+
+        $showRows = [];
+        $userColumns = [];
+        $userAlias = '';
+        $userId = null;
+        foreach ($rawVotes as $rawVote) {
+            if ($rawVote->getUser()->getId() !== $userId) {
+                $userId = $rawVote->getUser()->getId();
+                if ($userAlias === '') {
+                    $userAlias = 'A';
+                } else {
+                    $userAlias++;
+                }
+                $userColumns[] = $userAlias;
+            }
+            $showTitle = $rawVote->getShow()->getEnglishTitle();
+            if (!isset($showRows[$showTitle])) {
+                $showRows[$showTitle] = [];
+            }
+            $showRows[$showTitle][] = $rawVote->getRank();
+        }
+
+        $fp = fopen('php://temp', 'wb');
+        fwrite($fp, $exportHelper->arrayToCsv(['', ...$userColumns]) . "\n");
+        foreach ($showRows as $key => $showRow) {
+            fwrite($fp, $exportHelper->arrayToCsv([$key, ...$showRow]) . "\n");
+        }
+//        $userAlias = '';
+//        $userId = null;
+//        foreach ($rawVotes as $rawVote) {
+//            if ($rawVote->getUser()->getId() !== $userId) {
+//                $userId = $rawVote->getUser()->getId();
+//                if ($userAlias === '') {
+//                    $userAlias = 'A';
+//                } else {
+//                    $userAlias++;
+//                }
+//            }
+//            $showTitle = $rawVote->getShow()->getEnglishTitle();
+//            $rank = $rawVote->getRank();
+//            fwrite($fp, $exportHelper->arrayToCsv([$userAlias, $showTitle, $rank]) . "\n");
+//        }
 
         rewind($fp);
         $response = new Response(stream_get_contents($fp));

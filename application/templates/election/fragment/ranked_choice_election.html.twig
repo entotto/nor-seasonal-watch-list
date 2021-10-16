@@ -42,5 +42,14 @@
                 Export vote tally
             </a>
         </div>
+        <div class="mt-3 mb-3">
+            <a
+                    class="btn btn-secondary"
+                    target="_blank"
+                    href="{{ path('admin_election_export_raw', { 'id': election.id }) }}"
+            >
+                Export raw votes
+            </a>
+        </div>
     </td>
 </tr>
