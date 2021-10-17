@@ -48,6 +48,9 @@ class ElectionVoteController extends AbstractController
             $election = $electionVote->getElection();
             $maxVotes = $election->getMaxVotes();
             $currentVoteCount = $electionVoteRepository->getCountForUserAndElection($user, $election);
+            if ($maxVotes < 1 || $maxVotes === null) {
+                $maxVotes = -1;
+            }
 
             $form = $this->createForm(
                 ElectionVoteType::class,
@@ -62,7 +65,7 @@ class ElectionVoteController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                if ($currentVoteCount >= $maxVotes && $electionVote->getChosen()) {
+                if ($maxVotes > 0 && $currentVoteCount >= $maxVotes && $electionVote->getChosen()) {
                     $electionVote->setChosen(false);
                     $this->getDoctrine()->getManager()->persist($electionVote);
                     $this->getDoctrine()->getManager()->flush();
@@ -95,12 +98,18 @@ class ElectionVoteController extends AbstractController
                             }
                             break;
                         default:
-                            if ($newCurrentVoteCount > $currentVoteCount) {
-                                $message = 'Vote received, ' . $remainingChoices . ' choices left.';
+                            $votesIncreased = $newCurrentVoteCount > $currentVoteCount;
+                            if ($maxVotes > 0) {
+                                if ($votesIncreased) {
+                                    $message = 'Vote received, ' . $remainingChoices . ' choices left.';
+                                } else {
+                                    $message = 'Change received, ' . $remainingChoices . ' choices left.';
+                                }
+                            } elseif ($votesIncreased) {
+                                $message = 'Vote received.';
                             } else {
-                                $message = 'Change received, ' . $remainingChoices . ' choices left.';
+                                $message = 'Change received.';
                             }
-
                     }
                     return new JsonResponse(
                         ['data' => [
