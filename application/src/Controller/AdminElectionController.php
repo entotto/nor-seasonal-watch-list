@@ -6,7 +6,6 @@ namespace App\Controller;
 
 use App\Entity\Election;
 use App\Entity\ElectionShowBuff;
-use App\Entity\Show;
 use App\Entity\View\BuffedElection;
 use App\Entity\View\VoteTally;
 use App\Form\BuffedElectionType;
@@ -15,6 +14,8 @@ use App\Repository\ElectionRepository;
 use App\Repository\ElectionShowBuffRepository;
 use App\Repository\ElectionVoteRepository;
 use App\Repository\ShowRepository;
+use App\Service\ExportHelper;
+use App\Service\VoterInfoHelper;
 use Doctrine\DBAL\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,20 +77,16 @@ class AdminElectionController extends AbstractController
     /**
      * @Route("/{id}", name="admin_election_show", methods={"GET"}, requirements={"id":"\d+"})
      * @param Election $election
-     * @param ElectionVoteRepository $electionVoteRepository
-     * @param ShowRepository $showRepository
-     * @param ElectionRepository $electionRepository
+     * @param VoterInfoHelper $voterInfoHelper
      * @return Response
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function show(
         Election $election,
-        ElectionVoteRepository $electionVoteRepository,
-        ShowRepository $showRepository,
-        ElectionRepository $electionRepository
+        VoterInfoHelper $voterInfoHelper
     ): Response {
-        $info = $this->getVoterInfo($electionRepository, $showRepository, $election, $electionVoteRepository);
+        $info = $voterInfoHelper->getInfo($election);
         return $this->render('election/show.html.twig', [
             'user' => $this->getUser(),
             'election' => $election,
@@ -104,23 +101,16 @@ class AdminElectionController extends AbstractController
      * Export election data as a CSV file
      *
      * @Route("/export/{id}", name="admin_election_export", methods={"GET"}, requirements={"id":"\d+"})
+     * @param VoterInfoHelper $voterInfoHelper
      * @param Election $election
-     * @param ElectionVoteRepository $electionVoteRepository
-     * @param ShowRepository $showRepository
      * @return Response
-     * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function export(
-        Election $election,
-        ElectionVoteRepository $electionVoteRepository,
-        ShowRepository $showRepository
+        VoterInfoHelper $voterInfoHelper,
+        Election $election
     ): Response {
-        $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
-        $votesInfo = $electionVoteRepository->getCountsForElection($election);
-        $totalVoterCount = $electionVoteRepository->getVoterCountForElection($election);
-        $buffedTotalVoteCount = $electionVoteRepository->getBuffedVoteCountForElection($election);
-
         $filenameParts = [
             str_replace(' ', '-', $election->getSeason()->getName()),
             $election->getStartDate()->format('Ymd-Hi'),
@@ -128,23 +118,58 @@ class AdminElectionController extends AbstractController
         ];
         $filename = implode('-', $filenameParts) . '.csv';
 
-        $voteTallies = $this->getVoteTallies($votesInfo, $totalVoterCount, $buffedTotalVoteCount, $shows);
+        $voterInfoHelper->initializeForExport($election);
 
         $fp = fopen('php://temp', 'wb');
-        fwrite($fp, $this->arrayToCsv(['Show', 'Raw Votes', 'Buff', 'Calc Votes', '% of Voters', '% of Total']) . "\n");
-        foreach ($voteTallies as $voteTally) {
-            $title = $voteTally->getShowCombinedTitle();
-            if (!empty($voteTally->getRelatedShowNames())) {
-                $title .= ' (and ' . count($voteTally->getRelatedShowNames()) . ' other seasons)';
+        $voterInfoHelper->writeExport($fp);
+
+        rewind($fp);
+        $response = new Response(stream_get_contents($fp));
+        fclose($fp);
+
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        return $response;
+    }
+
+    /**
+     * Export election data as a CSV file
+     *
+     * @Route("/export_raw/{id}", name="admin_election_export_raw", methods={"GET"}, requirements={"id":"\d+"})
+     * @param ExportHelper $exportHelper
+     * @param ElectionVoteRepository $electionVoteRepository
+     * @param Election $election
+     * @return Response
+     */
+    public function exportRaw(
+        ExportHelper $exportHelper,
+        ElectionVoteRepository $electionVoteRepository,
+        Election $election
+    ): Response {
+        $filenameParts = [
+            str_replace(' ', '-', $election->getSeason()->getName()),
+            $election->getStartDate()->format('Ymd-Hi'),
+            $election->getEndDate()->format('Ymd-Hi')
+        ];
+        $filename = implode('-', $filenameParts) . '-raw.csv';
+
+        // $rawVotes is sorted User, then Show
+        $rawVotes = $electionVoteRepository->getRawRankingVoteEntriesForElection($election);
+
+        $showRows = [];
+        foreach ($rawVotes as $rawVote) {
+            $showTitle = $rawVote->getShow()->getEnglishTitle();
+            if (!isset($showRows[$showTitle])) {
+                $showRows[$showTitle] = [$showTitle];
             }
-            fwrite($fp, $this->arrayToCsv([
-                $title,
-                $voteTally->getVoteCount(),
-                "'" . $voteTally->getBuffRule(),
-                $voteTally->getBuffedVoteCount(),
-                $voteTally->getVotePercentOfVoterTotal(),
-                $voteTally->getBuffedVotePercentOfTotal()
-            ]) . "\n");
+            $showRows[$showTitle][] = $rawVote->getRank();
+        }
+
+        $userRows = $this->flipArray($showRows);
+
+        $fp = fopen('php://temp', 'wb');
+        foreach ($userRows as $userRow) {
+            fwrite($fp, $exportHelper->arrayToCsv([...$userRow]) . "\n");
         }
 
         rewind($fp);
@@ -154,6 +179,21 @@ class AdminElectionController extends AbstractController
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
         return $response;
+    }
+
+    private function flipArray(array $showRows): array
+    {
+        $userRows = [];
+        $i = -1;
+        foreach ($showRows as $showRow) {
+            $i++;
+            $j = -1;
+            foreach ($showRow as $value) {
+                $j++;
+                $userRows[$j][$i] = $value;
+            }
+        }
+        return $userRows;
     }
 
     /**
@@ -190,10 +230,9 @@ class AdminElectionController extends AbstractController
      * @Route("/{id}/buff", name="admin_election_buff", methods={"GET","POST"}, requirements={"id":"\d+"})
      * @param Request $request
      * @param Election $election
-     * @param ElectionVoteRepository $electionVoteRepository
      * @param ShowRepository $showRepository
-     * @param ElectionRepository $electionRepository
      * @param ElectionShowBuffRepository $electionShowBuffRepository
+     * @param VoterInfoHelper $voterInfoHelper
      * @return Response
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
@@ -201,12 +240,11 @@ class AdminElectionController extends AbstractController
     public function buff(
         Request $request,
         Election $election,
-        ElectionVoteRepository $electionVoteRepository,
         ShowRepository $showRepository,
-        ElectionRepository $electionRepository,
-        ElectionShowBuffRepository $electionShowBuffRepository
+        ElectionShowBuffRepository $electionShowBuffRepository,
+        VoterInfoHelper $voterInfoHelper
     ): Response {
-        $info = $this->getVoterInfo($electionRepository, $showRepository, $election, $electionVoteRepository);
+        $info = $voterInfoHelper->getInfo($election);
         $buffedElection = new BuffedElection($election);
         $buffedElection->setVoteTallies($info['voteTallies']);
 
@@ -277,153 +315,8 @@ class AdminElectionController extends AbstractController
         return $this->redirectToRoute('admin_election_index');
     }
 
-    /**
-     * @param array $votesInfo
-     * @param int $totalVoterCount
-     * @param int $buffedTotalVoteCount
-     * @param Show[] $shows
-     * @return VoteTally[]
-     */
-    private function getVoteTallies(array $votesInfo, int $totalVoterCount, int $buffedTotalVoteCount, array $shows): array
-    {
-        $voteTallies = [];
-        $totalVotes = 0;
-        $buffedTotalVotes = 0;
-        foreach ($votesInfo as $voteInfo) {
-            $totalVotes += $voteInfo['vote_count'];
-            $buffedTotalVotes += $voteInfo['buffed_vote_count'];
-        }
-        foreach ($votesInfo as $key => $voteInfo) {
-            $voteTally = new VoteTally();
-            $voteTally->setId($key);
-            $voteTally->setShowId((int)$voteInfo['show_id']);
-            $voteTally->setShowJapaneseTitle((string)$voteInfo['japanese_title']);
-            $voteTally->setShowFullJapaneseTitle((string)$voteInfo['full_japanese_title']);
-            $voteTally->setShowEnglishTitle((string)$voteInfo['english_title']);
-            $voteTally->setVoteCount((int)$voteInfo['vote_count']);
-            $voteTally->setBuffedVoteCount((int)$voteInfo['buffed_vote_count']);
-            $voteTally->setBuffRule($voteInfo['buff_rule'] ?? '');
-            $voteTally->setVotePercentOfTotal($this->calculatePercent($voteInfo['vote_count'], $totalVotes));
-            $voteTally->setBuffedVotePercentOfTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVotes));
-            $voteTally->setVotePercentOfVoterTotal($this->calculatePercent($voteInfo['vote_count'], $totalVoterCount));
-            $voteTally->setBuffedVotePercentOfVoterTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVoteCount));
-            $voteTallies[] = $voteTally;
-            foreach ($shows as $showsKey => $show) {
-                if ($show->getId() === $voteTally->getShowId()) {
-                    $voteTally->setShowCombinedTitle($show->getVoteStyleTitles());
-                    if ($show->getRelatedShows()) {
-                        $relatedShowNames = [];
-                        foreach ($show->getRelatedShows() as $relatedShow) {
-                            $relatedShowNames[] = $relatedShow->getVoteStyleTitles();
-                        }
-                        $voteTally->setRelatedShowNames($relatedShowNames);
-                    }
-                    unset($shows[$showsKey]);
-                    break;
-                }
-            }
-        }
 
-        // Remaining $shows got zero votes
-        $nextVoteTallyId = count($voteTallies);
-        foreach ($shows as $show) {
-            $nextVoteTallyId++;
-            $voteTally = new VoteTally();
-            $voteTally->setId($nextVoteTallyId);
-            $voteTally->setShowId($show->getId());
-            $voteTally->setShowCombinedTitle((string)$show->getVoteStyleTitles());
-            $voteTally->setShowJapaneseTitle((string)$show->getJapaneseTitle());
-            $voteTally->setShowFullJapaneseTitle((string)$show->getFullJapaneseTitle());
-            $voteTally->setShowEnglishTitle((string)$show->getEnglishTitle());
-            $voteTally->setVoteCount(0);
-            $voteTally->setBuffedVoteCount(0);
-            $voteTally->setVotePercentOfTotal(0.0);
-            $voteTally->setBuffedVotePercentOfTotal(0.0);
-            $voteTally->setRelatedShowNames([]);
-            if ($show->getRelatedShows()) {
-                foreach ($show->getRelatedShows() as $relatedShow) {
-                    $voteTally->addRelatedShowName($relatedShow->getVoteStyleTitles());
-                }
-            }
-            $voteTallies[] = $voteTally;
-        }
-        return $voteTallies;
-    }
 
-    private function calculatePercent(int $count, int $totalCount): float
-    {
-        if ($totalCount > 0) {
-            return round(($count / $totalCount) * 100, 1);
-        }
-        return 0;
-    }
 
-    /**
-     * @param ElectionRepository $electionRepository
-     * @param ShowRepository $showRepository
-     * @param Election $election
-     * @param ElectionVoteRepository $electionVoteRepository
-     * @return array
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
-     */
-    private function getVoterInfo(
-        ElectionRepository $electionRepository,
-        ShowRepository $showRepository,
-        Election $election,
-        ElectionVoteRepository $electionVoteRepository
-    ): array {
-        $info = [];
-        $info['electionIsActive'] = $electionRepository->electionIsActive();
-        $info['shows'] = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
-        $info['votesInfo'] = $electionVoteRepository->getCountsForElection($election);
-        $info['totalVoterCount'] = $electionVoteRepository->getVoterCountForElection($election);
-        $info['buffedTotalVoteCount'] = $electionVoteRepository->getBuffedVoteCountForElection($election);
-        $info['voteTallies'] = $this->getVoteTallies($info['votesInfo'], $info['totalVoterCount'],
-            $info['buffedTotalVoteCount'], $info['shows']);
-        return $info;
-    }
 
-    /**
-     * Formats a line (passed as a fields  array) as CSV and returns the CSV as a string.
-     * Adapted from http://us3.php.net/manual/en/function.fputcsv.php#87120
-     *
-     * @param array $fields
-     * @param string $delimiter
-     * @param string $enclosure
-     * @param bool $encloseAll
-     * @param bool $nullToMysqlNull
-     * @return string
-     * @noinspection PhpSameParameterValueInspection
-     */
-    private function arrayToCsv(
-        array $fields,
-        string $delimiter = ',',
-        string $enclosure = '"',
-        bool $encloseAll = true,
-        bool $nullToMysqlNull = false
-    ): string {
-        $delimiter_esc = preg_quote($delimiter, '/');
-        $enclosure_esc = preg_quote($enclosure, '/');
-
-        $output = array();
-        foreach ( $fields as $field ) {
-            if ($field === null && $nullToMysqlNull) {
-                $output[] = 'NULL';
-                continue;
-            }
-
-            // Enclose fields containing $delimiter, $enclosure or whitespace
-            /** @noinspection RegExpUnnecessaryNonCapturingGroup */
-            /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
-            if ( $encloseAll || preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
-                $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
-            }
-            else {
-                $output[] = $field;
-            }
-        }
-
-        return implode( $delimiter, $output );
-    }
 }

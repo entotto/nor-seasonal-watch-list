@@ -129,6 +129,9 @@
     "guzzlehttp/uri-template": {
         "version": "v0.2.0"
     },
+    "julien-boudry/condorcet": {
+        "version": "v2.2.3"
+    },
     "knpuniversity/oauth2-client-bundle": {
         "version": "1.20",
         "recipe": {

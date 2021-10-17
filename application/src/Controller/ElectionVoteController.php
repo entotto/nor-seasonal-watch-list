@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Election;
 use App\Entity\ElectionVote;
 use App\Entity\User;
 use App\Form\ElectionVoteType;
 use App\Repository\ElectionVoteRepository;
+use App\Repository\ShowRepository;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,16 +27,17 @@ class ElectionVoteController extends AbstractController
      * @param Request $request
      * @param ElectionVote $electionVote
      * @param ElectionVoteRepository $electionVoteRepository
+     * @param ShowRepository $showRepository
      * @return Response
-     * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function edit(
         Request $request,
         ElectionVote $electionVote,
-        ElectionVoteRepository $electionVoteRepository
-    ): Response
-    {
+        ElectionVoteRepository $electionVoteRepository,
+        ShowRepository $showRepository
+    ): Response {
         try {
             /** @var User $user */
             $user = $this->getUser();
@@ -52,6 +55,13 @@ class ElectionVoteController extends AbstractController
                 $maxVotes = -1;
             }
 
+            if ($election->getElectionType() === Election::RANKED_CHOICE_ELECTION) {
+                $shows = $showRepository->getShowsForSeasonElectionEligible($election->getSeason());
+                $showCount = count($shows);
+            } else {
+                $showCount = 0;
+            }
+
             $form = $this->createForm(
                 ElectionVoteType::class,
                 $electionVote,
@@ -59,7 +69,10 @@ class ElectionVoteController extends AbstractController
                     'attr' => [
                         'id' => 'election_vote_' . $electionVote->getId(),
                         'class' => 'election_vote_form',
-                    ]
+                    ],
+                    'election_type' => $election->getElectionType(),
+                    'show_count' => $showCount,
+                    'form_key' => 0,
                 ]
             );
             $form->handleRequest($request);
@@ -84,32 +97,36 @@ class ElectionVoteController extends AbstractController
                 $this->getDoctrine()->getManager()->flush();
 
                 if ($request->isXmlHttpRequest()) {
-                    $newCurrentVoteCount = ($electionVote->getChosen()) ? $currentVoteCount + 1 : $currentVoteCount - 1;
-                    $remainingChoices = $maxVotes - $newCurrentVoteCount;
-                    switch ($remainingChoices) {
-                        case 0:
-                            $message = $maxVotes === 1 ? 'Vote received.' : 'All votes received.';
-                            break;
-                        case 1:
-                            if ($newCurrentVoteCount > $currentVoteCount) {
-                                $message = 'Vote received, 1 choice left.';
-                            } else {
-                                $message = 'Change received, 1 choice left.';
-                            }
-                            break;
-                        default:
-                            $votesIncreased = $newCurrentVoteCount > $currentVoteCount;
-                            if ($maxVotes > 0) {
-                                if ($votesIncreased) {
-                                    $message = 'Vote received, ' . $remainingChoices . ' choices left.';
+                    if ($election->getElectionType() === Election::RANKED_CHOICE_ELECTION) {
+                        $message = 'Change received.';
+                    } else {
+                        $newCurrentVoteCount = ($electionVote->getChosen()) ? $currentVoteCount + 1 : $currentVoteCount - 1;
+                        $remainingChoices = $maxVotes - $newCurrentVoteCount;
+                        switch ($remainingChoices) {
+                            case 0:
+                                $message = $maxVotes === 1 ? 'Vote received.' : 'All votes received.';
+                                break;
+                            case 1:
+                                if ($newCurrentVoteCount > $currentVoteCount) {
+                                    $message = 'Vote received, 1 choice left.';
                                 } else {
-                                    $message = 'Change received, ' . $remainingChoices . ' choices left.';
+                                    $message = 'Change received, 1 choice left.';
                                 }
-                            } elseif ($votesIncreased) {
-                                $message = 'Vote received.';
-                            } else {
-                                $message = 'Change received.';
-                            }
+                                break;
+                            default:
+                                $votesIncreased = $newCurrentVoteCount > $currentVoteCount;
+                                if ($maxVotes > 0) {
+                                    if ($votesIncreased) {
+                                        $message = 'Vote received, ' . $remainingChoices . ' choices left.';
+                                    } else {
+                                        $message = 'Change received, ' . $remainingChoices . ' choices left.';
+                                    }
+                                } elseif ($votesIncreased) {
+                                    $message = 'Vote received.';
+                                } else {
+                                    $message = 'Change received.';
+                                }
+                        }
                     }
                     return new JsonResponse(
                         ['data' => [
@@ -123,11 +140,20 @@ class ElectionVoteController extends AbstractController
             }
 
             if ($request->isXmlHttpRequest()) {
-                $html = $this->renderView('election_vote/edit.html.twig', [
-                    'election_vote' => $electionVote,
-                    'form' => $form->createView(),
-                ]);
-                return new Response($html, 400);
+                return new JsonResponse(
+                    ['data' => [
+                        'status' => 'failure',
+                        'message' => "Submitted data was invalid"
+                    ]],
+                    Response::HTTP_BAD_REQUEST
+                );
+
+//                $html = $this->renderView('election_vote/edit.html.twig', [
+//                    'election_vote' => $electionVote,
+//                    'election' => $election,
+//                    'form' => $form->createView(),
+//                ]);
+//                return new Response($html, 400);
             }
         } catch (UniqueConstraintViolationException $e) {
             return new JsonResponse(
