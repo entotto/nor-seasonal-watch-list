@@ -35,10 +35,10 @@ final class SimpleVoteTallyHelper
             $voteTally->setVoteCount((int)$voteInfo['vote_count']);
             $voteTally->setBuffedVoteCount((int)$voteInfo['buffed_vote_count']);
             $voteTally->setBuffRule($voteInfo['buff_rule'] ?? '');
-            $voteTally->setVotePercentOfTotal($this->calculatePercent($voteInfo['vote_count'], $totalVotes));
-            $voteTally->setBuffedVotePercentOfTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVotes));
-            $voteTally->setVotePercentOfVoterTotal($this->calculatePercent($voteInfo['vote_count'], $totalVoterCount));
-            $voteTally->setBuffedVotePercentOfVoterTotal($this->calculatePercent($voteInfo['buffed_vote_count'], $buffedTotalVoteCount));
+            $voteTally->setVotePercentOfTotal($this->calculatePercent((int)$voteInfo['vote_count'], $totalVotes));
+            $voteTally->setBuffedVotePercentOfTotal($this->calculatePercent((int)$voteInfo['buffed_vote_count'], $buffedTotalVotes));
+            $voteTally->setVotePercentOfVoterTotal($this->calculatePercent((int)$voteInfo['vote_count'], $totalVoterCount));
+            $voteTally->setBuffedVotePercentOfVoterTotal($this->calculatePercent((int)$voteInfo['buffed_vote_count'], $buffedTotalVoteCount));
             $voteTallies[] = $voteTally;
             foreach ($shows as $showsKey => $show) {
                 if ($show->getId() === $voteTally->getShowId()) {
