@@ -10,7 +10,6 @@ use App\Entity\View\VoteTally;
 use App\Repository\ElectionRepository;
 use App\Repository\ElectionVoteRepository;
 use App\Repository\ShowRepository;
-use CondorcetPHP\Condorcet\Throwable\CondorcetException;
 use Doctrine\DBAL\Exception;
 use RuntimeException;
 
@@ -54,7 +53,6 @@ final class VoterInfoHelper
     /**
      * @param Election $election
      * @return array
-     * @throws CondorcetException
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
@@ -83,7 +81,7 @@ final class VoterInfoHelper
     /**
      * @param Election $election
      * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception|CondorcetException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function initializeForExport(Election $election): void
     {
@@ -117,7 +115,7 @@ final class VoterInfoHelper
             fwrite($fp, $this->exportHelper->arrayToCsv(['Show', 'Raw Votes', 'Buff', 'Calc Votes', '% of Voters', '% of Total']) . "\n");
         }
         if ($this->election->getElectionType() === Election::RANKED_CHOICE_ELECTION) {
-            fwrite($fp, $this->exportHelper->arrayToCsv(['Show', 'Rank', 'Stats']) . "\n");
+            fwrite($fp, $this->exportHelper->arrayToCsv(['Show', 'Rank']) . "\n");
         }
     }
 
@@ -144,7 +142,6 @@ final class VoterInfoHelper
                 fwrite($fp, $this->exportHelper->arrayToCsv([
                         $title,
                         $voteTally->getRank(),
-                        $voteTally->getRankStats(),
                     ]) . "\n");
             }
         }
