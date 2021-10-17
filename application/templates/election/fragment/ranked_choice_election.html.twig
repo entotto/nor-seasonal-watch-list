@@ -4,30 +4,18 @@
         <table class="table">
             <thead>
             <tr>
-                <th class="col-md-6 border-top-0 align-text-top">Show</th>
-                <th class="col-md-5 border-top-0 align-text-top">Details</th>
-                <th class="col-md-1 text-end border-top-0 align-text-top">Rank</th>
+                <th class="col-md-9 border-top-0 align-text-top">Show</th>
+                <th class="col-md-3 text-end border-top-0 align-text-top">Rank</th>
             </tr>
             </thead>
             <tbody>
             {% for voteTally in voteTallies %}
                 <tr>
-                    <td class="col-md-6">
-                        <i>{{ voteTally.getShowCombinedTitle }}</i>
-                        {% if voteTally.getRelatedShowNames is not empty %}
-                            <br />Additional seasons:
-                            <ul>
-                                {% for name in voteTally.getRelatedShowNames %}
-                                    <li><i>{{ name }}</i></li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
+                    <td class="col-md-9">
+                        {{ voteTally.getShowTitle }}
                     </td>
-                    <td class="col-md-5">
-                        <small>{{ voteTally.getRankStats|raw }}</small>
-                    </td>
-                    <td class="col-md-1 text-end">
-                        {{ voteTally.getFinalRank }}
+                    <td class="col-md-3 text-end">
+                        {{ voteTally.getRank }}
                     </td>
                 </tr>
             {% endfor %}

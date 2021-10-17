@@ -16,7 +16,6 @@ use App\Repository\ElectionVoteRepository;
 use App\Repository\ShowRepository;
 use App\Service\ExportHelper;
 use App\Service\VoterInfoHelper;
-use CondorcetPHP\Condorcet\Throwable\CondorcetException;
 use Doctrine\DBAL\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,7 +79,6 @@ class AdminElectionController extends AbstractController
      * @param Election $election
      * @param VoterInfoHelper $voterInfoHelper
      * @return Response
-     * @throws CondorcetException
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
@@ -107,7 +105,7 @@ class AdminElectionController extends AbstractController
      * @param Election $election
      * @return Response
      * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception|CondorcetException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function export(
         VoterInfoHelper $voterInfoHelper,
@@ -236,7 +234,6 @@ class AdminElectionController extends AbstractController
      * @param ElectionShowBuffRepository $electionShowBuffRepository
      * @param VoterInfoHelper $voterInfoHelper
      * @return Response
-     * @throws CondorcetException
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
      */
