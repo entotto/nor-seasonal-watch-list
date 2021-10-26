@@ -62,27 +62,41 @@
 {#                            <img class="img-fluid rounded-3" src="{{ row.vote.show.getCoverImageLarge|raw }}" alt="cover image" />#}
 {#                        </td>#}
                         <td class="col-md-9 col-xs-8 col-sm-8">
-                            {% if row.vote.show.getRelatedShows is empty %}
-                                <a target="_blank" href="https://anilist.co/anime/{{ row.vote.show.getAnilistId }}">
-                                    {{ row.vote.show.getVoteStyleTitles }}
-                                </a>
-                            {% else %}
-                                Multiple seasons:
-                                <ul>
-                                    <li>
+                            <div class="row">
+                                <div class="col-3 col-md-2 col-lg-1">
+                                    <img
+                                            class="img-fluid rounded-3"
+                                            src="{{ row.vote.show.getCoverImageLarge|raw }}"
+                                            alt="cover image"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#image-popup-{{ key }}"
+                                            style="cursor: pointer;"
+                                    />
+                                </div>
+                                <div class="col-9 col-md-10 col-lg-11">
+                                    {% if row.vote.show.getRelatedShows is empty %}
                                         <a target="_blank" href="https://anilist.co/anime/{{ row.vote.show.getAnilistId }}">
                                             {{ row.vote.show.getVoteStyleTitles }}
                                         </a>
-                                    </li>
-                                    {% for relatedShow in row.vote.show.getRelatedShows %}
-                                        <li>
-                                            <a target="_blank" href="https://anilist.com/anime/{{ relatedShow.getAnilistId }}">
-                                                {{ relatedShow.getVoteStyleTitles }}
-                                            </a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
+                                    {% else %}
+                                        Multiple seasons:
+                                        <ul>
+                                            <li>
+                                                <a target="_blank" href="https://anilist.co/anime/{{ row.vote.show.getAnilistId }}">
+                                                    {{ row.vote.show.getVoteStyleTitles }}
+                                                </a>
+                                            </li>
+                                            {% for relatedShow in row.vote.show.getRelatedShows %}
+                                                <li>
+                                                    <a target="_blank" href="https://anilist.com/anime/{{ relatedShow.getAnilistId }}">
+                                                        {{ relatedShow.getVoteStyleTitles }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </td>
                         <td class="col-md-3 col-xs-4 col-sm-4">
                             {% if row.form %}
@@ -180,6 +194,33 @@
     </div>
 
 
+{% endblock %}
+
+{% block modal_popup %}
+    {% for key, row in data %}
+        <div class="modal fade" id="image-popup-{{ key }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <img
+                                            class="img-fluid mx-auto d-block"
+                                            src="{{ row.vote.show.getCoverImageLarge|raw }}"
+                                            alt="cover image"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}
 
 {% block body_javascripts %}
