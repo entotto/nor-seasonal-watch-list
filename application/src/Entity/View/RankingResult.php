@@ -11,10 +11,10 @@ final class RankingResult
 
     private int $rank;
 
-    public function __construct(string $showTitle, int $rank)
+    public function __construct(?string $showTitle, ?int $rank)
     {
-        $this->showTitle = $showTitle;
-        $this->rank = $rank;
+        $this->showTitle = $showTitle ?? '(unknown)';
+        $this->rank = $rank ?? 0;
     }
 
     /**

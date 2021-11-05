@@ -189,7 +189,9 @@ final class MinimaxRankHelper
 
             $winners = $this->maxima($this->candidates, $defeats);
 
-            if (count($winners) === 1) {
+            if (count($winners) === 0) {
+                $results = [];
+            } elseif (count($winners) === 1) {
                 $winner = current($winners);
                 $key = array_search($winner, $this->candidates, true);
                 array_splice($this->candidates, $key, 1);
