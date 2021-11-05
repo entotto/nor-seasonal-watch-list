@@ -36,7 +36,11 @@ class AnilistApi
     {
 //        echo("<pre>\n"); print_r($data); die();
         $show->setJapaneseTitle($data['title']['romaji']);
-        $show->setEnglishTitle($data['title']['english']);
+        if (empty($data['title']['english'])) {
+            $show->setEnglishTitle($data['title']['romaji']);
+        } else {
+            $show->setEnglishTitle($data['title']['english']);
+        }
         $show->setFullEnglishTitle($data['title']['english']);
         $show->setFullJapaneseTitle($data['title']['native']);
         $show->setDescription($data['description']);
