@@ -122,6 +122,15 @@ final class MinimaxRankHelper
         $results = [];
         $topOfRange = $this->getNumberOfWinners();
         $nT = $this->getNumberOfTitles();
+        $nB = count($this->ballots);
+
+        // Handle the before-election-starts case of no ballots entered
+        if ($nB === 0) {
+            for ($i = 0; $i < $nT; $i++) {
+                $results[] = new RankingResult($this->titles[$i], 0);
+            }
+            return $results;
+        }
 
         for ($winnerRank = 1; $winnerRank <= $topOfRange; $winnerRank++) {
 
