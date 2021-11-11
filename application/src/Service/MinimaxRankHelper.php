@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\View\RankingResult;
+use Exception;
 
 final class MinimaxRankHelper
 {
@@ -119,100 +120,110 @@ final class MinimaxRankHelper
      */
     public function getRanks(): array
     {
-        $results = [];
-        $topOfRange = $this->getNumberOfWinners();
-        $nT = $this->getNumberOfTitles();
-        $nB = count($this->ballots);
+        try {
+            $results = [];
+            $topOfRange = $this->getNumberOfWinners();
+            $nT = $this->getNumberOfTitles();
+            $nB = count($this->ballots);
 
-        // Handle the before-election-starts case of no ballots entered
-        if ($nB === 0) {
-            for ($i = 0; $i < $nT; $i++) {
-                $results[] = new RankingResult($this->titles[$i], 0);
+            // Handle the before-election-starts case of no ballots entered
+            if ($nB === 0) {
+                for ($i = 0; $i < $nT; $i++) {
+                    $results[] = new RankingResult($this->titles[$i], 0);
+                }
+                return $results;
             }
-            return $results;
-        }
 
-        for ($winnerRank = 1; $winnerRank <= $topOfRange; $winnerRank++) {
+            for ($winnerRank = 1; $winnerRank <= $topOfRange; $winnerRank++) {
 
-            // $preferenceMatrix[$a][$b] stores how many people ranked $a above $b
-            // Create NxN nested array filled with 0s
-            $preferenceMatrix = array_fill(0, $nT, array_fill(0, $nT, 0));
+                // $preferenceMatrix[$a][$b] stores how many people ranked $a above $b
+                // Create NxN nested array filled with 0s
+                $preferenceMatrix = array_fill(0, $nT, array_fill(0, $nT, 0));
 
-            $nC = $this->getNumberOfCandidates();
+                $nC = $this->getNumberOfCandidates();
 
-            // Compare all candidates pairwise
-            foreach ($this->ballots as $ballot) {
+                // Compare all candidates pairwise
+                foreach ($this->ballots as $ballot) {
+                    for ($i = 0; $i < $nC; $i++) {
+                        $iKey = $this->candidates[$i];
+                        for ($j = 0; $j < $nC; $j++) {
+                            $jKey = $this->candidates[$j];
+                            if ($iKey === $jKey) {
+                                continue;
+                            }
+                            $ballotI = $ballot[$iKey];
+                            $ballotJ = $ballot[$jKey];
+                            // 'No opinion' doesn't count for either candidate being compared.
+                            if ($ballotI === null || $ballotJ === null) {
+                                continue;
+                            }
+                            if ($ballotI < $ballotJ) {
+                                $preferenceMatrix[$iKey][$jKey] += 1;
+                            }
+                        }
+                    }
+                }
+
+                // We order the candidates' defeats. Note that "defeats" really means all pairwise contests here.
+                // Proper defeats result in negative values, while victories result in positive values.
+                // We then sort them smallest to largest, so the worst defeat comes first.
+
+                $defeats = [];
                 for ($i = 0; $i < $nC; $i++) {
                     $iKey = $this->candidates[$i];
+                    $candidateDefeats = [];
                     for ($j = 0; $j < $nC; $j++) {
                         $jKey = $this->candidates[$j];
                         if ($iKey === $jKey) {
                             continue;
                         }
-                        $ballotI = $ballot[$iKey];
-                        $ballotJ = $ballot[$jKey];
-                        // 'No opinion' doesn't count for either candidate being compared.
-                        if ($ballotI === null || $ballotJ === null) {
-                            continue;
-                        }
-                        if ($ballotI < $ballotJ) {
-                            $preferenceMatrix[$iKey][$jKey] += 1;
-                        }
+                        $candidateDefeats[] = [
+                            $preferenceMatrix[$iKey][$jKey] - $preferenceMatrix[$jKey][$iKey],  // Margin
+                            $preferenceMatrix[$iKey][$jKey]                               // Winning Votes
+                        ];
                     }
-                }
-            }
 
-            // We order the candidates' defeats. Note that "defeats" really means all pairwise contests here.
-            // Proper defeats result in negative values, while victories result in positive values.
-            // We then sort them smallest to largest, so the worst defeat comes first.
+                    // Sort candidates' defeats by margin first, winning votes second.
+                    // Note that this is not what the Darlington paper recommends, but what
+                    // CIVS implements.
+                    usort(
+                        $candidateDefeats,
+                        static function ($x, $y) {
+                            if ($x[0] > $y[0]) {
+                                return 1;
+                            }
+                            if ($x[0] < $y[0]) {
+                                return -1;
+                            }
+                            return $x[1] <=> $y[1];
+                        }
+                    );
 
-            $defeats = [];
-            for ($i = 0; $i < $nC; $i++) {
-                $iKey = $this->candidates[$i];
-                $candidateDefeats = [];
-                for ($j = 0; $j < $nC; $j++) {
-                    $jKey = $this->candidates[$j];
-                    if ($iKey === $jKey) {
-                        continue;
-                    }
-                    $candidateDefeats[] = [
-                        $preferenceMatrix[$iKey][$jKey] - $preferenceMatrix[$jKey][$iKey],  // Margin
-                        $preferenceMatrix[$iKey][$jKey]                               // Winning Votes
-                    ];
+                    $defeats[$i] = $candidateDefeats;
                 }
 
-                // Sort candidates' defeats by margin first, winning votes second.
-                // Note that this is not what the Darlington paper recommends, but what
-                // CIVS implements.
-                usort(
-                    $candidateDefeats,
-                    static function ($x, $y) {
-                        if ($x[0] > $y[0]) { return 1; }
-                        if ($x[0] < $y[0]) { return -1; }
-                        return $x[1] <=> $y[1];
-                    }
-                );
+                $winners = $this->maxima($this->candidates, $defeats);
 
-                $defeats[$i] = $candidateDefeats;
-            }
+                // Do nothing if count($winners) === 0
+                // That can happen if there are ties, and we have reached the end of the 'for $winnerRank' outer loop.
 
-            $winners = $this->maxima($this->candidates, $defeats);
-
-            if (count($winners) === 0) {
-                $results = [];
-            } elseif (count($winners) === 1) {
-                $winner = current($winners);
-                $key = array_search($winner, $this->candidates, true);
-                array_splice($this->candidates, $key, 1);
-                $results[] = new RankingResult($this->titles[$winner], $winnerRank);
-            } else {
-                foreach ($winners as $winner) {
+                if (count($winners) === 1) {
+                    $winner = current($winners);
                     $key = array_search($winner, $this->candidates, true);
-                    $results[] = new RankingResult($this->titles[$winner], $winnerRank);
                     array_splice($this->candidates, $key, 1);
+                    $results[] = new RankingResult($this->titles[$winner], $winnerRank);
+                } elseif (count($winners) > 1) {
+                    foreach ($winners as $winner) {
+                        $key = array_search($winner, $this->candidates, true);
+                        $results[] = new RankingResult($this->titles[$winner], $winnerRank);
+                        array_splice($this->candidates, $key, 1);
+                    }
                 }
             }
+            return $results;
+        } catch (Exception $e) {
+            print $e->getMessage();
+            return [];
         }
-        return $results;
     }
 }
