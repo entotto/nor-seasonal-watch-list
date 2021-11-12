@@ -17,6 +17,16 @@ final class MinimaxRankHelper
     private array $ballots = [];
 
     private ?int $numberOfWinners = null;
+    private bool $noOpinionIsWorstRank;
+
+    /**
+     * @param bool $noOpinionIsWorstRank
+     */
+    public function __construct(
+        bool $noOpinionIsWorstRank
+    ) {
+        $this->noOpinionIsWorstRank = $noOpinionIsWorstRank;
+    }
 
     public function setNumberOfWinners(?int $n): void
     {
@@ -39,7 +49,7 @@ final class MinimaxRankHelper
         $thisBallot = array_values($ballot);
         // Convert 'No opinion' into null, other values to int
         foreach($thisBallot as $key => $value) {
-            if (strtolower($value) === 'no opinion') {
+            if ( empty($value) || strtolower($value) === 'no opinion') {
                 $thisBallot[$key] = null;
             } else {
                 $thisBallot[$key] = (int)$value;
@@ -153,12 +163,30 @@ final class MinimaxRankHelper
                             }
                             $ballotI = $ballot[$iKey];
                             $ballotJ = $ballot[$jKey];
-                            // 'No opinion' doesn't count for either candidate being compared.
-                            if ($ballotI === null || $ballotJ === null) {
-                                continue;
-                            }
-                            if ($ballotI < $ballotJ) {
-                                $preferenceMatrix[$iKey][$jKey] += 1;
+
+                            if ($this->noOpinionIsWorstRank) {
+                                // 'Madi' version, which counts no opinion as worse than any explicit ranking.
+                                // Two paired no opinions still counted as a tie.
+
+                                // 'No opinion' for both candidates counts as a tie.
+                                if ($ballotI === null && $ballotJ === null) {
+                                    continue;
+                                }
+                                if ($ballotJ === null || ($ballotI !== null && $ballotI < $ballotJ)) {
+                                    $preferenceMatrix[$iKey][$jKey] += 1;
+                                }
+
+                            } else {
+                                // Original 'Max' version, which counts any no opinion as a no-decision between
+                                // the two candidates.
+
+                                // 'No opinion' doesn't count for either candidate being compared.
+                                if ($ballotI === null || $ballotJ === null) {
+                                    continue;
+                                }
+                                if ($ballotI < $ballotJ) {
+                                    $preferenceMatrix[$iKey][$jKey] += 1;
+                                }
                             }
                         }
                     }
