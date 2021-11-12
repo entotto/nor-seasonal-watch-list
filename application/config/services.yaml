@@ -13,6 +13,7 @@ parameters:
     discordBotToken: "%env(DISCORD_BOT_TOKEN)%"
     router.request_context.scheme: 'https'
     asset.request_context.secure: true
+    noOpinionIsWorstRank: "%env(bool:NO_OPINION_IS_WORST_RANK)%"
 
 services:
     # default configuration for services in *this* file
@@ -27,6 +28,7 @@ services:
             $discordTestRedirectUri: '%discordTestRedirectUri%'
             $norGuildId: '%norGuildId%'
             $apiVersion: '%api_version%'
+            $noOpinionIsWorstRank: '%noOpinionIsWorstRank%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
