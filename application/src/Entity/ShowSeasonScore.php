@@ -45,25 +45,25 @@ class ShowSeasonScore
     private ?Score $score = null;
 
     /**
-     * @var Season
+     * @var Season|null
      * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="showSeasonScores")
      * @ORM\JoinColumn(nullable=false)
      */
-    private Season $season;
+    private ?Season $season;
 
     /**
-     * @var Show
+     * @var Show|null
      * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="scores")
      * @ORM\JoinColumn(nullable=false)
      */
-    private Show $show;
+    private ?Show $show;
 
     /**
-     * @var User
+     * @var User|null
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="showSeasonScores")
      * @ORM\JoinColumn(nullable=false)
      */
-    private User $user;
+    private ?User $user;
 
     public function getId(): ?int
     {
@@ -103,9 +103,9 @@ class ShowSeasonScore
     }
 
     /**
-     * @return Season
+     * @return Season|null
      */
-    public function getSeason(): Season
+    public function getSeason(): ?Season
     {
         return $this->season;
     }
@@ -122,9 +122,9 @@ class ShowSeasonScore
     }
 
     /**
-     * @return Show
+     * @return Show|null
      */
-    public function getShow(): Show
+    public function getShow(): ?Show
     {
         return $this->show;
     }
@@ -141,9 +141,9 @@ class ShowSeasonScore
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -167,7 +167,7 @@ class ShowSeasonScore
             'score' => $this->getScore() ? $this->getScore()->jsonSerialize() : [],
             'season' => $this->getSeason() ? $this->getSeason()->jsonSerialize() : [],
             'show' => $this->getShow() ? $this->getShow()->jsonSerialize() : [],
-            'user' => $this->getUser()->jsonSerialize(),
+            'user' => $this->getUser() ? $this->getUser()->jsonSerialize() : [],
         ];
     }
 
@@ -177,7 +177,7 @@ class ShowSeasonScore
             'id' => $this->getId(),
             'activity' => $this->getActivity() ? $this->getActivity()->jsonSerialize() : [],
             'recommendation' => $this->getScore() ? $this->getScore()->jsonSerialize() : [],
-            'user' => $this->getUser()->jsonSerialize(),
+            'user' => $this->getUser() ? $this->getUser()->jsonSerialize() : [],
         ];
     }
 }

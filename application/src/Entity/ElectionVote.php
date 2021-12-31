@@ -31,25 +31,25 @@ class ElectionVote
     private ?int $id = null;
 
     /**
-     * @var Show
+     * @var Show|null
      * @ORM\ManyToOne(targetEntity=Show::class, inversedBy="votes")
      * @ORM\JoinColumn(nullable=false)
      */
-    private Show $animeShow;
+    private ?Show $animeShow;
 
     /**
-     * @var Season
+     * @var Season|null
      * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="votes")
      * @ORM\JoinColumn(nullable=false)
      */
-    private Season $season;
+    private ?Season $season;
 
     /**
-     * @var User
+     * @var User|null
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="electionVotes")
      * @ORM\JoinColumn(nullable=false)
      */
-    private User $user;
+    private ?User $user;
 
     /**
      * @var bool
@@ -64,11 +64,11 @@ class ElectionVote
     private ?int $rank = null;
 
     /**
-     * @var Election
+     * @var Election|null
      * @ORM\ManyToOne(targetEntity=Election::class, inversedBy="electionVotes")
      * @ORM\JoinColumn(nullable=false)
      */
-    private Election $election;
+    private ?Election $election;
 
     /**
      * @return int|null
@@ -79,17 +79,17 @@ class ElectionVote
     }
 
     /**
-     * @return Show
+     * @return Show|null
      */
-    public function getAnimeShow(): Show
+    public function getAnimeShow(): ?Show
     {
         return $this->animeShow;
     }
 
     /**
-     * @return Show
+     * @return Show|null
      */
-    public function getShow(): Show
+    public function getShow(): ?Show
     {
         return $this->getAnimeShow();
     }
@@ -115,9 +115,9 @@ class ElectionVote
     }
 
     /**
-     * @return Season
+     * @return Season|null
      */
-    public function getSeason(): Season
+    public function getSeason(): ?Season
     {
         return $this->season;
     }
@@ -134,9 +134,9 @@ class ElectionVote
     }
 
     /**
-     * @return User
+     * @return User|null
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -172,9 +172,9 @@ class ElectionVote
     }
 
     /**
-     * @return Election
+     * @return Election|null
      */
-    public function getElection(): Election
+    public function getElection(): ?Election
     {
         return $this->election;
     }

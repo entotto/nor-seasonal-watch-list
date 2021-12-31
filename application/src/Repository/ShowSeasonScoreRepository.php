@@ -104,6 +104,19 @@ class ShowSeasonScoreRepository extends ServiceEntityRepository
 
     /**
      * @param User $user
+     * @return ShowSeasonScore[]
+     */
+    public function findAllForUser(User $user): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param User $user
      * @param Show $show
      * @param Season $season
      * @return ShowSeasonScore|null

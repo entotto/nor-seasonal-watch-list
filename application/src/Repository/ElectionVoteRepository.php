@@ -49,6 +49,19 @@ class ElectionVoteRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param User $user
+     * @return ElectionVote[]|array
+     */
+    public function getAllForUser(User $user): array
+    {
+        return $this->createQueryBuilder('ev')
+            ->where('ev.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @param Election $election
      * @return array
      * @throws DoctrineException

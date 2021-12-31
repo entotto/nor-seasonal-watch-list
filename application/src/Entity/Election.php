@@ -6,7 +6,6 @@ namespace App\Entity;
 
 use App\Repository\ElectionRepository;
 use DateTime;
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,23 +41,23 @@ class Election
     private ?string $description = null;
 
     /**
-     * @var Season
+     * @var Season|null
      * @ORM\ManyToOne(targetEntity=Season::class, inversedBy="elections")
      * @ORM\JoinColumn(nullable=false)
      */
-    private Season $season;
+    private ?Season $season;
 
     /**
-     * @var DateTimeInterface
+     * @var DateTime|null
      * @ORM\Column(type="datetime")
      */
-    private DateTimeInterface $startDate;
+    private ?DateTime $startDate;
 
     /**
-     * @var DateTimeInterface
+     * @var DateTime|null
      * @ORM\Column(type="datetime")
      */
-    private DateTimeInterface $endDate;
+    private ?DateTime $endDate;
 
     /**
      * @var int|null
@@ -100,9 +99,9 @@ class Election
     }
 
     /**
-     * @return Season
+     * @return Season|null
      */
-    public function getSeason(): Season
+    public function getSeason(): ?Season
     {
         return $this->season;
     }
@@ -119,18 +118,18 @@ class Election
     }
 
     /**
-     * @return DateTimeInterface
+     * @return DateTime|null
      */
-    public function getStartDate(): DateTimeInterface
+    public function getStartDate(): ?DateTime
     {
         return $this->startDate;
     }
 
     /**
-     * @param DateTimeInterface $startDate
+     * @param DateTime $startDate
      * @return $this
      */
-    public function setStartDate(DateTimeInterface $startDate): self
+    public function setStartDate(DateTime $startDate): self
     {
         $this->startDate = $startDate;
 
@@ -138,18 +137,18 @@ class Election
     }
 
     /**
-     * @return DateTimeInterface
+     * @return DateTime|null
      */
-    public function getEndDate(): DateTimeInterface
+    public function getEndDate(): ?DateTime
     {
         return $this->endDate;
     }
 
     /**
-     * @param DateTimeInterface $endDate
+     * @param DateTime $endDate
      * @return $this
      */
-    public function setEndDate(DateTimeInterface $endDate): self
+    public function setEndDate(DateTime $endDate): self
     {
         $this->endDate = $endDate;
 
@@ -163,7 +162,8 @@ class Election
     {
         try {
             $now = new DateTime();
-            return $now >= $this->getStartDate() && $now <= $this->getEndDate();
+            return $this->getStartDate() && $this->getEndDate() &&
+                $now >= $this->getStartDate() && $now <= $this->getEndDate();
         } catch (Exception $e) {
             return false;
         }
@@ -210,7 +210,8 @@ class Election
 
     public function __toString(): string
     {
-        return $this->getName() . $this->getStartDate()->format(' \(Y-m-d H:i:s\)');
+        $start = $this->getStartDate() ? $this->getStartDate()->format(' \(Y-m-d H:i:s\)') : ' (unknown start)';
+        return $this->getName() . $start;
     }
 
     /**
@@ -322,7 +323,7 @@ class Election
      */
     public function getElectionType(): string
     {
-        return $this->electionType;
+        return $this->electionType ?? '(unknown)';
     }
 
     /**
