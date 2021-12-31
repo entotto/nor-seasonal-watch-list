@@ -5,6 +5,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use App\Service\DiscordApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -86,9 +87,21 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         $discordId = $discordUser->getId();
         $localUsername = $discordUser->getUsername() . '#' . $discordUser->getDiscriminator();
 
-        /** @var User $existingUser */
-        $existingUser = $this->em->getRepository(User::class)
-            ->findOneBy(['username' => $localUsername]);
+        /** @var UserRepository $userRepo */
+        $userRepo = $this->em->getRepository(User::class);
+        /** @var User|null $existingUser */
+        $existingUser = null;
+        if ($discordId) {
+            $existingUsers = $userRepo->findAllByDiscordId($discordId);
+            if ($existingUsers) {
+                // Take the last, which we hope is the most current and active
+                $existingUser = array_pop($existingUsers);
+            }
+        }
+        if (!$existingUser) {
+            $existingUser = $this->em->getRepository(User::class)
+                ->findOneBy(['username' => $localUsername]);
+        }
         if ($existingUser) {
             $existingRoles = $existingUser->getRoles();
             try {
@@ -98,6 +111,22 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
                 }
                 $nickname = $this->getDiscordNickname($credentials->getToken(), $discordId);
                 $existingUser->setDisplayName($nickname);
+                if ($existingUser->getDiscordId() !== $discordId) {
+                    $existingUser->setDiscordId($discordId);
+                }
+                if ($existingUser->getUsername() !== $localUsername) {
+                    try {
+                        // Remove potential collision
+                        $priorUser = $userRepo->findByUsername($localUsername);
+                        if ($priorUser) {
+                            $priorUser->setUsername(sprintf("%s-%s", $localUsername, $priorUser->getId()));
+                            $this->em->persist($priorUser);
+                        }
+                        $existingUser->setUsername($localUsername);
+                    } catch (Exception $e) {
+                        // Leave username unchanged for now
+                    }
+                }
                 $this->em->persist($existingUser);
                 $this->em->flush();
             } catch (GuzzleException|Exception $e) {

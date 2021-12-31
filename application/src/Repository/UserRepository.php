@@ -41,4 +41,30 @@ class UserRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['apiKey' => $apiKey]);
     }
+
+    /**
+     * Due to a bug in this application, there can be multiple User records with the same
+     * Discord ID. Find all of them, in creation order, in the hope that the newest one
+     * is likely to be the one currently being used by the Discord user.
+     *
+     * @param string $discordId
+     * @return User[]|array
+     */
+    public function findAllByDiscordId(string $discordId): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->andWhere('u.discordId = :discordId')
+            ->setParameter('discordId', $discordId)
+            ->orderBy('u.id', 'asc');
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param string $username
+     * @return User|null
+     */
+    public function findByUsername(string $username): ?User
+    {
+        return $this->findOneBy(['username' => $username]);
+    }
 }
