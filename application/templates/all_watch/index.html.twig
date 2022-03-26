@@ -147,7 +147,7 @@
             <div class="row">
                 {% if viewMode == 'expanded' %}
                     <div class="col-md-2">
-                        <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                        <img class="img-fluid rounded-3 cover-image-large" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                     </div>
                     <div class="col-md-2">
                         {{ row.show.title|raw }}
@@ -273,7 +273,7 @@
                 <div id="collapseRow{{ key }}" class="collapse">
                     <div class="row">
                         <div class="col-md-2 mt-3">
-                            <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                            <img class="img-fluid rounded-3 cover-image-large" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                         </div>
                         <div class="col-md-2 mt-3">
                             {{ row.show.title|raw }}
@@ -324,7 +324,7 @@
                 </div>
                 <div class="row">
                     <div class="col-4">
-                        <img class="img-fluid rounded-3" src="{{ row.show.coverImage|raw }}" alt="cover image" />
+                        <img class="img-fluid rounded-3 cover-image-large" src="{{ row.show.coverImage|raw }}" alt="cover image" />
                     </div>
                     <div class="col-8 position-relative">
                         {{ row.show.title|raw }}

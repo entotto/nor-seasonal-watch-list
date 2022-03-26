@@ -8,7 +8,10 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ShowType extends AbstractType
@@ -49,6 +52,25 @@ class ShowType extends AbstractType
                 'label' => 'Exclude from elections'
             ])
         ;
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $show = $event->getData();
+            $form = $event->getForm();
+
+            if ($show !== null && $show->getId() !== null) {
+                $form->add('japaneseTitle')
+                    ->add('fullJapaneseTitle')
+                    ->add('englishTitle')
+//                    ->add('description')
+//                    ->add('hashtag')
+                    ->add('coverImageMedium')
+                    ->add('coverImageLarge')
+                    ->add('siteUrl')
+                    ->add('malId')
+                    ->add('updateFromAnilist', SubmitType::class, ['label' => 'Update from Anilist'])
+                    ;
+
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
