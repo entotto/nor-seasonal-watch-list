@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Entity\Show;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use JsonException;
 
 class AnilistApi
@@ -20,22 +21,26 @@ class AnilistApi
      */
     public function fetch(int $anilistId): ?array
     {
-        $http = new Client;
-        $response = $http->post($this->anilistApiBase, [
-            'json' => [
-                'query' => $this->constructQuery($anilistId)
-            ]
-        ]);
-        $statusCode = $response->getStatusCode();
-        if (($statusCode >= 200) && ($statusCode < 300)) {
-            try {
-                $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
-                return $data['data']['Media'];
-            } catch (Exception $e) {
-                return null;
+        try {
+            $http = new Client;
+            $response = $http->post($this->anilistApiBase, [
+                'json' => [
+                    'query' => $this->constructQuery($anilistId)
+                ]
+            ]);
+            $statusCode = $response->getStatusCode();
+            if (($statusCode >= 200) && ($statusCode < 300)) {
+                try {
+                    $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+                    return $data['data']['Media'];
+                } catch (Exception $e) {
+                    return null;
+                }
             }
+            return null;
+        } catch (RequestException|Exception $e) {
+            return null;
         }
-        return null;
     }
 
     public function updateShow(Show $show, array $data): void
