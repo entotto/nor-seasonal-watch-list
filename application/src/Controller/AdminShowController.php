@@ -128,7 +128,7 @@ class AdminShowController extends AbstractController
             $em->persist($show);
             $em->flush();
 
-            return $this->redirectToRoute('admin_show_edit');
+            return $this->redirectToRoute('admin_show_edit', ['id' => $show->getId()]);
         }
 
         return $this->render('show/new.html.twig', [
