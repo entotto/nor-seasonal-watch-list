@@ -55,12 +55,9 @@
         "twbs/bootstrap": "^5.1",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "wohali/oauth2-discord-new": "^1.1"
-    },
-    "require-dev": {
+        "wohali/oauth2-discord-new": "^1.1",
         "mockery/mockery": "^1.4",
         "phpunit/phpunit": "^9.5",
-        "roave/security-advisories": "dev-latest",
         "symfony/browser-kit": "^5.2",
         "symfony/css-selector": "^5.2",
         "symfony/debug-bundle": "^5.2",
@@ -69,6 +66,9 @@
         "symfony/stopwatch": "^5.2",
         "symfony/var-dumper": "^5.2",
         "symfony/web-profiler-bundle": "^5.2"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
     },
     "config": {
         "optimize-autoloader": true,
