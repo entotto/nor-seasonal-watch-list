@@ -258,3 +258,10 @@ body.color-scheme-dark .third-nav-bar { background-color: #222 !important; }
 .has-markdown td {
     padding-right: 1em;
 }
+
+.cover-image-large {
+    max-width: 200px;
+}
+.cover-image-medium {
+    max-width: 100px;
+}

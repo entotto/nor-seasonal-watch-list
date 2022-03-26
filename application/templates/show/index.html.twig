@@ -15,6 +15,8 @@
 
     {% include 'show/fragment/season_picker.html.twig' %}
 
+    {{ include('show/fragment/flashes.html.twig') }}
+
     <h1>Shows</h1>
 
     <table class="table">
@@ -44,7 +46,7 @@
             <tr>
                 <td>
                     <a href="{{ path('admin_show_show', {'id': show.id}) }}">
-                        <img class="rounded-3" src="{{ show.getCoverImageMedium|raw }}" alt="cover image" />
+                        <img class="rounded-3 cover-image-medium" src="{{ show.getCoverImageMedium|raw }}" alt="cover image" />
                     </a>
                 </td>
                 <td>

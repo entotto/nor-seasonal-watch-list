@@ -11,7 +11,8 @@
                 </div>
             </div>
         <p>
-            The app will automatically fill in show details from the Anilist database.
+            On first save the app will automatically fill in show details from the Anilist database.
+            During later edits you can choose to manually refresh the information from Anilist.
         </p>
         <p>
             Select the season or seasons the show will air in.
@@ -27,29 +28,62 @@
 {{ form_start(form) }}
 {#<div class="row">#}
 {#    <div class="col">#}
-{#        {{ form_row(form.japaneseTitle) }}#}
-{#    </div>#}
-{#</div>#}
-{#<div class="row">#}
-{#    <div class="col">#}
-{#        {{ form_row(form.englishTitle) }}#}
-{#    </div>#}
-{#</div>#}
-{#<div class="row">#}
-{#    <div class="col">#}
-{#        {{ form_row(form.fullJapaneseTitle) }}#}
-{#    </div>#}
-{#</div>#}
-{#<div class="row">#}
-{#    <div class="col">#}
 {#        {{ form_row(form.fullEnglishTitle) }}#}
 {#    </div>#}
 {#</div>#}
 <div class="row">
     <div class="col-md-6">
-        {{ form_row(form.anilistId) }}
+        {{ form_row(form.anilistId, {'label': 'Anilist show ID'}) }}
     </div>
 </div>
+{% if mode == 'edit' %}
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.japaneseTitle) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.fullJapaneseTitle) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.englishTitle) }}
+        </div>
+    </div>
+{#    <div class="row">#}
+{#        <div class="col">#}
+{#            {{ form_row(form.description) }}#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="row">#}
+{#        <div class="col">#}
+{#            {{ form_row(form.hashtag) }}#}
+{#        </div>#}
+{#    </div>#}
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.coverImageMedium, {'label': 'Cover image small URL'}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.coverImageLarge, {'label': 'Cover image medium URL'}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.siteUrl, {'label': 'Anilist show page URL'}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.malId, {'label': 'MyAnimeList show ID'}) }}
+        </div>
+    </div>
+
+{% endif %}
 <div class="row">
     <div class="col-md-6">
         <div class="card mt-3 mb-3">
@@ -94,6 +128,9 @@
 <div class="row py-3">
     <div class="col">
         <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+        {% if mode == 'edit' %}
+            {{ form_widget(form.updateFromAnilist, {'attr': {'class': 'btn btn-warning ms-2'}}) }}
+        {% endif %}
     </div>
 </div>
 {{ form_end(form) }}

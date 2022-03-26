@@ -113,21 +113,29 @@ class AdminShowController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $this->saveNewRelatedShows($show, $em);
-            $anilistData = $anilistApi->fetch($show->getAnilistId());
-            if ($anilistData !== null) {
-                $anilistApi->updateShow($show, $anilistData);
+            try {
+                $anilistData = $anilistApi->fetch($show->getAnilistId());
+                if ($anilistData !== null) {
+                    $anilistApi->updateShow($show, $anilistData);
+                    $this->addFlash('success', 'Updated from the Anilist API');
+                } else {
+                    $this->addFlash('warning', 'Update from the Anilist API failed');
+                }
+            } catch (Exception $e) {
+                $this->addFlash('warning', 'Update from the Anilist API failed');
             }
 
             $em->persist($show);
             $em->flush();
 
-            return $this->redirectToRoute('admin_show_index');
+            return $this->redirectToRoute('admin_show_edit');
         }
 
         return $this->render('show/new.html.twig', [
             'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
+            'mode' => 'add',
             'electionIsActive' => $electionIsActive,
         ]);
     }
@@ -180,20 +188,32 @@ class AdminShowController extends AbstractController
                 $em->persist($originalRelatedShow);
             }
             $this->saveNewRelatedShows($show, $em);
-            $anilistData = $anilistApi->fetch($show->getAnilistId());
-            if ($anilistData !== null) {
-                $anilistApi->updateShow($show, $anilistData);
+
+            if ($form->get('updateFromAnilist') && $form->get('updateFromAnilist')->isClicked()) {
+                try {
+                    $anilistData = $anilistApi->fetch($show->getAnilistId());
+                    if ($anilistData !== null) {
+                        $anilistApi->updateShow($show, $anilistData);
+                        $this->addFlash('success', 'Updated from the Anilist API');
+                    } else {
+                        $this->addFlash('warning', 'Update from the Anilist API failed');
+                    }
+                } catch (Exception $e) {
+                    $this->addFlash('warning', 'Update from the Anilist API failed');
+                }
             }
+
             $em->persist($show);
             $em->flush();
 
-            return $this->redirectToRoute('admin_show_index');
+            $this->addFlash("success", "Show updated");
         }
 
         return $this->render('show/edit.html.twig', [
             'user' => $this->getUser(),
             'show' => $show,
             'form' => $form->createView(),
+            'mode' => 'edit',
             'electionIsActive' => $electionIsActive,
         ]);
     }

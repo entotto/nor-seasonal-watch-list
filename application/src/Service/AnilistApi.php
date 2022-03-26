@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php /** @noinspection PhpMultipleClassDeclarationsInspection */
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Service;
 
@@ -26,8 +28,12 @@ class AnilistApi
         ]);
         $statusCode = $response->getStatusCode();
         if (($statusCode >= 200) && ($statusCode < 300)) {
-            $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
-            return $data['data']['Media'];
+            try {
+                $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+                return $data['data']['Media'];
+            } catch (Exception $e) {
+                return null;
+            }
         }
         return null;
     }
@@ -37,7 +43,9 @@ class AnilistApi
 //        echo("<pre>\n"); print_r($data); die();
         $show->setJapaneseTitle($data['title']['romaji']);
         if (empty($data['title']['english'])) {
-            $show->setEnglishTitle($data['title']['romaji']);
+            if (empty($show->getEnglishTitle())) {
+                $show->setEnglishTitle($data['title']['romaji']);
+            }
         } else {
             $show->setEnglishTitle($data['title']['english']);
         }
