@@ -38,7 +38,7 @@ final class ExportHelper
             /** @noinspection RegExpUnnecessaryNonCapturingGroup */
             /** @noinspection PhpUnnecessaryCurlyVarSyntaxInspection */
             if ( $encloseAll || preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
-                $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
+                $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, (string)$field) . $enclosure;
             }
             else {
                 $output[] = $field;

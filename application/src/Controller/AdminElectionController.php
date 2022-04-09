@@ -17,6 +17,7 @@ use App\Repository\ShowRepository;
 use App\Service\ExportHelper;
 use App\Service\VoterInfoHelper;
 use Doctrine\DBAL\Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,11 +48,13 @@ class AdminElectionController extends AbstractController
      * @Route("/new", name="admin_election_new", methods={"GET","POST"})
      * @param Request $request
      * @param ElectionRepository $electionRepository
+     * @param EntityManagerInterface $entityManager
      * @return Response
      */
     public function new(
         Request $request,
-        ElectionRepository $electionRepository
+        ElectionRepository $electionRepository,
+        EntityManagerInterface $entityManager
     ): Response {
         $electionIsActive = $electionRepository->electionIsActive();
         $election = new Election();
@@ -59,7 +62,6 @@ class AdminElectionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($election);
             $entityManager->flush();
 
@@ -111,10 +113,11 @@ class AdminElectionController extends AbstractController
         VoterInfoHelper $voterInfoHelper,
         Election $election
     ): Response {
+        $electionName = $election->getSeason() ? $election->getSeason()->getName() : '';
         $filenameParts = [
-            str_replace(' ', '-', $election->getSeason()->getName()),
-            $election->getStartDate()->format('Ymd-Hi'),
-            $election->getEndDate()->format('Ymd-Hi')
+            str_replace(' ', '-', $electionName),
+            $election->getStartDate() ? $election->getStartDate()->format('Ymd-Hi') : 'start',
+            $election->getEndDate() ? $election->getEndDate()->format('Ymd-Hi') : 'end'
         ];
         $filename = implode('-', $filenameParts) . '.csv';
 
@@ -146,10 +149,11 @@ class AdminElectionController extends AbstractController
         ElectionVoteRepository $electionVoteRepository,
         Election $election
     ): Response {
+        $electionName = $election->getSeason() ? $election->getSeason()->getName() : '';
         $filenameParts = [
-            str_replace(' ', '-', $election->getSeason()->getName()),
-            $election->getStartDate()->format('Ymd-Hi'),
-            $election->getEndDate()->format('Ymd-Hi')
+            str_replace(' ', '-', $electionName),
+            $election->getStartDate() ? $election->getStartDate()->format('Ymd-Hi') : 'start',
+            $election->getEndDate() ? $election->getEndDate()->format('Ymd-Hi') : 'end'
         ];
         $filename = implode('-', $filenameParts) . '-raw.csv';
 
@@ -158,7 +162,7 @@ class AdminElectionController extends AbstractController
 
         $showRows = [];
         foreach ($rawVotes as $rawVote) {
-            $showTitle = $rawVote->getShow()->getEnglishTitle();
+            $showTitle = $rawVote->getShow() ? $rawVote->getShow()->getEnglishTitle() : '(unknown title)';
             if (!isset($showRows[$showTitle])) {
                 $showRows[$showTitle] = [$showTitle];
             }
@@ -201,19 +205,21 @@ class AdminElectionController extends AbstractController
      * @param Request $request
      * @param Election $election
      * @param ElectionRepository $electionRepository
+     * @param EntityManagerInterface $em
      * @return Response
      */
     public function edit(
         Request $request,
         Election $election,
-        ElectionRepository $electionRepository
+        ElectionRepository $electionRepository,
+        EntityManagerInterface $em
     ): Response {
         $electionIsActive = $electionRepository->electionIsActive();
         $form = $this->createForm(ElectionType::class, $election);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $em->flush();
 
             return $this->redirectToRoute('admin_election_index');
         }
@@ -233,6 +239,7 @@ class AdminElectionController extends AbstractController
      * @param ShowRepository $showRepository
      * @param ElectionShowBuffRepository $electionShowBuffRepository
      * @param VoterInfoHelper $voterInfoHelper
+     * @param EntityManagerInterface $em
      * @return Response
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
@@ -242,7 +249,8 @@ class AdminElectionController extends AbstractController
         Election $election,
         ShowRepository $showRepository,
         ElectionShowBuffRepository $electionShowBuffRepository,
-        VoterInfoHelper $voterInfoHelper
+        VoterInfoHelper $voterInfoHelper,
+        EntityManagerInterface $em
     ): Response {
         $info = $voterInfoHelper->getInfo($election);
         $buffedElection = new BuffedElection($election);
@@ -251,7 +259,6 @@ class AdminElectionController extends AbstractController
         $form = $this->createForm(BuffedElectionType::class, $buffedElection);
         $form->handleRequest($request);
 
-        $em = $this->getDoctrine()->getManager();
         if ($form->isSubmitted() && $form->isValid()) {
             foreach ($buffedElection->getVoteTallies() as $tally) {
                 /** @var VoteTally $tally */
@@ -282,7 +289,7 @@ class AdminElectionController extends AbstractController
                     }
                 }
             }
-            $this->getDoctrine()->getManager()->flush();
+            $em->flush();
 
             return $this->redirectToRoute('admin_election_index');
         }
@@ -300,14 +307,15 @@ class AdminElectionController extends AbstractController
      * @Route("/{id}", name="admin_election_delete", methods={"DELETE"}, requirements={"id":"\d+"})
      * @param Request $request
      * @param Election $election
+     * @param EntityManagerInterface $entityManager
      * @return Response
      */
     public function delete(
         Request $request,
-        Election $election
+        Election $election,
+        EntityManagerInterface $entityManager
     ): Response {
         if ($this->isCsrfTokenValid('delete'.$election->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($election);
             $entityManager->flush();
         }
