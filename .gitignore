@@ -49,3 +49,8 @@ Thumbs.db
 
 /git-config.txt
 /.phpunit.result.cache
+/application/docker/
+/application/docker-compose.yml
+/application/.docker.env
+/application/.docker.env.example
+/application/.dockerignore
