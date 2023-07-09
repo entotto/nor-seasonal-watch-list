@@ -10,6 +10,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PostSetDataEvent;
 use Symfony\Component\Form\Event\PreSubmitEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -39,6 +40,7 @@ class ElectionVoteType extends AbstractType
                     'required' => false,
                     'placeholder' => 'No opinion',
                     'choices' => $choices,
+                    'attr' => [ 'autocomplete' => 'off' ],
                 ]);
         }
 
