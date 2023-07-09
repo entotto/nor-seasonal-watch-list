@@ -37,13 +37,16 @@ final class SelectedSeasonHelper
         if ($selectedSeasonId === null) {
             $season = $this->seasonRepository->getSeasonForDate();
             if ($season === null) {
-                $season = $this->seasonRepository->getFirstSeason();
+                $season = $this->seasonRepository->getMostRecentSeason();
             }
         } else {
             $season = $this->seasonRepository->find($selectedSeasonId);
         }
+        if ($season && $season->isHiddenFromSeasonsList()) {
+            $season = $this->seasonRepository->getMostRecentSeason();
+        }
+        $selectedSeasonId = $season ? $season->getId() : null;
         $request->getSession()->set('selectedSeasonId', $selectedSeasonId);
         return $season;
     }
-
 }

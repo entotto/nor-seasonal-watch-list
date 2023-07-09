@@ -44,7 +44,7 @@ class SeasonRepository extends ServiceEntityRepository
      * Get the default season to show for a given date.
      *
      * NOTE: this function now anticipates the coming season by one month. In
-     * December it selects the Winter quarter (of the next year), in March it
+     * December, it selects the Winter quarter (of the next year), in March it
      * selects the Spring quarter, and so on.
      */
     public function getSeasonForDate(?DateTime $date = null): ?season
@@ -100,6 +100,20 @@ class SeasonRepository extends ServiceEntityRepository
             $qb->andWhere('s.hiddenFromSeasonsList = :hidden')
                 ->setParameter('hidden', false);
         }
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @return Season|null
+     * @throws NonUniqueResultException
+     */
+    public function getMostRecentSeason(): ?season
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->orderBy('s.rankOrder', 'DESC')
+            ->setMaxResults(1);
+        $qb->andWhere('s.hiddenFromSeasonsList = :hidden')
+            ->setParameter('hidden', false);
         return $qb->getQuery()->getOneOrNullResult();
     }
 }
