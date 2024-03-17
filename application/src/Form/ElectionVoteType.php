@@ -32,6 +32,7 @@ class ElectionVoteType extends AbstractType
                 ->add('chosen', CheckboxType::class, [
                     'label' => 'Choose this show',
                     'required' => false,
+                    'attr' => [ 'autocomplete' => 'off' ],
                 ]);
         } else {
             $builder->
