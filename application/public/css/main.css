@@ -196,7 +196,7 @@ a.back-to-top-button {
 
 .activity-emoji-container, .mood-emoji-container {
     font-size: calc(1.375rem + 1.5vw); /* .fs-1 */
-    position:relative;
+    line-height: 1;
 }
 
 @media (min-width: 992px) {
@@ -209,6 +209,14 @@ a.back-to-top-button {
     .activity-emoji-container, .mood-emoji-container {
         font-size: 1.75rem; /* .fs-3 */
     }
+}
+
+.mood-emoji-container .bi {
+    grid-area: 1 / 1;
+}
+
+.mood-emoji-container .bi-circle-fill {
+    z-index: -1;
 }
 
 .mood-emoji-favorable-color {
