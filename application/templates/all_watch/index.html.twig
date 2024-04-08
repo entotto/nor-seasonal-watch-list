@@ -15,16 +15,16 @@
 {% block second_navbar %}
     <nav id="second_nav" class="navbar navbar-expand-md navbar-light second-nav-bar">
         <div class="container">
-            <form class="d-none d-lg-flex" style="width:100%;">
-                <label class="pe-2 pt-2" for="select_show_wide">Show</label>
+            <form class="d-none d-lg-flex align-items-center" style="width:100%;">
+                <label class="pe-2" for="select_show_wide">Show</label>
                 <select id="select_show_wide" class="form-select me-2">
                     {% for key, row in data %}
                         <option value="show_target_wide_{{ row.show.id }}">{{ row.show.shortTitle }}</option>
                     {% endfor %}
                 </select>
             </form>
-            <form class="d-flex d-lg-none" style="width:100%;">
-                <label class="pe-2 pt-2" for="select_show">Show</label>
+            <form class="d-flex d-lg-none align-items-center" style="width:100%;">
+                <label class="pe-2" for="select_show">Show</label>
                 <select id="select_show" class="form-select me-2">
                     {% for key, row in data %}
                         <option value="show_target_{{ row.show.id }}">{{ row.show.shortTitle }}</option>
