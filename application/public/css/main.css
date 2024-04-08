@@ -145,12 +145,19 @@ a.nor-red:hover {
 .second-nav-bar {
     z-index: 900;
     background-color: #eeeeee !important;
+    color: --bs-dark;
+}
+
+.swl-color-mode-dark .second-nav-bar {
+    background-color: #444 !important;
+    color: --bs-light;
 }
 
 @media (prefers-color-scheme: dark) {
 
-    .second-nav-bar {
+    .swl-color-mode-os .second-nav-bar {
         background-color: #444 !important;
+        color: --bs-light;
     }
 
 }
@@ -163,9 +170,13 @@ a.nor-red:hover {
     background-color: #fff;
 }
 
+.swl-color-mode-dark .third-nav-bar {
+    background-color: #222;
+}
+
 @media (prefers-color-scheme: dark) {
 
-    .third-nav-bar {
+    .swl-color-mode-os .third-nav-bar {
         background-color: #222;
     }
 
