@@ -153,7 +153,7 @@ a.nor-red:hover {
 }
 
 .second-nav-bar {
-    z-index:1000;
+    z-index: 900;
     background-color: #4a4a4a !important;
 }
 
@@ -162,7 +162,7 @@ a.nor-red:hover {
 }
 
 .third-nav-bar {
-    z-index:1000;
+    z-index: 900;
     background-color: #222;
 }
 
