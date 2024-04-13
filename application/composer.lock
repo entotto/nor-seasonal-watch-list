@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37787073226d18a9396afcaa2b67389e",
+    "content-hash": "f57ff356c4ae83d75f700ac1bf27e72e",
     "packages": [
         {
             "name": "babdev/pagerfanta-bundle",
@@ -4328,30 +4328,30 @@
         },
         {
             "name": "psr/log",
-            "version": "1.1.4",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "d49695b909c3b7628b6289db5479a1c204601f11"
+                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/d49695b909c3b7628b6289db5479a1c204601f11",
-                "reference": "d49695b909c3b7628b6289db5479a1c204601f11",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/ef29f6d262798707a9edd554e2b82517ef3a9376",
+                "reference": "ef29f6d262798707a9edd554e2b82517ef3a9376",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=8.0.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Psr\\Log\\": "Psr/Log/"
+                    "Psr\\Log\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -4372,9 +4372,9 @@
                 "psr-3"
             ],
             "support": {
-                "source": "https://github.com/php-fig/log/tree/1.1.4"
+                "source": "https://github.com/php-fig/log/tree/2.0.0"
             },
-            "time": "2021-05-03T11:20:27+00:00"
+            "time": "2021-07-14T16:41:46+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -4422,25 +4422,25 @@
         },
         {
             "name": "restcord/restcord",
-            "version": "0.5.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/restcord/restcord.git",
-                "reference": "e79722fc74b15773a8b58237f678d004038f3529"
+                "reference": "8619e1a05e4df994c15bd457562eddbf99dea35f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/restcord/restcord/zipball/e79722fc74b15773a8b58237f678d004038f3529",
-                "reference": "e79722fc74b15773a8b58237f678d004038f3529",
+                "url": "https://api.github.com/repos/restcord/restcord/zipball/8619e1a05e4df994c15bd457562eddbf99dea35f",
+                "reference": "8619e1a05e4df994c15bd457562eddbf99dea35f",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": "^6.3",
+                "guzzlehttp/guzzle": "^7.0",
                 "guzzlehttp/guzzle-services": "^1.0",
-                "monolog/monolog": "^1.22|^2.0",
                 "netresearch/jsonmapper": "^1.4",
                 "php": "^7.3|^8.0",
-                "symfony/options-resolver": "^3.4|^4.4|^5.1"
+                "psr/log": "^2.0|^3.0",
+                "symfony/options-resolver": "^3.4|^4.4|^5.1|^6.0"
             },
             "require-dev": {
                 "beberlei/assert": "^2.7",
@@ -4451,6 +4451,7 @@
                 "symfony/var-dumper": "^2.6|^3.0|^4.0",
                 "twig/twig": "^1.20|^2.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -4470,9 +4471,9 @@
             "description": "REST Library for the Discord API",
             "support": {
                 "issues": "https://github.com/restcord/restcord/issues",
-                "source": "https://github.com/restcord/restcord/tree/0.5.0"
+                "source": "https://github.com/restcord/restcord/tree/develop"
             },
-            "time": "2020-12-24T04:37:14+00:00"
+            "time": "2023-12-11T22:06:27+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -12126,10 +12127,17 @@
             "version": "7.2.0.0",
             "alias": "6.3",
             "alias_normalized": "6.3.0.0"
+        },
+        {
+            "package": "restcord/restcord",
+            "version": "dev-develop",
+            "alias": "0.5.x-dev",
+            "alias_normalized": "0.5.9999999.9999999-dev"
         }
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "restcord/restcord": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": true,
