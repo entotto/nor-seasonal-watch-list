@@ -170,7 +170,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         $this->flashBag->add('danger', strtr($exception->getMessageKey(), $exception->getMessageData()));
-        $targetUrl = $this->router->generate('https_default');
+        $targetUrl = $this->router->generate('default');
         return new RedirectResponse($targetUrl);
     }
 
@@ -185,7 +185,7 @@ class AppDiscordAuthenticator extends SocialAuthenticator // AbstractGuardAuthen
         // Go home
         $targetUrl = $request->getSession()->get('loginOriginalRequestUri');
         if ($targetUrl === null) {
-            $targetUrl = $this->router->generate('https_default');
+            $targetUrl = $this->router->generate('default');
         }
         return new RedirectResponse($targetUrl);
         // Or allow the original controller to process this request

@@ -11,6 +11,9 @@ parameters:
     norGuildId: "%env(NOR_GUILD_ID)%"
     discordApiRootUrl: "https://discord.com/api/v8"
     discordBotToken: "%env(DISCORD_BOT_TOKEN)%"
+    swlApiRootUrl: "%env(SWL_API_ROOT_URL)%"
+    env(SWL_API_ROOT_URL): "https://swl.nearlyonred.com/api/v1"
+    swlApiKey: "%env(SWL_API_KEY)%"
     router.request_context.scheme: 'https'
     asset.request_context.secure: true
     noOpinionIsWorstRank: "%env(bool:NO_OPINION_IS_WORST_RANK)%"
@@ -22,6 +25,7 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
         bind:
+            $dataDir: '%kernel.project_dir%/data'
             $discordClientId: '%discordClientId%'
             $discordClientSecret: '%discordClientSecret%'
             $discordRedirectUri: '%discordRedirectUri%'
@@ -53,3 +57,8 @@ services:
         arguments:
             $rootUrl: '%discordApiRootUrl%'
             $botToken: '%discordBotToken%'
+
+    App\Service\SwlApi:
+        arguments:
+            $rootUrl: '%swlApiRootUrl%'
+            $apiKey: '%swlApiKey%'
