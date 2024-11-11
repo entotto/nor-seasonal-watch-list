@@ -91,6 +91,10 @@ a.back-to-top-button {
     clip-path: circle(48%);
 }
 
+.all-watch-bar-chart-container {
+    grid-template-columns: min-content auto;
+}
+
 .has-markdown th {
     padding-right: 1em;
 }

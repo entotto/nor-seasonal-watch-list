@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+exec mysqld --datadir=$MYSQL_DATA --socket=./mysqld.sock --skip-networking --gdb

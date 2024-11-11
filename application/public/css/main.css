@@ -1,11 +1,65 @@
 /* This file gets loaded when colors mode is 'light' or 'os'. */
 
+/*
+To apply a light-theme only rule, we need two declarations:
+one for when colors mode is 'light' and another for when
+colors mode is 'os' and the user's color preference is indeed
+'light'.
+
+```
+.swl-color-mode-light your-selector-here {
+    ...
+}
+
+@media (prefers-color-scheme: light) {
+    .swl-color-mode-os your-selector-here {
+        ...
+    }
+}
+```
+
+To apply a dark-theme only rule, we need just one declaration
+for when colors mode is 'os' and the user's color preference
+is indeed 'dark'.
+
+```
+@media (prefers-color-scheme: dark) {
+    .swl-color-mode-os your-selector-here {
+        ...
+    }
+}
+```
+
+*/
+
+.swl-color-mode-light .swl-d-light-none {
+    display: none !important;
+}
+@media (prefers-color-scheme: light) {
+    .swl-color-mode-os .swl-d-light-none {
+        display: none !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .swl-color-mode-os .swl-d-dark-none {
+        display: none !important;
+    }
+}
+
 .bg-royal {
     background-color: #6f42c1;
 }
 
 .text-royal {
     color: #6f42c1;
+}
+
+@media (prefers-color-scheme: dark) {
+    .swl-color-mode-os .home-nav-card .card-header {
+        background-color: rgba(250,250,250,.08); /* lighter .card-header */
+        filter: brightness(92%);
+    }
 }
 
 .recommendation-row {

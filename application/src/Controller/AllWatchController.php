@@ -14,6 +14,8 @@ use App\Repository\SeasonRepository;
 use App\Repository\ShowRepository;
 use App\Repository\ShowSeasonScoreRepository;
 use App\Repository\UserRepository;
+use App\Service\ScoreMood;
+use App\Service\ScoreMoodHelper;
 use App\Service\SelectedAllWatchModeHelper;
 use App\Service\SelectedSeasonHelper;
 use App\Service\SelectedSortHelper;
@@ -39,6 +41,7 @@ class AllWatchController extends AbstractController
      * @param ScoreRepository $scoreRepository
      * @param ActivityRepository $activityRepository
      * @param ElectionRepository $electionRepository
+     * @param ScoreMoodHelper $scoreMoodHelper
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param SelectedSortHelper $selectedSortHelper
      * @param SelectedAllWatchModeHelper $selectedAllWatchModeHelper
@@ -57,6 +60,7 @@ class AllWatchController extends AbstractController
         ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
         ElectionRepository $electionRepository,
+        ScoreMoodHelper $scoreMoodHelper,
         SelectedSeasonHelper $selectedSeasonHelper,
         SelectedSortHelper $selectedSortHelper,
         SelectedAllWatchModeHelper $selectedAllWatchModeHelper
@@ -76,6 +80,7 @@ class AllWatchController extends AbstractController
             $scoreRepository,
             $activityRepository,
             $showSeasonScoreRepository,
+            $scoreMoodHelper,
             $em,
             $userKeys,
             $data
@@ -120,6 +125,7 @@ class AllWatchController extends AbstractController
      * @param UserRepository $userRepository
      * @param ScoreRepository $scoreRepository
      * @param ActivityRepository $activityRepository
+     * @param ScoreMoodHelper $scoreMoodHelper
      * @param SelectedSeasonHelper $selectedSeasonHelper
      * @param SelectedSortHelper $selectedSortHelper
      * @return Response
@@ -135,6 +141,7 @@ class AllWatchController extends AbstractController
         UserRepository $userRepository,
         ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
+        ScoreMoodHelper $scoreMoodHelper,
         SelectedSeasonHelper $selectedSeasonHelper,
         SelectedSortHelper $selectedSortHelper
 
@@ -152,6 +159,7 @@ class AllWatchController extends AbstractController
             $scoreRepository,
             $activityRepository,
             $showSeasonScoreRepository,
+            $scoreMoodHelper,
             $em,
             $userKeys,
             $data
@@ -234,6 +242,7 @@ class AllWatchController extends AbstractController
      * @param ScoreRepository $scoreRepository
      * @param ActivityRepository $activityRepository
      * @param ShowSeasonScoreRepository $showSeasonScoreRepository
+     * @param ScoreMoodHelper $scoreMoodHelper
      * @param EntityManagerInterface $em
      * @param array $userKeys
      * @param array $data
@@ -250,6 +259,7 @@ class AllWatchController extends AbstractController
         ScoreRepository $scoreRepository,
         ActivityRepository $activityRepository,
         ShowSeasonScoreRepository $showSeasonScoreRepository,
+        ScoreMoodHelper $scoreMoodHelper,
         EntityManagerInterface $em,
         array $userKeys,
         array $data
@@ -318,6 +328,7 @@ class AllWatchController extends AbstractController
 
             $consolidatedShowScores = $showSeasonScoreRepository->getScoresForSeason($season);
             $keyedConsolidatedShowScores = [];
+            $index = 0;
             foreach ($consolidatedShowScores as $consolidatedShowScore) {
 
                 if ($consolidatedShowScore['all_count'] > 0) {
@@ -336,32 +347,32 @@ class AllWatchController extends AbstractController
 
                 $moodAverageValue = ($consolidatedShowScore['all_count'] > 0) ?
                     $consolidatedShowScore['score_total'] / $consolidatedShowScore['all_count'] : 0;
-                if ($moodAverageValue > 5) {
-//                    $moodEmoji = 'emoji-heart-eyes-fill';
-                    $moodEmoji = <<<EOF
+
+                $index += 1;
+                $mood = $scoreMoodHelper->scoreToMood($moodAverageValue);
+                $moodEmoji = match($mood) {
+//                  $moodEmoji = 'emoji-heart-eyes-fill';
+                    ScoreMood::HeartEyes => <<<EOF
 <i class="bi bi-circle-fill bi-x-upper-half d-flex align-items-center mood-emoji-heart-eyes-color"></i>
 <i class="bi bi-circle-fill bi-x-lower-half d-flex align-items-center mood-emoji-dark-mouth-color"></i>
 <i class="bi bi-emoji-heart-eyes-fill d-flex align-items-center mood-emoji-favorable-color"></i>
-EOF;
-                } elseif ($moodAverageValue > 1) {
+EOF,
                     // $moodEmoji = 'emoji-smile-fill';
-                    $moodEmoji = <<<EOF
+                    ScoreMood::Smile => <<<EOF
 <i class="bi bi-circle-fill bi-x-shrunk-circle d-flex align-items-center mood-emoji-dark-mouth-color"></i>
 <i class="bi bi-emoji-smile-fill d-flex align-items-center mood-emoji-favorable-color"></i>
-EOF;
-                } elseif ($moodAverageValue > -1) {
+EOF,
                     // $moodEmoji = 'emoji-neutral-fill';
-                    $moodEmoji = <<<EOF
+                    ScoreMood::Neutral => <<<EOF
 <i class="bi bi-circle-fill bi-x-shrunk-circle d-flex align-items-center mood-emoji-dark-mouth-color"></i>
 <i class="bi bi-emoji-neutral-fill d-flex align-items-center mood-emoji-neutral-color"></i>
-EOF;
-                } else {
+EOF,
                     // $moodEmoji = 'emoji-frown-fill';
-                    $moodEmoji = <<<EOF
+                    ScoreMood::Frown => <<<EOF
 <i class="bi bi-circle-fill bi-x-shrunk-circle d-flex align-items-center mood-emoji-light-mouth-color"></i>
 <i class="bi bi-emoji-frown-fill d-flex align-items-center mood-emoji-unfavorable-color"></i>
-EOF;
-                }
+EOF,
+                };
                 $maxScoreCount = max([
                     $maxScoreCount,
                     ($consolidatedShowScore['th8a_count'] +
