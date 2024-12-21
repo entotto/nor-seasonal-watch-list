@@ -1,0 +1,17 @@
+{
+  "name": "swl",
+  "version": "1.0.0",
+  "description": "[Seasonal Watch List](https://swl.nearlyonred.com) is an application used by the Nearly On Red (NOR) community's membership to track watch activity and recommendations of seasonal anime. Every three months a new batch of shows becomes available. The NOR community uses this application to track which shows they are watching, and which shows they think are worth the interest and attention of others in the community. The [Nearly On Red Discord server](https://discord.com/channels/592858084339351554/596489195841912873) is the center for discussion about these shows within the community. Each season the community selects a limited number of shows that are likely to generate enough discussion to warrant having their own individual channels for those posts. Show selection is a mostly democratic process, made through one or more rounds of voting. This SWL application includes an election feature, to organize those rounds of voting and collect the results.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^22.10.2",
+    "lodash-es": "^4.17.21"
+  }
+}
